@@ -1,82 +1,103 @@
-\chapter{公式、表格与代码的插入示例}
-\label{cha:for_tab_example}
-公式用于对论文基础理论的介绍，表格则是对一些不方便进行作图的数据进行展示。
+\chapter{实验设计与结果分析}
+\label{chap:exp}
 
-\section{公式的插入}
-\label{sec:formula}
-带左半边大括号的核反应方程式，如式(\ref{eqn:fusion_reactions})所示：
-\begin{equation}
-	\label{eqn:fusion_reactions}
-	\left\{
-	\begin{aligned}
-		&\mbox{D}+\mbox{D}\rightarrow \mbox{T}\,(\text{1.01}\;\mbox{MeV})+\mbox{p}\,(\text{3.03}\;\mbox{MeV}) \\
-		&\mbox{D}+\mbox{D}\rightarrow {^{\text{3}}}\mbox{He}\,(\text{0.82}\;\mbox{MeV})+\mbox{n}\,(\text{2.45}\;\mbox{MeV}) \\
-		&\mbox{D}+\mbox{T}\rightarrow \text{α}\,(\text{3.52}\;\mbox{MeV})+\mbox{n}\,(\text{14.06}\;\mbox{MeV}) \\
-		&\mbox{D}+{^{\text{3}}}\mbox{He}\rightarrow \text{α}\,(\text{3.67}\;\mbox{MeV})+\mbox{p}\,(\text{14.67}\;\mbox{MeV})
-	\end{aligned}
-	\right.
-\end{equation}
+\section{实验目标与研究问题}
+围绕提出的协同框架，本文设计以下研究问题：
+\begin{enumerate}
+    \item RQ1：相比主流序列/图/LLM基线，本文方法是否稳定提升推荐性能？
+    \item RQ2：时间增强、双向转移、GCIM、PAM 等关键模块是否均有独立贡献？
+    \item RQ3：在冷启动与跨城迁移场景中，方法是否仍具有鲁棒性？
+\end{enumerate}
 
-狄拉克函数$\delta_{ij}$的表达式：
-\begin{equation}
-	\label{eqn:delta_ij}
-	\delta_{ij}=\left\{
-	\begin{aligned}
-		1,\; i=j \\
-		0,\; i\neq j
-	\end{aligned}
-	\right.
-\end{equation}
+\section{数据集与评价指标}
+\subsection{数据集}
+与前期工作一致，实验采用Gowalla与Foursquare用于小模型验证；采用NYC、TKY、CA用于LLM路线与跨城泛化分析。各数据集均包含用户ID、POI ID、时间戳、经纬度与类别信息。
 
-一般的公式：
-\begin{equation}
-	\label{eqn:vec_v_cm}
-	\vec{v}_{cm}=\dfrac{m_{1}\vec{v}_{1}+m_{2}\vec{v}_{2}}{m_{1}+m_{2}}
-\end{equation}
+\subsection{评价指标}
+采用准确率与排序质量指标：Acc@1、Acc@5、Acc@10、MRR（或MRR@5）。记第 $i$ 个样本中真实POI排名为 $rank_i$，则
+\[
+\text{Acc@k}=\frac{1}{N}\sum_{i=1}^{N}\mathbb{I}(rank_i\le k),\qquad
+\text{MRR}=\frac{1}{N}\sum_{i=1}^{N}\frac{1}{rank_i}.
+\]
 
-超长的公式\cite{appelbe2011production}：
-\begin{equation}
-	\label{eqn:iint_theta3_phi3}
-	\begin{split}
-		\int_{0}^{\pi}\int_{0}^{2\pi} \sin\theta_{3}&\dfrac{\exp(-\alpha v_{cm}^{2})}{v_{cm}}\sinh(\mu \gamma v_{r}v_{cm})\mbox{d}\phi_{3}\mbox{d}\theta_{3}=\dfrac{2\pi \sqrt{\pi}}{4\sqrt{\alpha}v_{3}u_{3}}\exp\left( \dfrac{(\mu \gamma v_{r})^{2}}{4\alpha} \right) \\
-		&\times \Bigg( \mbox{erf}\left( \dfrac{\mu \gamma v_{r}+2\alpha(v_{3}-u_{3})}{2\sqrt{\alpha}} \right)-\mbox{erf}\left( \dfrac{-\mu \gamma v_{r}+2\alpha(v_{3}-u_{3})}{2\sqrt{\alpha}} \right) \\
-		&+\mbox{erf}\left( \dfrac{-\mu \gamma v_{r}+2\alpha(v_{3}+u_{3})}{2\sqrt{\alpha}} \right)-\mbox{erf}\left( \dfrac{\mu \gamma v_{r}+2\alpha(v_{3}+u_{3})}{2\sqrt{\alpha}} \right) \Bigg)
-	\end{split}
-\end{equation}
+\section{小模型实验：TSPM结果分析}
+\subsection{总体对比结果}
+表~\ref{tab:tspm-main} 给出了你前期小模型稿件中的核心结果。TSPM在Gowalla与Foursquare上均达到最优，说明“时间槽偏好 + 双向转移 + 动态图”对下一POI预测有稳定增益。
 
-输入矩阵：
-\begin{equation}
-	\label{eqn:matrix}
-	A_{m\times n}=
-	\left[ {\begin{array}{cccc}
-			a_{11} & a_{12} & \cdots & a_{1n}\\
-			a_{21} & a_{22} & \cdots & a_{2n}\\
-			\vdots & \vdots & \ddots & \vdots\\
-			a_{m1} & a_{m2} & \cdots & a_{mn}\\
-	\end{array}}\right]
-\end{equation}
+\begin{table}[htbp]
+    \centering
+    \caption{TSPM与基线在Gowalla/Foursquare上的结果（来自前期工作）}
+    \label{tab:tspm-main}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{l|cccc|cccc}
+        \toprule
+        \multirow{2}{*}{方法} & \multicolumn{4}{c|}{Gowalla} & \multicolumn{4}{c}{Foursquare} \\
+        & Acc@1 & Acc@5 & Acc@10 & MRR & Acc@1 & Acc@5 & Acc@10 & MRR \\
+        \midrule
+        PRME & 0.0740 & 0.2146 & 0.2899 & 0.1503 & 0.0982 & 0.3167 & 0.4064 & 0.2040 \\
+        STRNN & 0.0900 & 0.2120 & 0.2730 & 0.1508 & 0.2290 & 0.4310 & 0.5050 & 0.3248 \\
+        DeepMove & 0.0625 & 0.1304 & 0.1594 & 0.0982 & 0.2400 & 0.4319 & 0.4742 & 0.3270 \\
+        LBSN2Vec & 0.0864 & 0.1186 & 0.1390 & 0.1032 & 0.2190 & 0.3955 & 0.4621 & 0.2781 \\
+        STGN & 0.0624 & 0.1586 & 0.2104 & 0.1125 & 0.2094 & 0.4734 & 0.5470 & 0.3283 \\
+        LightGCN & 0.0428 & 0.1439 & 0.2115 & 0.1224 & 0.0540 & 0.1790 & 0.2710 & 0.1574 \\
+        Flashback & 0.1158 & 0.2754 & 0.3479 & 0.1925 & 0.2496 & 0.5399 & 0.6236 & 0.3805 \\
+        STAN & 0.0891 & 0.2096 & 0.2763 & 0.1523 & 0.2265 & 0.4515 & 0.5310 & 0.3420 \\
+        GETNext & 0.1419 & 0.3270 & 0.4081 & 0.2294 & 0.2646 & 0.5640 & 0.6431 & 0.3988 \\
+        Graph-Flashback & 0.1512 & 0.3425 & 0.4256 & 0.2422 & 0.2805 & 0.5757 & 0.6514 & 0.4136 \\
+        \midrule
+        TSPM & \textbf{0.1595} & \textbf{0.3520} & \textbf{0.4350} & \textbf{0.2509} & \textbf{0.2932} & \textbf{0.5978} & \textbf{0.6768} & \textbf{0.4301} \\
+        \bottomrule
+    \end{tabular}}
+\end{table}
 
-\section{表格的插入}
-\label{sec:table}
-插入一般的表格：
-\input{table/chap04_siftflow}
+\subsection{消融实验结论}
+在小模型稿件中，去除TSDG或去除双向转移建模（BTM）均会造成性能下降，验证了：
+\begin{enumerate}
+    \item 时间槽建模能够显著缓解“同一POI在不同时段行为模式不同”的问题；
+    \item 转入/转出双向偏好比单向转移更能刻画真实出行路径。
+\end{enumerate}
 
-较为复杂的表格：
-\input{table/chap04_nucheat_tot}
+\section{大模型实验：GA-LLM结果分析}
+\subsection{核心发现}
+依据ICDE二轮稿与修订说明，GA-LLM通过GCIM和PAM在三个方面取得改进：
+\begin{enumerate}
+    \item \textbf{精度提升}：相对LLM4POI与多种基线，在Acc@1/Acc@5/MRR@5上取得明显优势（文中报告最高可达24.10\%相对提升）；
+    \item \textbf{空间幻觉缓解}：错误预测与真实POI的平均地理距离显著下降，说明GCIM有效约束了地理不合理生成；
+    \item \textbf{跨城冷启动增强}：在训练城市与测试城市不一致时，GA-LLM仍优于文本LLM基线，显示更强可迁移性。
+\end{enumerate}
 
-\section{代码的插入}
-\label{sec:code}
-本模版支持在论文中插入代码片段，或直接从源码文件进行插入。例如，在论文中插入代码片段的效果为：
-\begin{python}
-def func():
-print("hello world")
-with open('./output.txt', 'w') as f:
-L = f.readlines()
-	
-if __name__ == "__main__":
-# this is a comment line
-func()
-\end{python}
-也可在行内插入代码片段，例如：Python中重载加法运算符的函数为\pyinline{__add__}，类的标识符为\pyinline{class}。
-此外，还可直接插入代码文件，例如插入\texttt{./code/demo.cpp}的效果为：
-\lstinputlisting[style=sysucpp]{code/demo.cpp}
+\subsection{GCIM作用分析}
+GCIM的贡献可概括为“离散层级结构 + 连续频域结构 + 地理一致性约束”三者协同：
+\begin{enumerate}
+    \item Quadkey层级编码保留区域-子区域多尺度信息；
+    \item Fourier连续映射补足平滑空间变化；
+    \item 测地约束将真实地理距离引入表示学习，减少语义空间扭曲。
+\end{enumerate}
+
+\subsection{PAM作用分析}
+PAM将图模型POI表示映射到LLM语义空间，在目标POI未显式出现在输入历史时仍可通过转移先验进行推断。对比“仅token学习POI”的策略，PAM在复杂城市分布下更稳定。
+
+\subsection{效率与可扩展性}
+GA-LLM采用结构化坐标注入而非原始长文本坐标描述，减少了上下文冗余；同时LoRA微调降低了训练参数开销，具有较好的工程可部署性。
+
+\section{融合模型的综合讨论}
+将小模型与大模型能力融合后，模型具备如下互补机制：
+\begin{enumerate}
+    \item 小模型提供可解释时空结构先验（时间槽、转移图、双向偏好）；
+    \item 大模型提供强语义建模与跨场景泛化能力；
+    \item 对齐模块将二者映射到统一语义空间，缓解结构信息在生成模型中的丢失。
+\end{enumerate}
+
+从误差类型看，融合模型可同时降低两类错误：
+\begin{enumerate}
+    \item 由文本语义偏置导致的“空间远跳错误”；
+    \item 由局部历史过拟合导致的“重复历史POI错误”。
+\end{enumerate}
+
+\section{实验小结}
+本章实验表明：
+\begin{enumerate}
+    \item 在小模型路线中，TSPM通过时间增强与双向转移显著提升基础预测能力；
+    \item 在大模型路线中，GA-LLM通过GCIM/PAM显著提升空间一致性与冷启动鲁棒性；
+    \item 二者融合后能够在精度、鲁棒性和可解释性之间取得更优平衡。
+\end{enumerate}

@@ -1,2 +1,14 @@
-\chapter{结论与展望}
-\label{cha:conclusion_outlook}
+\chapter*{结论与展望}
+\addcontentsline{toc}{chapter}{结论与展望}
+\label{chap:conclusion}
+
+\section*{结论}
+本文围绕“面向出行位置点预测的大小模型协同学习”展开研究，形成了较完整的论文方案：一是基于时间增强序列动态图与双向转移建模，强化传统模型对时空依赖的刻画；二是通过MLP对齐与LoRA微调，将传统模型全局信息注入LLM，提升稀疏场景下的推荐鲁棒性。当前已完成论文结构重构、方法描述与实验方案设计，为后续实证结果补充和终稿撰写打下基础。
+
+\section*{展望}
+后续工作将重点推进三个方向：
+\begin{enumerate}
+    \item 完成大规模实验与统计显著性检验，形成可复现结果；
+    \item 探索多模态上下文信息（如地理文本描述）对推荐效果的增益；
+    \item 研究协同框架在跨城市、跨平台迁移场景中的泛化能力。
+\end{enumerate}

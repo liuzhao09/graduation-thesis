@@ -1,30 +1,127 @@
-\chapter{图像的插入示例}
-\label{cha:fig_example}
-除了第一章引言和最后一章的总结与展望之外，正文的所有章都要在章标题之下加上这样一段引入本章内容的话语，让读者知道本章的目的以及意义。本章将通过一些示例来说明如何插入图片。读者在阅读文章时，最能吸引读者注意力的莫过于文章中的图片，因此图片对于论文来说是重中之重，甚至可以说，好图就是好文章。规范地插入图片对于整篇文章的观感、阅读体验来说，有着至关重要的作用。
-\section{单张图片的插入}
-\label{sec:fig_singlefig}
-单张图片插入的原则：（1）图片居中放置，大小适当，图中文字、内容清晰；（2）从文献中获得的图片要引用，要写明来源；（3）图片应该放置在两段文字之间，图片上面一段文字应该是对图片内容的描述，不要插在一段文字内，一页排不下时，应排在下一页的顶部；（4）对图片的描述要符合规范，指明是图x-x，不能说如下图所示。
-\begin{itemize}
-\item 错误描述：托卡马克装置示意图如下图所示\cite{xu2016general}：
-\item 正确描述：托卡马克装置示意图如图 \ref{fig:tokamak} 所示\cite{xu2016general}：
-\end{itemize}
+\chapter{大小模型协同学习方法}
+\label{chap:method}
 
-\input{figure/chap03/tokamak}
-\subsection{矢量图片的插入}
-\label{ssec:fig_vecfig}
-本小节示例了如何插入小节。按照中大的规定，正文中的标题只到小节，如 \ref{ssec:fig_vecfig} 小节，目录中的标题只到节，如 \ref{sec:fig_singlefig} 节。
+\section{任务定义与总体框架}
+设用户集合为 $\mathcal{U}$，POI集合为 $\mathcal{L}$。用户 $u\in\mathcal{U}$ 的签到序列记为
+\[
+\mathcal{T}_u=\{(p_1,t_1,g_1,c_1),\ldots,(p_n,t_n,g_n,c_n)\},
+\]
+其中 $p_i$ 为POI ID，$t_i$ 为时间戳，$g_i=(lat_i,lon_i)$ 为经纬度，$c_i$ 为类别。目标是学习函数
+\[
+\hat{p}_{n+1}=f(\mathcal{T}_u),\quad \hat{p}_{n+1}\in\mathcal{L},
+\]
+使真实下一POI在候选排序中尽可能靠前。
 
-\LaTeX\  支持svg、pdf、eps格式的矢量图的插入，svg格式的矢量图插入过程有点复杂，我暂时还没看明白，但是pdf和eps格式的矢量图是能直接插入的，操作很简单，与图 \ref{fig:tokamak} 操作相同，只需更改文件名。
+本文框架由三部分组成：
+\begin{enumerate}
+    \item 小模型分支：TSPM（Time-enhanced Sequential Prediction Model）；
+    \item 大模型分支：GA-LLM（Geography-Aware LLM）；
+    \item 融合分支：嵌入对齐与两阶段协同训练。
+\end{enumerate}
 
-图 \ref{fig:tbm_layer} 为插入的pdf格式的矢量图，图 \ref{fig:confusion} 为插入的eps格式的矢量图。一些简单的示意图可以用PowerPoint制作，最后导出成pdf即可，值得注意的是，MS Office套件由于自身的漏洞，无法导出eps格式的文件。
-\input{figure/chap03/tbm_layer}
-\input{figure/chap03/confusion}
-\section{多张图片的插入}
-\label{sec:fig_multifig}
-多张图片插入的原则与单张图片的相同，但是值得注意的是，多张图片不宜使用\LaTeX\ 直接插入，应将所需插入的图片先用PowerPoint排列、拼接，再标号，生成一张图片，再整个插入论文中，这样就与单张图片的插入过程相同。生成图片的过程，偷懒的话可以直接截屏保存为png格式图片，不偷懒就调整ppt的大小后直接导出为pdf。
-\input{figure/chap03/temperature_density}
-\input{figure/chap03/compare}
+\section{小模型分支：TSPM}
+\subsection{时间增强序列动态图（TSDG）}
+传统连续序列默认不同时间段共享同一转移机制，难以刻画“早高峰通勤”与“夜间娱乐”行为差异。为此，将一天划分为 $z$ 个时间槽 $\{T_1,\ldots,T_z\}$，在每个时间槽内构建POI转移子图。对当前POI嵌入 $\mathbf{e}_i$ 与时间槽嵌入 $\mathbf{t}_i$，定义时间感知的转出向量：
+\[
+\boldsymbol{\xi}^{out}_{i,T_i}=\sigma\left([\mathbf{e}_i\Vert \mathbf{t}_i]\mathbf{W}^{t}_{out}+\mathbf{b}^{t}_{out}\right),
+\]
+对应地定义转入向量：
+\[
+\boldsymbol{\xi}^{in}_{j,T_i}=\sigma\left([\mathbf{e}_j\Vert \mathbf{t}_i]\mathbf{W}^{t}_{in}+\mathbf{b}^{t}_{in}\right).
+\]
 
-如果实在有需要直接插入多张图片的需求，则参考如图 \ref{fig:section_compare} 所示的例子。
-\input{figure/chap03/section_compare}
+\subsection{双向转移建模}
+为同时建模“从哪里来”和“将去哪里”，采用双向对比损失：
+\[
+\mathcal{L}_{time}=-\sum_t\log\sigma\left(\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2-\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{+,T}\|_2^2\right),
+\]
+其中 $+$ 与 $-$ 分别表示正负样本POI。该损失鼓励当前POI在给定时间槽下更接近真实下一跳的转入表示。
+
+\subsection{序列偏好建模与动态图权重}
+将最近 $k$ 个访问拼接后得到序列表示：
+\[
+\boldsymbol{\xi}_{seq}=\sigma\left([\mathbf{e}_t\Vert\mathbf{e}_{t-1}\Vert\cdots\Vert\mathbf{e}_{t-k}]\mathbf{W}^{s}+\mathbf{b}^{s}\right).
+\]
+对应序列对比损失为：
+\[
+\mathcal{L}_{seq}=-\sum_t\log\sigma\left(\|\boldsymbol{\xi}_{seq}-\mathbf{e}^{-}_t\|_2^2-\|\boldsymbol{\xi}_{seq}-\mathbf{e}^{+}_{t+1}\|_2^2\right).
+\]
+综合损失：
+\[
+\mathcal{L}_{TSPM}=\alpha\mathcal{L}_{time}+\beta\mathcal{L}_{seq}.
+\]
+
+学习完成后，定义动态边权：
+\[
+s^d_{i,j}=\exp\left(-\rho_1\|\boldsymbol{\xi}_{seq}-\mathbf{e}_j\|_2^2-\rho_2\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{j,T}\|_2^2\right),
+\]
+并据此构建时间增强动态图进行邻域聚合。
+
+\subsection{TiRNN预测头}
+为显式建模多步历史影响，TiRNN将过去 $K$ 个隐状态加权融合：
+\[
+\mathbf{c}_t=\sum_{k=1}^{K}\alpha_k(\mathbf{h}_{t-k}\circ\mathbf{r}_k),
+\]
+\[
+\mathbf{h}_t=\sigma(\kappa\mathbf{v}_t+\mathbf{c}_t),\qquad
+\hat{\mathbf{y}}_t=\text{Softmax}(\mathbf{W}_f[\hat{\mathbf{h}}_t\Vert\mathbf{E}_u]).
+\]
+训练目标采用交叉熵与$L_2$正则。
+
+\section{大模型分支：GA-LLM}
+\subsection{问题动机}
+基于LLM的POI推荐虽具语义优势，但存在“空间连续性缺失”和“转移先验不足”两类核心问题：
+\begin{enumerate}
+    \item 经纬度离散分词后，近邻点可能映射到语义距离较远的token空间；
+    \item 仅依赖文本提示时，模型倾向重复历史出现POI，难以推断未显式出现但转移概率高的目标POI。
+\end{enumerate}
+
+\subsection{GCIM：地理坐标注入模块}
+GCIM由双分支组成：
+\begin{enumerate}
+    \item 层级离散分支（Quadkey n-gram）：编码多尺度地理网格结构；
+    \item 连续频域分支（Fourier）：编码平滑地理距离变化。
+\end{enumerate}
+
+连续频域分支写作：
+\[
+\mathbf{E}_{fourier}=\frac{1}{\sqrt{M}}\left[\cos(\mathbf{g}\mathbf{W}_s^\top)\,\Vert\,\sin(\mathbf{g}\mathbf{W}_s^\top)\right],
+\]
+其中 $\mathbf{g}=(lat,lon)$。双分支融合后通过投影映射至LLM语义空间：
+\[
+\mathbf{E}_{GPS}=\mathbf{W}_{GPS}[\mathbf{E}_{quad}\Vert\mathbf{E}_{fourier}].
+\]
+
+为保持语义空间中的地理一致性，引入测地一致性损失，约束嵌入距离与真实地理距离单调一致，从而降低空间幻觉预测。
+
+\subsection{PAM：POI对齐模块}
+PAM将图模型产生的低维POI向量 $\mathbf{e}_{poi}\in\mathbb{R}^{d}$ 投影至LLM空间：
+\[
+\mathbf{E}_{poi}=\text{PAM}(\mathbf{e}_{poi})=\mathbf{W}_{p}\mathbf{e}_{poi}+\mathbf{b}_{p}.
+\]
+
+与仅将POI当作独立token的策略不同，PAM显式引入跨POI转移先验，使模型能在目标POI未出现在输入历史时仍基于结构化关系完成预测。
+
+\subsection{结构化提示构造}
+采用“轨迹文本 + 专用token”混合提示：
+\begin{quote}
+This is the historical trajectory of user u: ... <POI $p_i$>, <GPS $g_i$> ... Which POI will user u visit next?
+\end{quote}
+其中 `<GPS>` 由GCIM编码，`<POI>` 由PAM编码。该策略在不显著增加上下文长度的前提下注入关键地理与转移信息。
+
+\section{融合策略：大小模型协同训练}
+\subsection{两阶段训练流程}
+\textbf{阶段一（对齐阶段）}：冻结LLM主体，仅训练GCIM/PAM与跨模型映射层，获得稳定空间与POI对齐表征。  
+\textbf{阶段二（协同阶段）}：采用LoRA微调LLM注意力层，联合优化序列目标与生成目标。
+
+总目标可写为：
+\[
+\mathcal{L}_{total}=\lambda_1\mathcal{L}_{gen}+\lambda_2\mathcal{L}_{geo}+\lambda_3\mathcal{L}_{align}+\lambda_4\mathcal{L}_{TSPM}.
+\]
+其中 $\mathcal{L}_{gen}$ 为自回归生成损失，$\mathcal{L}_{geo}$ 为地理一致性损失，$\mathcal{L}_{align}$ 为POI语义对齐损失。
+
+\subsection{推理机制}
+推理时，将用户近期轨迹编码为结构化提示，GCIM与PAM分别注入地理与转移信息，LLM输出候选POI分布；同时可利用小模型输出进行重排序，得到最终Top-$K$推荐列表。
+
 \section{本章小结}
+本章构建了从“小模型时空建模”到“大模型语义增强”再到“统一协同训练”的完整方法体系。该体系针对POI推荐中的时间异质性、空间连续性与转移先验三类核心难题给出统一解决方案，为下一章实验验证奠定基础。

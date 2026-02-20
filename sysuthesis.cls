@@ -131,7 +131,7 @@
 
 % 目录设定，使用tocloft宏包
 \setcounter{secnumdepth}{3} % depth of toc, 2
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 % 如果要在目录中显示子章节请换用下面这行(目录中显示到x.y.z章)，如果不用这行默认显示到x.y章。
 % \setcounter{tocdepth}{2}
 
@@ -196,64 +196,38 @@
 \newcommand\emajor[1]{\def\@emajor{#1}}
 \newcommand\cmentor[1]{\def\@cmentor{#1}}
 \newcommand\ementor[1]{\def\@ementor{#1}}
+\newcommand\ccollege[1]{\def\@ccollege{#1}}
+\newcommand\cdegree[1]{\def\@cdegree{#1}}
+\def\@ccollege{中山大学人工智能学院}
+\def\@cdegree{硕士}
 
 \newlength{\@title@width}
 
 \renewcommand\maketitle {
     \begin{titlepage}
         \begin{center}
-            \includegraphics[width=10cm]{image/SYSULogo} \\
             \songti
-            \vspace{\baselineskip}
-            \zihao{1}{中山大学硕士学位论文} \\
-            \vspace{1\baselineskip}
+            \zihao{3}\bfseries\@ccollege\\[8pt]
+            \zihao{2}\bfseries 研究生学位论文\\[5em]
 
-            {\fontsize{12}{10}\selectfont
-            \begin{tabular}{l}
-            	\hfill\zihao{3}\songti\bfseries\@covertitlefirst\hfill\\\vspace{1pt}\\
-            	\hfill\zihao{3}\songti\textbf{\@covertitlesecond}\hfill\\\vspace{1pt}\\
-            	\hfill\zihao{3}\songti\textbf{\@covertitlethird}\hfill\\\vspace{20pt}\\
+            \zihao{3}\songti\@covertitlefirst\\[10pt]
+            \zihao{-4}\rmfamily\@covertitlesecond\\[4em]
+
+            \begin{tabular}{ll}
+                \zihao{4}学位申请人： & \zihao{4}\@cauthor \\
+                \zihao{4}专业名称： & \zihao{4}\@cmajor \\
+                \zihao{4}导师姓名及职称： & \zihao{4}\@cmentor \\
+                \zihao{4}学位： & \zihao{4}\@cdegree \\
             \end{tabular}
-        	\begin{tabular}{l}
-        		\zihao{4}{专业：}\@cmajor\\\vspace{4pt} \\
-        		\zihao{4}{学位申请人：}\@cauthor\\\vspace{4pt} \\
-        		\zihao{4}{指导教师：}\@cmentor\\\vspace{1pt} \\
-            \end{tabular}
-            }
-        	\vspace{15pt}
-%			\vspace{1\baselineskip}
-			
-   		 	\setlength{\@title@width}{6cm}
-   		 	{\zihao{4}\songti{
-   		 	\begin{tabular}{c}
-     				论文答辩委员会主席:\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad \\
-     				
-     				%\vspace{12pt}
-     				\underline{\makebox[\@title@width][c]{~}} \\
-     				%\vspace{12pt}
-     				论文答辩委员会成员:\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad \\
-     				%\vspace{12pt}
-   
-     				\underline{\makebox[\@title@width][c]{~}} \\
-     				~\\
-     				\underline{\makebox[\@title@width][c]{~}}\\
-     				~\\
-     				\underline{\makebox[\@title@width][c]{~}}\\
-     				~\\
-     				\underline{\makebox[\@title@width][c]{~}}\\
-   				\end{tabular}}	% 不加粗
-%				\hspace{24pt}论文答辩委员会主席:
-  		    }
+
             \vfill
 
-            \zihao{-5}
-            {\centering
-            	{二〇二二年五月}
-%                \ctexset{today=big}         % 汉字数字形式日期
-%                \today     \\ % 使用最后一次编译的日期, 实现日期的自动化
-                % Date:\hspace{0.5\ccwd} Month\hspace{2\ccwd} Day\hspace{1\ccwd} Year
-%                Date: \etoday % 英文日期自动化
-            }
+            \setlength{\@title@width}{8cm}
+            \zihao{4}\songti
+            \begin{tabular}{l}
+                答辩委员会主席（签名）：\underline{\makebox[\@title@width][c]{~}}\\[20pt]
+                委员（签名）：\underline{\makebox[\@title@width][c]{~}}
+            \end{tabular}
 
         \end{center}
     \end{titlepage}
@@ -299,6 +273,7 @@
 	}
 	
 	\addcontentsline{toc}{chapter}{摘\hspace{\ccwd}要}
+    \phantomsection\label{abs-cn}
 	\begin{center}
 		\zihao{3}
 		\mbox{ }\\
@@ -313,7 +288,7 @@
 		\vspace{\baselineskip}\\ 
 		\zihao{-2}\heiti\textbf{摘要}
 	\end{center}		
-		\begin{spacing}{1.6}
+		\begin{spacing}{1.5}
 			\zihao{-4} \songti\@cabstract
 			~\\
 		\end{spacing}
@@ -333,12 +308,13 @@
 	}
 	
 	\addcontentsline{toc}{chapter}{ABSTRACT}
+    \phantomsection\label{abs-en}
 	
-	\begin{center}
-		\zihao{3}
-		\mbox{ }\\
-		\textbf{Title: \@etitle} 
-		\vspace{\baselineskip}\\
+		\begin{center}
+			\zihao{-3}
+			\mbox{ }\\
+			\textbf{Title: \@etitle} 
+			\vspace{\baselineskip}\\
 		\zihao{-3}
 		\begin{tabular}{ll}
 			Major: \@emajor \\
@@ -346,13 +322,13 @@
 			Supervisor: \@ementor
 		\end{tabular}
 		\vspace{\baselineskip}\\
-		\zihao{-2} \textbf{ABSTRACT}
-	\end{center}
-		\begin{spacing}{1.6}
-			\zihao{-4} \@eabstract
-			~\\
-		\end{spacing}
-	\begin{spacing}{1.6}
+			\zihao{-3} \textbf{Abstract}
+		\end{center}
+			\begin{spacing}{1.5}
+				\zihao{-4} \@eabstract
+				~\\
+			\end{spacing}
+	\begin{spacing}{1.5}
 		\noindent\zihao{-4}\textbf{Keywords: }\@ekeywords
 	\end{spacing}
 		%\paragraph{\textbf{Keywords: }}\zihao{-4}\indent \@ekeywords
@@ -371,6 +347,93 @@
 \newcommand\maketableofcontents{
     \pagestyle{plain}
     \tableofcontents
+    \newclearpage
+}
+
+\newcommand\cacheenglishtoc{
+    \global\let\sysuen@tocdata\@empty
+    \begingroup
+    \def\contentsline##1##2##3##4{%
+        \g@addto@macro\sysuen@tocdata{%
+            \noexpand\sysuen@entry{##1}{##2}{##3}{##4}%
+        }%
+    }%
+    \InputIfFileExists{\jobname.toc}{}{}%
+    \endgroup
+}
+
+\newcommand\makeenglishtableofcontents{
+    \begingroup
+    \chapter*{Contents}
+    \zihao{-4}\songti
+    \setlength{\parindent}{0pt}
+    \def\sysuen@chapter##1##2{\noindent ##1\dotfill ##2\par}
+    \def\sysuen@section##1##2{\hspace*{1.8em}##1\dotfill ##2\par}
+    \def\sysuen@subsection##1##2{\hspace*{3.6em}##1\dotfill ##2\par}
+    \def\sysuen@subsubsection##1##2{\hspace*{5.4em}##1\dotfill ##2\par}
+    \sysuen@chapter{Abstract (Chinese)}{I}
+    \sysuen@chapter{Abstract}{II}
+    \sysuen@chapter{List of Abbreviations}{VII}
+    \sysuen@chapter{Chapter 1 Introduction}{1}
+    \sysuen@section{1.1 Research Background}{1}
+    \sysuen@section{1.2 Problem Definition and Notations}{1}
+    \sysuen@section{1.3 Fundamentals of Recommender Systems and Sequential Modeling}{2}
+    \sysuen@subsection{1.3.1 Matrix Factorization and Implicit Feedback Learning}{2}
+    \sysuen@subsection{1.3.2 Temporal and Attention-based Modeling}{2}
+    \sysuen@subsection{1.3.3 Fundamentals of Graph Neural Networks}{3}
+    \sysuen@section{1.4 LLM Introduction and Core Challenges}{3}
+    \sysuen@section{1.5 Research Idea and Technical Route}{4}
+    \sysuen@section{1.6 Main Contributions and Innovations}{4}
+    \sysuen@section{1.7 Thesis Organization}{4}
+    \sysuen@chapter{Chapter 2 Related Work and Problem Analysis}{6}
+    \sysuen@section{2.1 Overview of the Next POI Recommendation Task}{6}
+    \sysuen@section{2.2 Recommender System Fundamentals and Evaluation Metrics}{6}
+    \sysuen@subsection{2.2.1 From Static Recommendation to Sequential Recommendation}{6}
+    \sysuen@subsection{2.2.2 Typical Optimization Objectives}{7}
+    \sysuen@subsection{2.2.3 Common Evaluation Metrics}{7}
+    \sysuen@section{2.3 Small-model Route: Sequential and Graph Methods}{7}
+    \sysuen@subsection{2.3.1 Sequential Modeling Methods}{7}
+    \sysuen@subsection{2.3.2 Graph Modeling Methods}{8}
+    \sysuen@section{2.4 Large-model Route: LLM-driven Recommendation}{9}
+    \sysuen@subsection{2.4.1 LLM Applications in Recommender Systems}{9}
+    \sysuen@subsection{2.4.2 Progress of LLMs in Next POI Recommendation}{10}
+    \sysuen@subsection{2.4.3 Current Major Bottlenecks}{10}
+    \sysuen@section{2.5 Research Gaps and Problem Formulation}{10}
+    \sysuen@section{2.6 Chapter Summary}{11}
+    \sysuen@chapter{Chapter 3 Collaborative Learning with Small and Large Models}{12}
+    \sysuen@section{3.1 Task Definition and Overall Framework}{12}
+    \sysuen@section{3.2 Small-model Branch: TSPM}{12}
+    \sysuen@subsection{3.2.1 Time-enhanced Sequential Dynamic Graph (TSDG)}{12}
+    \sysuen@subsection{3.2.2 Bidirectional Transition Modeling}{13}
+    \sysuen@subsection{3.2.3 Sequential Preference Modeling and Dynamic Graph Weights}{13}
+    \sysuen@subsection{3.2.4 TiRNN Prediction Head}{13}
+    \sysuen@section{3.3 Large-model Branch: GA-LLM}{14}
+    \sysuen@subsection{3.3.1 Problem Motivation}{14}
+    \sysuen@subsection{3.3.2 GCIM: Geographic Coordinate Injection Module}{14}
+    \sysuen@subsection{3.3.3 PAM: POI Alignment Module}{14}
+    \sysuen@subsection{3.3.4 Structured Prompt Construction}{15}
+    \sysuen@section{3.4 Fusion Strategy: Small-Large Model Collaborative Training}{15}
+    \sysuen@subsection{3.4.1 Two-stage Training Procedure}{15}
+    \sysuen@subsection{3.4.2 Inference Mechanism}{15}
+    \sysuen@section{3.5 Chapter Summary}{15}
+    \sysuen@chapter{Chapter 4 Experimental Design and Results Analysis}{16}
+    \sysuen@section{4.1 Experimental Objectives and Research Questions}{16}
+    \sysuen@section{4.2 Datasets and Evaluation Metrics}{16}
+    \sysuen@subsection{4.2.1 Datasets}{16}
+    \sysuen@subsection{4.2.2 Evaluation Metrics}{16}
+    \sysuen@section{4.3 Small-model Experiments: TSPM Results}{16}
+    \sysuen@subsection{4.3.1 Overall Comparison Results}{16}
+    \sysuen@subsection{4.3.2 Ablation Study Results}{17}
+    \sysuen@section{4.4 Large-model Experiments: GA-LLM Results}{17}
+    \sysuen@subsection{4.4.1 Key Findings}{17}
+    \sysuen@subsection{4.4.2 GCIM Analysis}{17}
+    \sysuen@subsection{4.4.3 PAM Analysis}{18}
+    \sysuen@subsection{4.4.4 Efficiency and Scalability}{18}
+    \sysuen@section{4.5 Comprehensive Discussion on the Fusion Model}{18}
+    \sysuen@section{4.6 Experimental Summary}{18}
+    \sysuen@chapter{Conclusion and Future Work}{19}
+    \sysuen@chapter{References}{20}
+    \endgroup
     \newclearpage
 }
 
@@ -419,8 +482,7 @@
         }
     }
 
-    \zihao{-4}\songti \linespread{1.6}\selectfont
-    %\zihao{-4}\songti \linespread{1.5}\selectfont
+    \zihao{-4}\songti \linespread{1.5}\selectfont
     \pagestyle{plain}
 }
 

@@ -1,12 +1,176 @@
-\chapter{本模板的一些基本设置}
-\label{cha:format}
-本章将介绍本模板的一些基本设置。
-\section{版面}
-\label{sec:composition}
-在介绍本模板的排版和格式之前，本章首先介绍一些基本的概念，如图 \ref{fig:composition_general} 所示。图 \ref{fig:composition_general} 中的英文为geometry宏包中的参数，纸张默认设置为A4大小，body或total body为正文内容所在区域。重要的参数有7个，分别是：top、bottom、left、right、headheight、headsep、footskip。top和bottom分别为上边距和下边距，本模板按照word默认设置为1英寸；left和right分别为左边距和右边距，本模板按照word默认设置为1.25英寸；headsep为页眉（横线）与正文区域的距离，本模板按照word默认设置为0.2英寸；headheight为页眉内容的高度，本模板按照word默认设置页眉顶端距离页面边界1.5 cm，计算得到headheight为0.532 cm；footskip为页脚内容的高度，本模板按照word默认设置页脚底部距离页面边界1.75 cm，计算得到footskip为0.79 cm。
-\input{figure/chap02/composition_general}
+\chapter{相关研究与问题分析}
+\label{chap:related}
 
-每一章的标题采用小二号黑体，居中；节标题采用小三号宋体，加粗；小节标题采用小四号宋体，加粗（本模板中，由于选用的字库和字体问题，无法直接将宋体加粗，于是实际采用黑体代替宋体加粗）。正文内容、致谢和附录中的中文采用小四号宋体，英文采用Times New Roman，12 pt。参考文献的字体和字号采用宋体/Times New Roman，五号/10 pt。行距设置为1.5倍行距。
+\section{下一兴趣点推荐任务概述}
+下一兴趣点推荐（Next Point-of-Interest Recommendation, Next POI）任务通常定义为：给定用户历史签到序列，预测其下一时刻最可能访问的POI。该任务本质上同时依赖三类信息：
+\begin{enumerate}
+    \item 序列依赖：近期访问行为对下一跳具有强约束；
+    \item 空间依赖：地理邻近性与城市功能分区影响候选分布；
+    \item 语义依赖：POI类别、时间上下文与用户意图决定可达性与偏好。
+\end{enumerate}
+
+经典工作将该问题视为序列建模任务，Where You Like to Go Next~\cite{cheng2013where} 和 Latent Behavior Patterns~\cite{he2016inferring} 具有代表性。后续研究逐渐扩展到时空序列深度网络与图结构建模框架，例如 HST-LSTM~\cite{HST-LSTM}、LSTPM~\cite{LSTPM}、STAN~\cite{STAN}、GETNext~\cite{GETNext}、STHGCN~\cite{STHGCN} 和 GraphFlashback~\cite{GraphFlashback}。此外，随着城市计算与地理建模发展，学界开始关注多尺度区域结构、跨模态语义特征与地理知识融合，代表工作包括 TSPN-RA~\cite{TSPN-RA}、M3PA~\cite{M3PA} 和 City Foundation Models~\cite{Pasquale2024City}。
+
+\section{推荐系统基础与评价指标}
+\subsection{从静态推荐到序列推荐}
+传统推荐系统通常学习用户 $u$ 与项目 $i$ 的偏好函数 $\hat{y}_{ui}=f(u,i)$。在POI场景中，项目集合对应地点集合 $\mathcal{L}$，而用户状态还受历史轨迹影响，因此预测函数应写为
+\begin{equation}
+\hat{y}_{u,t,i}=f(u,\mathcal{T}_{u,1:t-1},i),
+\label{eq:c2-score}
+\end{equation}
+如式（\ref{eq:c2-score}）所示，其中 $\mathcal{T}_{u,1:t-1}$ 表示截至时刻 $t-1$ 的签到序列。与静态推荐相比，Next POI 推荐更强调条件分布 $p(\ell_t\mid \ell_{1:t-1},u,\text{context})$ 的建模。
+
+\subsection{典型优化目标}
+点式学习（point-wise）常以交叉熵最小化为目标：
+\begin{equation}
+\mathcal{L}_{\text{CE}}=-\sum_{(u,t)}\log p(\ell_t\mid \ell_{1:t-1},u).
+\label{eq:c2-ce}
+\end{equation}
+式（\ref{eq:c2-ce}）对应概率分类目标。对式学习（pair-wise）常采用 BPR~\cite{FPMC}：
+\begin{equation}
+\mathcal{L}_{\text{BPR}}=-\sum_{(u,i,j)}\log \sigma(\hat{y}_{u,i}-\hat{y}_{u,j})+\lambda\|\Theta\|_2^2,
+\label{eq:c2-bpr}
+\end{equation}
+见式（\ref{eq:c2-bpr}），其中 $i$ 为真实下一POI，$j$ 为负采样POI。PRME~\cite{PRME} 进一步将排序学习与度量空间结合，在新地点推荐中具有较强表现。
+
+\subsection{常用评价指标}
+为衡量排序质量，本文后续采用 Accuracy@K、MRR 和 NDCG@K：
+\begin{equation}
+\text{Acc@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\mathbf{1}(r_n\le K),
+\label{eq:c2-acc}
+\end{equation}
+\begin{equation}
+\text{MRR}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{1}{r_n},
+\label{eq:c2-mrr}
+\end{equation}
+\begin{equation}
+\text{NDCG@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{\mathbf{1}(r_n\le K)}{\log_2(r_n+1)},
+\label{eq:c2-ndcg}
+\end{equation}
+三项指标分别由式（\ref{eq:c2-acc}）、式（\ref{eq:c2-mrr}）和式（\ref{eq:c2-ndcg}）定义，其中 $r_n$ 为第 $n$ 个样本中真实POI的排名。Acc@K反映命中能力，MRR强调首个正确结果的位置，NDCG@K则更关注头部排序质量。
+
+\section{小模型路线：序列与图方法}
+\subsection{序列建模方法}
+早期方法以马尔可夫链与矩阵分解为主，代表模型 FPMC~\cite{FPMC} 与 PRME~\cite{PRME} 强调“用户偏好+转移模式”的联合建模。深度学习阶段中，RNN/LSTM成为主流，ST-RNN~\cite{ST-RNN} 显式引入时空上下文，HST-LSTM~\cite{HST-LSTM} 在层级结构中建模短期与长期偏好，LSTPM~\cite{LSTPM} 通过非局部操作增强长依赖建模，STAN~\cite{STAN} 进一步结合时空注意力提高表达能力。近年来，针对长期兴趣漂移、频率偏置与行为稀疏问题，CLSPRec~\cite{CLSPRec} 与 FHCRec~\cite{FHCRec} 采用对比学习强化表征鲁棒性。
+
+在数学形式上，序列方法一般遵循以下状态更新：
+\begin{equation}
+\mathbf{h}_t=\Phi(\mathbf{x}_t,\mathbf{h}_{t-1};\Theta),
+\label{eq:c2-rnn}
+\end{equation}
+其形式见式（\ref{eq:c2-rnn}），其中 $\mathbf{x}_t$ 是当前POI及上下文嵌入，$\Phi$ 可实例化为RNN或LSTM单元。若引入注意力机制，常写为
+\begin{equation}
+\alpha_{t,k}=\frac{\exp(\mathbf{q}_t^\top \mathbf{k}_k)}{\sum_{j=1}^{t-1}\exp(\mathbf{q}_t^\top \mathbf{k}_j)},\quad
+\mathbf{c}_t=\sum_{k=1}^{t-1}\alpha_{t,k}\mathbf{v}_k.
+\label{eq:c2-attn}
+\end{equation}
+如式（\ref{eq:c2-attn}）所示。最终预测分布通常由
+\begin{equation}
+p(\ell_{t+1}\mid \mathcal{T}_{u,1:t})=\text{Softmax}(\mathbf{W}_o[\mathbf{h}_t\|\mathbf{c}_t]+\mathbf{b}_o)
+\label{eq:c2-softmax}
+\end{equation}
+给出，对应式（\ref{eq:c2-softmax}）。该范式能够刻画短期转移，但当轨迹跨度增长、空间约束增强时，单序列编码难以充分表达跨用户共享结构。
+
+序列方法在中短序列预测上表现稳定，但普遍存在以下不足：
+\begin{enumerate}
+    \item 在稀疏轨迹和冷启动场景下，参数学习依赖充足监督信号；
+    \item 对“时间段差异”与“转入/转出双向偏好”刻画不充分；
+    \item 对跨用户高阶关系利用有限，难以吸收群体迁移知识。
+\end{enumerate}
+
+\subsection{图建模方法}
+图神经网络通过构建POI转移图、用户-POI二部图、超图或动态图显式学习高阶关系。代表方法包括 GETNext~\cite{GETNext}、GraphFlashback~\cite{GraphFlashback}、STHGCN~\cite{STHGCN}、SNPM~\cite{SNPM}、AGCL~\cite{AGCL} 与 DCPR~\cite{DCPR}。这类方法可跨用户传播结构信息，在稀疏场景中显著提升表示质量。为增强时间建模能力，ROTAN~\cite{ROTAN} 引入旋转时序注意力，MTNet~\cite{MTNet} 采用 mobility tree 学习时间槽偏好。
+
+图模型的核心可抽象为消息传递：
+\begin{equation}
+\mathbf{h}_i^{(l+1)}=\sigma\!\left(\mathbf{W}_0^{(l)}\mathbf{h}_i^{(l)}+\sum_{j\in\mathcal{N}(i)}\beta_{ij}^{(l)}\mathbf{W}_1^{(l)}\mathbf{h}_j^{(l)}\right),
+\label{eq:c2-msg}
+\end{equation}
+其形式见式（\ref{eq:c2-msg}），其中 $\beta_{ij}^{(l)}$ 为归一化邻接权重或注意力权重。若考虑时空边特征 $\mathbf{e}_{ij}=[\Delta t_{ij},d_{ij}]$，可进一步写为
+\begin{equation}
+\beta_{ij}^{(l)}\propto \exp\!\big(\text{MLP}([\mathbf{h}_i^{(l)}\|\mathbf{h}_j^{(l)}\|\mathbf{e}_{ij}])\big).
+\label{eq:c2-edge}
+\end{equation}
+如式（\ref{eq:c2-edge}）所示。这使模型同时编码“谁与谁相连”与“何时、隔多远发生转移”。
+
+在POI任务中，动态图通常记为 $\mathcal{G}_t=(\mathcal{V},\mathcal{E}_t)$，并基于滑动窗口更新边集：
+\begin{equation}
+\mathcal{E}_t=\{(\ell_{k},\ell_{k+1})\mid t-k\leq w\}.
+\label{eq:c2-dyn}
+\end{equation}
+式（\ref{eq:c2-dyn}）刻画了局部时间窗内的转移更新规则。该建模可反映近期行为变化，但随时间推移会带来图更新成本上升、训练不稳定和邻居爆炸问题。
+
+图方法尽管性能强，但仍面临以下挑战：
+\begin{enumerate}
+    \item 图结构通常静态，难以反映不同时间段转移动态；
+    \item 多源异构信息（文本语义、类别语义、空间连续坐标）融合成本高。
+\end{enumerate}
+
+\section{大模型路线：LLM驱动推荐}
+\subsection{LLM在推荐系统中的应用}
+在通用推荐领域，研究者已探索将LLM与协同信号、检索机制和图结构结合。CoLLM~\cite{CoLLM} 将协同嵌入注入语言模型语义空间；CoRAL~\cite{CoRAL} 通过检索增强改善长尾推荐；LLMRec~\cite{LLMRec} 采用图增强提升结构感知；ReLLa~\cite{ReLLa} 面向长历史行为引入检索式记忆。面向序列推荐，SeCor~\cite{SeCor} 与 LLaRA~\cite{LLaRA} 分别从语义-协同对齐和助理式推理角度验证了LLM在行为建模中的潜力。
+
+若将推荐任务表述为条件生成，LLM目标可写为
+\begin{equation}
+\max_{\Theta}\sum_{(x,y)}\log p_{\Theta}(y\mid x),
+\label{eq:c2-llm}
+\end{equation}
+见式（\ref{eq:c2-llm}），其中 $x$ 是由用户历史、候选集合和外部上下文构成的提示词，$y$ 为下一POI或其标识。参数高效微调常采用 LoRA 形式
+\begin{equation}
+\Delta \mathbf{W}=\mathbf{B}\mathbf{A},\quad \mathbf{W}'=\mathbf{W}+\Delta\mathbf{W},
+\label{eq:c2-lora}
+\end{equation}
+对应式（\ref{eq:c2-lora}），在保持主干参数冻结的前提下降低训练成本。
+
+\subsection{LLM在Next POI任务中的进展}
+在Next POI方向，LLM4POI~\cite{LLM4POI} 通过轨迹提示将任务转化为生成问题，展现了冷启动潜力。GraphGPT~\cite{GraphGPT} 与 E4SRec~\cite{E4SRec} 虽非专门针对POI场景，但其“结构指令化”和“高效序列适配”思路对POI任务有重要启发。GA-LLM~\cite{liu2026gallm} 进一步指出文本LLM存在空间幻觉、长距离误判与目标POI缺失时泛化不足问题，并提出地理坐标注入模块与POI对齐模块缓解缺陷。
+
+针对空间信息编码，一个关键思想是将连续坐标 $g=(lat,lon)$ 映射到离散地理单元 $q=\text{Quadkey}(g,z)$，再学习嵌入
+\begin{equation}
+\mathbf{e}_g=\text{Emb}(q)+\text{PE}_{\text{geo}}(g).
+\label{eq:c2-geoemb}
+\end{equation}
+对应式（\ref{eq:c2-geoemb}）。其中 $\text{PE}_{\text{geo}}$ 可采用可学习傅里叶特征，形式为
+\begin{equation}
+\text{PE}_{\text{geo}}(g)=\big[\sin(2\pi \mathbf{B}g),\cos(2\pi \mathbf{B}g)\big].
+\label{eq:c2-fourier}
+\end{equation}
+如式（\ref{eq:c2-fourier}）所示。该方案能缓解高精度坐标分词导致的序列膨胀问题，并增强空间邻近可分性。
+
+\subsection{现阶段主要瓶颈}
+综合现有LLM-POI研究，仍有三类关键瓶颈：
+\begin{enumerate}
+    \item \textbf{坐标稀疏语义问题}：经纬度被分词后难以保持几何邻近关系；
+    \item \textbf{转移先验缺失问题}：纯文本LLM难以隐式恢复POI图转移规律；
+    \item \textbf{空间幻觉问题}：可能生成地理上不合理或超出合理活动范围的候选。
+\end{enumerate}
+
+\section{研究空白与本文问题建模}
+综合上述文献，当前研究的关键矛盾可归纳为：
+\begin{enumerate}
+    \item 小模型时空结构建模强，但语义泛化能力不足；
+    \item 大模型语义理解强，但地理连续性与转移结构建模弱。
+\end{enumerate}
+
+由此产生本文的核心研究问题：如何在统一框架中同时保持小模型对时空转移的精细刻画能力，以及大模型对异构语义的泛化推理能力，并在实际可部署约束下实现性能与效率平衡。
+
+为解决该问题，本文采用“\textbf{小模型增强时空结构 + 大模型增强语义推理 + 融合对齐训练}”的技术路线：
+\begin{enumerate}
+    \item 在小模型侧构建时间增强序列动态图与双向转移建模，学习高质量时空表示；
+    \item 在大模型侧引入地理坐标注入模块（GCIM）与POI对齐模块（PAM），增强空间一致性与转移先验；
+    \item 通过嵌入对齐与两阶段训练，将小模型知识稳定注入LLM，实现协同优化。
+\end{enumerate}
+
+上述融合框架可形式化为联合优化问题：
+\begin{equation}
+\mathcal{L}=\mathcal{L}_{\text{small}}+\lambda_1\mathcal{L}_{\text{align}}+\lambda_2\mathcal{L}_{\text{llm}}+\lambda_3\mathcal{L}_{\text{reg}},
+\label{eq:c2-joint}
+\end{equation}
+即式（\ref{eq:c2-joint}），其中 $\mathcal{L}_{\text{small}}$ 学习时空结构先验，$\mathcal{L}_{\text{align}}$ 约束小模型与LLM语义空间对齐，$\mathcal{L}_{\text{llm}}$ 对应生成或分类目标，$\mathcal{L}_{\text{reg}}$ 控制参数复杂度。该路线既保留了小模型对局部时空依赖的刻画能力，又利用了LLM的上下文语义推理优势，并通过结构化注入与参数高效微调降低工程成本，更适合真实出行场景下的可部署需求。
 
 \section{本章小结}
+本章围绕“方法演进脉络与现实瓶颈”对Next POI研究进行了系统梳理。整体来看，FPMC~\cite{FPMC}、PRME~\cite{PRME} 所代表的早期范式在可解释性和训练稳定性方面具有优势，但对复杂时空上下文的表达能力有限；ST-RNN~\cite{ST-RNN}、HST-LSTM~\cite{HST-LSTM}、STAN~\cite{STAN} 所代表的序列深度模型显著提升了时序建模能力，但对跨用户高阶迁移知识利用不足；GETNext~\cite{GETNext}、SNPM~\cite{SNPM}、GraphFlashback~\cite{GraphFlashback} 所代表的图方法在结构关系学习上更具优势，但在动态更新和异构融合方面存在工程复杂度偏高的问题。
 
+在大模型方向，LLM4POI~\cite{LLM4POI}、LLaRA~\cite{LLaRA}、SeCor~\cite{SeCor}、CoLLM~\cite{CoLLM} 展现了语义泛化与冷启动潜力，但空间连续性建模和转移先验注入仍是核心短板。GA-LLM~\cite{liu2026gallm} 提供了具有针对性的改进思路，说明“地理编码增强+结构先验对齐”是提升LLM在时空推荐任务中可靠性的关键路径。
+
+基于以上分析，本文后续章节将以“结构先验与语义推理协同优化”为主线，分别从小模型分支的时间增强动态图建模、大模型分支的地理坐标注入与POI对齐机制、以及端到端协同训练策略三个维度展开，目标是在准确率、鲁棒性与部署效率之间实现更优平衡。
