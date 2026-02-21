@@ -8,6 +8,13 @@
 - 论文主文件：`main.tex`
 - 参考文献库：`reference.bib`
 - 编译输出：`main.pdf`
+- 在线查看：[`main.pdf`](./main.pdf)
+
+## PDF 预览
+
+> 说明：部分平台（如 GitHub 的 README）不支持内嵌 PDF，若下方未显示请点击上面的 `main.pdf` 链接。
+
+<iframe src="./main.pdf" width="100%" height="720px"></iframe>
 
 ## 章节文件对应
 
