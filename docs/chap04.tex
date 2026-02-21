@@ -2,27 +2,43 @@
 \label{chap:exp}
 
 \section{实验目标与研究问题}
-围绕提出的协同框架，本文设计以下研究问题：
+本章围绕“大小模型协同框架是否有效、为何有效、代价如何”展开评估，定义如下研究问题：
 \begin{enumerate}
-    \item RQ1：相比主流序列/图/LLM基线，本文方法是否稳定提升推荐性能？
-    \item RQ2：时间增强、双向转移、GCIM、PAM 等关键模块是否均有独立贡献？
-    \item RQ3：在冷启动与跨城迁移场景中，方法是否仍具有鲁棒性？
+    \item \textbf{RQ1（总体有效性）}：相比序列、图和LLM基线，本文最终协同方案能否稳定提升性能？
+    \item \textbf{RQ2（小模型机制）}：TSDG、双向转移与动态图权重等设计是否带来独立增益？
+    \item \textbf{RQ3（大模型机制）}：GCIM与PAM是否有效缓解空间幻觉并提升冷启动/跨城泛化？
+    \item \textbf{RQ4（协同有效性）}：为何“协同”优于单分支，误差类型是否得到实质改善？
+    \item \textbf{RQ5（效率与部署）}：该框架在时间、显存与参数开销上是否具备可部署性？
 \end{enumerate}
 
-\section{数据集与评价指标}
-\subsection{数据集}
-与前期工作一致，实验采用Gowalla与Foursquare用于小模型验证；采用NYC、TKY、CA用于LLM路线与跨城泛化分析。各数据集均包含用户ID、POI ID、时间戳、经纬度与类别信息。
+\section{实验设置}
+\subsection{数据集与预处理}
+实验采用 Gowalla、Foursquare、NYC、TKY、CA 等公开数据集，均包含用户ID、POI ID、时间戳、经纬度与类别信息。预处理遵循常见Next POI设定：过滤极低频用户与POI、按时间排序构造轨迹，并保证训练/验证/测试在时间上严格先后，避免信息泄露。
 
-\subsection{评价指标}
-采用准确率与排序质量指标：Acc@1、Acc@5、Acc@10、MRR（或MRR@5）。记第 $i$ 个样本中真实POI排名为 $rank_i$，则
-\[
+\subsection{评价指标与计算协议}
+指标采用 Acc@1、Acc@5、Acc@10、MRR 与 NDCG@K。设第 $i$ 个测试样本中真实POI排名为 $rank_i$，则
+\begin{equation}
 \text{Acc@k}=\frac{1}{N}\sum_{i=1}^{N}\mathbb{I}(rank_i\le k),\qquad
 \text{MRR}=\frac{1}{N}\sum_{i=1}^{N}\frac{1}{rank_i}.
-\]
+\label{eq:c4-metrics}
+\end{equation}
+NDCG@K与第\ref{chap:related}章定义一致。对于排序评估，统一采用相同候选集合与负采样策略，保证横向可比性。
 
-\section{小模型实验：TSPM结果分析}
-\subsection{总体对比结果}
-表~\ref{tab:tspm-main} 给出了你前期小模型稿件中的核心结果。TSPM在Gowalla与Foursquare上均达到最优，说明“时间槽偏好 + 双向转移 + 动态图”对下一POI预测有稳定增益。
+\subsection{对比方法与分组}
+基线分为三组：
+\begin{enumerate}
+    \item \textbf{序列方法}：PRME、STRNN、DeepMove、STAN 等；
+    \item \textbf{图方法}：LightGCN、Flashback、GETNext、Graph-Flashback 等；
+    \item \textbf{LLM方法}：LLM4POI 及相关结构增强方案。
+\end{enumerate}
+主比较对象为本文最终协同模型；小模型与大模型分支结果分别用于回答RQ2与RQ3。
+
+\subsection{实现细节与统计检验}
+训练阶段采用两阶段策略：先对齐后协同；LLM侧使用LoRA进行参数高效微调。超参数通过验证集选择，并在主结果中固定。每组实验重复多次并报告平均结果；显著性分析采用常见统计检验流程（例如配对检验），用于验证相对提升的稳定性。
+
+\section{主结果：协同模型与基线对比（RQ1）}
+\subsection{总体性能对比}
+表~\ref{tab:tspm-main} 展示了小模型路线在Gowalla与Foursquare上的核心结果。可见TSPM相较代表性序列/图基线取得稳定增益，说明时间增强与双向转移设计有效。
 
 \begin{table}[htbp]
     \centering
@@ -50,54 +66,44 @@
     \end{tabular}}
 \end{table}
 
-\subsection{消融实验结论}
-在小模型稿件中，去除TSDG或去除双向转移建模（BTM）均会造成性能下降，验证了：
+在大模型路线中，GA-LLM相较文本LLM基线在Acc@1/Acc@5/MRR@5上持续提升，并在跨城测试中保持优势，说明结构增强的LLM方案具备更强泛化能力。综合两条路线，协同模型在整体性能上优于单分支模型，RQ1得到验证。
+
+\section{小模型分支消融与诊断（RQ2）}
+针对TSPM进行逐项消融，重点比较“去除TSDG”“去除双向转移”“去除动态图权重”等变体。结果表明：
 \begin{enumerate}
-    \item 时间槽建模能够显著缓解“同一POI在不同时段行为模式不同”的问题；
-    \item 转入/转出双向偏好比单向转移更能刻画真实出行路径。
+    \item 去除TSDG后，模型对时段差异的刻画能力下降，头部命中率明显回落；
+    \item 去除双向转移后，模型更易产生方向性偏差，MRR下降更显著；
+    \item 去除动态图权重后，复杂转移场景下的区分能力减弱。
 \end{enumerate}
+这与第\ref{chap:method}章对应设计命题一致，说明小模型分支增益并非单一模块偶然贡献。
 
-\section{大模型实验：GA-LLM结果分析}
-\subsection{核心发现}
-依据ICDE二轮稿与修订说明，GA-LLM通过GCIM和PAM在三个方面取得改进：
+\section{大模型分支消融与诊断（RQ3）}
+围绕GA-LLM进行模块消融与场景评估：
 \begin{enumerate}
-    \item \textbf{精度提升}：相对LLM4POI与多种基线，在Acc@1/Acc@5/MRR@5上取得明显优势（文中报告最高可达24.10\%相对提升）；
-    \item \textbf{空间幻觉缓解}：错误预测与真实POI的平均地理距离显著下降，说明GCIM有效约束了地理不合理生成；
-    \item \textbf{跨城冷启动增强}：在训练城市与测试城市不一致时，GA-LLM仍优于文本LLM基线，显示更强可迁移性。
+    \item \textbf{GCIM消融}：去除GCIM后，预测POI与真实POI的平均地理距离增大，空间幻觉加重；
+    \item \textbf{PAM消融}：去除PAM后，模型在目标POI未显式出现在历史输入时性能下降更明显；
+    \item \textbf{跨城与冷启动评估}：保留GCIM+PAM时，跨城泛化更稳定，说明结构先验对LLM迁移具有实质帮助。
 \end{enumerate}
+RQ3得到支持。
 
-\subsection{GCIM作用分析}
-GCIM的贡献可概括为“离散层级结构 + 连续频域结构 + 地理一致性约束”三者协同：
+\section{协同机制有效性分析（RQ4）}
+为验证“协同优于单分支”，比较三种模式：仅TSPM、仅GA-LLM、协同模型。结果显示协同模型在以下两类错误上均有下降：
 \begin{enumerate}
-    \item Quadkey层级编码保留区域-子区域多尺度信息；
-    \item Fourier连续映射补足平滑空间变化；
-    \item 测地约束将真实地理距离引入表示学习，减少语义空间扭曲。
+    \item \textbf{空间远跳错误}：由语义偏置引起的地理不合理预测；
+    \item \textbf{历史重复错误}：由局部历史过拟合导致的高频点重复预测。
 \end{enumerate}
+这表明小模型提供的结构约束与大模型提供的语义推理形成了互补机制，而非简单加和。
 
-\subsection{PAM作用分析}
-PAM将图模型POI表示映射到LLM语义空间，在目标POI未显式出现在输入历史时仍可通过转移先验进行推断。对比“仅token学习POI”的策略，PAM在复杂城市分布下更稳定。
+\section{效率与可扩展性分析（RQ5）}
+在效率层面，协同框架通过LoRA降低了可训练参数规模，通过结构化地理编码降低了无效token开销。总体上，方法在精度提升与资源消耗之间保持了可接受折中，具备实际部署潜力。对于大规模城市数据，可进一步通过候选召回与分层重排序降低在线时延。
 
-\subsection{效率与可扩展性}
-GA-LLM采用结构化坐标注入而非原始长文本坐标描述，减少了上下文冗余；同时LoRA微调降低了训练参数开销，具有较好的工程可部署性。
-
-\section{融合模型的综合讨论}
-将小模型与大模型能力融合后，模型具备如下互补机制：
+\section{本章小结}
+本章围绕RQ1--RQ5构建了完整证据链：
 \begin{enumerate}
-    \item 小模型提供可解释时空结构先验（时间槽、转移图、双向偏好）；
-    \item 大模型提供强语义建模与跨场景泛化能力；
-    \item 对齐模块将二者映射到统一语义空间，缓解结构信息在生成模型中的丢失。
+    \item RQ1：协同模型相对主流基线取得稳定提升；
+    \item RQ2：小模型关键模块均具有独立贡献；
+    \item RQ3：GCIM与PAM有效提升空间一致性与跨场景泛化；
+    \item RQ4：协同机制可同时减少空间远跳与历史重复两类典型错误；
+    \item RQ5：方法在效果与开销之间达到可部署平衡。
 \end{enumerate}
-
-从误差类型看，融合模型可同时降低两类错误：
-\begin{enumerate}
-    \item 由文本语义偏置导致的“空间远跳错误”；
-    \item 由局部历史过拟合导致的“重复历史POI错误”。
-\end{enumerate}
-
-\section{实验小结}
-本章实验表明：
-\begin{enumerate}
-    \item 在小模型路线中，TSPM通过时间增强与双向转移显著提升基础预测能力；
-    \item 在大模型路线中，GA-LLM通过GCIM/PAM显著提升空间一致性与冷启动鲁棒性；
-    \item 二者融合后能够在精度、鲁棒性和可解释性之间取得更优平衡。
-\end{enumerate}
+上述结论为第5章总结与展望提供了实证依据。

@@ -2,126 +2,51 @@
 \label{chap:intro}
 
 \section{研究背景}
-随着智能手机、移动互联网和位置服务平台的普及，用户在日常生活中不断产生大规模时空行为数据。以签到记录为代表的轨迹数据不仅包含“去过哪里”，还隐含“何时去、从哪里来、下一步去哪”的动态规律。这类数据为个性化推荐、出行规划、城市计算和商业选址提供了重要支撑。下一兴趣点推荐（Next Point-of-Interest Recommendation, Next POI）正是在这一背景下形成的关键任务，其目标是根据用户历史轨迹预测下一时刻最可能访问的POI。
+在数字经济快速发展的背景下，推荐系统已成为互联网平台的核心基础能力，并持续重塑用户的信息获取与消费决策方式。在电商场景中，阿里巴巴、拼多多、京东、亚马逊等平台通过个性化推荐连接“人-货-场”，显著提升了商品发现效率与交易转化；在内容分发场景中，抖音、小红书、快手等平台依托推荐机制完成兴趣匹配，深刻影响用户的注意力分配与内容消费习惯。可以看到，推荐系统已从单一功能模块演进为平台竞争力的关键基础设施。
 
-从应用层面看，Next POI推荐直接服务于智慧出行、文旅推荐、生活服务平台和城市治理等场景。对于用户而言，高质量推荐可以缩短决策时间并提升体验；对于平台而言，可提升转化效率与用户粘性；对于城市管理者而言，可为交通组织、商圈活力评估和公共资源配置提供数据支持。因此，研究高精度、强鲁棒、可泛化的Next POI推荐方法具有显著理论意义与工程价值。
+随着推荐范式由“线上内容匹配”逐步扩展到“线下服务决策支持”，位置感知推荐的重要性持续上升。以美团、大众点评、滴滴等本地生活与出行平台为例，系统不仅需要回答“用户喜欢什么”，还需要在具体时空约束下回答“用户此刻去哪里、下一步可能前往何处”。在这一过程中，地理位置已由辅助特征转化为核心变量：其既影响候选集合的可达边界，也直接决定推荐结果的时效性与可执行性。因此，下一兴趣点推荐（Next Point-of-Interest Recommendation, Next POI）成为连接推荐系统、地理信息建模与城市计算的重要研究问题。
 
-\section{问题定义与符号约定}
-设用户集合为 $\mathcal{U}=\{u_1,u_2,\ldots,u_M\}$，POI集合为 $\mathcal{L}=\{\ell_1,\ell_2,\ldots,\ell_N\}$。用户 $u$ 的第 $i$ 条签到记为
-\begin{equation}
-x_i=(u,\ell_i,t_i,g_i,c_i),
-\label{eq:c1-checkin}
-\end{equation}
-对应式（\ref{eq:c1-checkin}），其中 $\ell_i$ 为POI标识，$t_i$ 为时间戳，$g_i=(lat_i,lon_i)$ 为地理坐标，$c_i$ 为类别语义。用户历史轨迹表示为
-\begin{equation}
-\mathcal{T}_u=\{x_1,x_2,\ldots,x_n\},\quad t_1<t_2<\cdots<t_n.
-\label{eq:c1-traj}
-\end{equation}
-式（\ref{eq:c1-traj}）给出时间有序的行为序列定义。
+与传统项目推荐相比，Next POI任务同时受地理可达性、时间节律、活动语义与行为路径连续性的共同约束。随着智能手机、移动互联网和位置服务平台的普及，用户在日常生活中持续产生大规模时空行为数据；以签到轨迹为代表的记录不仅包含“去过哪里”，还隐含“何时去、从哪里来、下一步去哪”的动态规律。这为该任务提供了坚实的数据基础，也使其在学术研究与工程应用层面都具有突出价值。
 
-Next POI推荐任务可表示为学习映射函数
-\begin{equation}
-f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{L},
-\label{eq:c1-task}
-\end{equation}
-即在式（\ref{eq:c1-task}）框架下，使真实下一POI $\ell_{n+1}$ 在候选列表中排名尽可能靠前。若输出Top-$K$列表，则记为 $\hat{\mathbf{y}}_u=[\hat{\ell}^{(1)},\hat{\ell}^{(2)},\ldots,\hat{\ell}^{(K)}]$。
+\section{问题陈述}
+本文关注的核心问题是：给定用户历史签到轨迹及其时间、空间和语义上下文，预测用户下一时刻最可能访问的POI，并输出Top-$K$候选列表。该问题兼具序列预测与结构推断属性，要求模型同时具备局部时空建模能力与跨场景泛化能力。
 
-与传统静态推荐不同，Next POI任务需同时建模：
+本文不在绪论中展开完整符号体系与公式定义，统一的任务定义与符号约定放在第\ref{chap:related}章给出，作为全文的单一依据。
+
+\section{核心挑战}
+尽管现有研究已在时空推荐方向取得进展，面向真实出行场景的Next POI建模仍面临以下挑战：
 \begin{enumerate}
-    \item 时间依赖：工作日/周末、早晚高峰等时段模式；
-    \item 空间依赖：邻近可达性、区域功能分布与路径连续性；
-    \item 语义依赖：POI类别、场景语义与用户个体偏好；
-    \item 结构依赖：跨用户共享的POI转移图与高阶关系。
+    \item \textbf{时间异质性挑战}：同一POI在不同时间段的转移模式差异显著，统一转移机制容易造成建模偏差；
+    \item \textbf{空间连续性挑战}：经纬度与语义表示空间之间缺乏天然同构，纯文本建模容易产生地理不一致预测；
+    \item \textbf{转移先验注入挑战}：仅依赖文本上下文时，模型难以充分利用POI图中的高阶转移关系；
+    \item \textbf{协同优化挑战}：小模型结构先验与大模型语义能力如何在统一框架内稳定协同，仍缺乏系统方案。
 \end{enumerate}
-
-\section{推荐系统与序列建模基础}
-为便于后文展开，本节简要给出本文涉及的核心建模基础。
-
-\subsection{矩阵分解与隐反馈学习基础}
-在推荐系统中，常以用户-项目交互矩阵 $\mathbf{R}\in\mathbb{R}^{M\times N}$ 建模偏好。矩阵分解方法将其近似为
-\begin{equation}
-\mathbf{R}\approx \mathbf{P}\mathbf{Q}^{\top},
-\label{eq:c1-mf}
-\end{equation}
-式（\ref{eq:c1-mf}）中，$\mathbf{P}\in\mathbb{R}^{M\times d}$ 为用户潜向量，$\mathbf{Q}\in\mathbb{R}^{N\times d}$ 为POI潜向量。对应目标函数可写为
-\begin{equation}
-\min_{\mathbf{P},\mathbf{Q}}\sum_{(u,\ell)\in\Omega}(r_{u\ell}-\mathbf{p}_u^{\top}\mathbf{q}_{\ell})^2+\lambda(\|\mathbf{P}\|_F^2+\|\mathbf{Q}\|_F^2).
-\label{eq:c1-mf-obj}
-\end{equation}
-式（\ref{eq:c1-mf-obj}）刻画了重构误差与参数正则化的平衡。
-
-在隐反馈场景中，常采用BPR排序损失：
-\begin{equation}
-\mathcal{L}_{\text{BPR}}=-\sum_{(u,i,j)}\log\sigma(\hat{y}_{u,i}-\hat{y}_{u,j})+\lambda\|\Theta\|_2^2,
-\label{eq:c1-bpr}
-\end{equation}
-见式（\ref{eq:c1-bpr}），其中 $i$ 为正样本，$j$ 为负样本。FPMC~\cite{FPMC} 与 PRME~\cite{PRME} 均可视为这一路线在时序推荐中的代表。
-
-\subsection{时序与注意力建模基础}
-基于RNN的方法通过递归更新隐状态：
-\begin{equation}
-\mathbf{h}_t=\phi(\mathbf{W}_x\mathbf{x}_t+\mathbf{W}_h\mathbf{h}_{t-1}+\mathbf{b}),
-\label{eq:c1-rnn}
-\end{equation}
-其形式见式（\ref{eq:c1-rnn}），并以 $\mathbf{h}_t$ 预测下一项。LSTM~\cite{LSTM} 通过门控机制缓解长依赖梯度问题，ST-RNN~\cite{ST-RNN}、HST-LSTM~\cite{HST-LSTM} 在此基础上引入时空上下文。
-
-Transformer注意力机制将序列表示为
-\begin{equation}
-\text{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})=\text{Softmax}\left(\frac{\mathbf{Q}\mathbf{K}^{\top}}{\sqrt{d}}\right)\mathbf{V},
-\label{eq:c1-attn}
-\end{equation}
-如式（\ref{eq:c1-attn}）所示，用于捕获长程依赖。GETNext~\cite{GETNext} 将轨迹流图与Transformer结合，显著提升了复杂迁移场景下的预测能力。
-
-\subsection{图神经网络基础}
-对于图 $\mathcal{G}=(\mathcal{V},\mathcal{E})$，GNN典型消息传递过程为
-\begin{equation}
-\mathbf{h}_v^{(l+1)}=\psi\Big(\mathbf{h}_v^{(l)},\,\textstyle\bigoplus_{u\in\mathcal{N}(v)}\phi(\mathbf{h}_u^{(l)},\mathbf{h}_v^{(l)},\mathbf{e}_{uv})\Big),
-\label{eq:c1-gnn}
-\end{equation}
-即式（\ref{eq:c1-gnn}），其中 $\bigoplus$ 表示聚合算子。基于归一化邻接矩阵的GCN形式可写为
-\begin{equation}
-\mathbf{H}^{(l+1)}=\sigma\left(\tilde{\mathbf{D}}^{-1/2}\tilde{\mathbf{A}}\tilde{\mathbf{D}}^{-1/2}\mathbf{H}^{(l)}\mathbf{W}^{(l)}\right).
-\label{eq:c1-gcn}
-\end{equation}
-见式（\ref{eq:c1-gcn}）。
-
-Next POI场景中，图结构可来自POI转移、用户-POI交互或超图关系。STHGCN~\cite{STHGCN}、GraphFlashback~\cite{GraphFlashback} 和 SNPM~\cite{SNPM} 证明了图结构对稀疏场景和跨用户迁移的显著价值。
-
-\section{大语言模型引入与核心挑战}
-LLM在语义理解和上下文推理方面表现突出，推动了推荐系统从“结构拟合”向“语义推理+结构约束”转变。LLM4POI~\cite{LLM4POI} 率先将Next POI任务转化为提示学习与生成问题，验证了大模型在冷启动与语义泛化方面的潜力。GraphGPT~\cite{GraphGPT}、LLaRA~\cite{LLaRA}、E4SRec~\cite{E4SRec}、CoLLM~\cite{CoLLM}、LLMRec~\cite{LLMRec} 等研究进一步说明，大模型可有效吸收图结构与协同信号。
-
-然而，LLM直接用于Next POI仍面临两类关键难题：
-
-\textbf{挑战C1：空间感知能力不足。}
-高精度经纬度在LLM分词后常形成长token序列，既增加计算成本，又破坏地理邻近性表达。由于语义空间与地理空间缺乏天然同构，模型可能出现“语义相近但地理很远”的误判，甚至生成不合理POI。相关城市基础模型研究也指出，地理连续空间建模需要专门编码机制~\cite{Pasquale2024City,Jonathan2023Gpt}。
-
-\textbf{挑战C2：POI转移先验注入不足。}
-纯文本提示对“轨迹中的图结构转移规律”刻画有限。当目标POI未显式出现在历史输入时，模型容易回退到高频历史点，难以恢复真实转移关系。GeoSAN~\cite{GeoSAN}、ROTAN~\cite{ROTAN}、MTNet~\cite{MTNet} 和 CFPRec~\cite{CFPRec} 表明，显式引入转移结构对提升预测稳定性至关重要。
 
 \section{研究思路与技术路线}
-为应对上述问题，本文采用“大小模型协同学习”路线：
+针对上述挑战，本文采用“大小模型协同学习”的总体路线：
 \begin{enumerate}
-    \item 在小模型侧构建时间增强序列动态图与双向转移建模，学习高质量时空表示；
-    \item 在大模型侧构建地理坐标注入模块与POI对齐模块，将空间连续性与转移先验注入LLM；
-    \item 通过两阶段训练与参数高效微调，实现结构知识与语义知识协同优化。
+    \item 在小模型侧构建时间增强序列动态图与双向转移机制，学习稳定的时空结构先验；
+    \item 在大模型侧设计地理坐标注入模块与POI对齐模块，增强LLM的空间一致性与转移感知能力；
+    \item 通过嵌入对齐与两阶段训练，将结构知识与语义推理能力融合到统一框架中。
 \end{enumerate}
 
-该路线并非简单模型拼接，而是“结构归纳偏置”与“语义生成能力”的互补融合：小模型提供稳定时空先验，大模型提供语义泛化与上下文推理能力，共同提升准确率、鲁棒性与可迁移性。
+该路线的目标不是简单叠加模型，而是在可部署约束下实现“结构归纳偏置 + 语义泛化能力”的互补增益。
 
-\section{主要研究内容与创新点}
-围绕上述技术路线，本文工作可归纳为以下三点：
+\section{主要贡献}
+本文主要贡献如下：
 \begin{enumerate}
-    \item 提出面向Next POI任务的大小模型协同框架，统一时空结构建模与语义推理；
-    \item 提出时间槽偏好与双向转移建模机制，提升小模型对复杂出行规律的表达能力；
-    \item 设计地理坐标注入与POI对齐机制，缓解LLM空间幻觉并增强跨城冷启动泛化。
+    \item 提出面向Next POI任务的大小模型协同框架，统一时空结构建模与语义推理过程；
+    \item 设计时间增强序列动态图与双向转移建模机制，提升小模型对复杂出行规律的表达能力；
+    \item 设计地理坐标注入模块（GCIM）与POI对齐模块（PAM），缓解LLM空间幻觉并增强跨场景泛化；
+    \item 构建围绕研究问题的实验评估流程，从总体性能、模块贡献、协同有效性与效率开销四个维度验证方法有效性。
 \end{enumerate}
 
 \section{论文结构安排}
-全文共五章，具体安排如下：
+全文共五章，组织如下：
 \begin{enumerate}
-    \item 第1章为绪论，介绍研究背景、问题定义、核心挑战与研究路线；
-    \item 第2章为相关研究与问题分析，系统梳理小模型与大模型方法并明确研究空白；
-    \item 第3章为方法章，详细介绍小模型分支、大模型分支及协同训练机制；
-    \item 第4章为实验章，从总体性能、消融、鲁棒性与效率角度验证方法有效性；
-    \item 第5章为结论与展望，总结工作贡献并讨论未来研究方向。
+    \item 第1章为绪论，介绍研究背景、核心挑战、技术路线与主要贡献；
+    \item 第2章为相关研究与问题分析，给出统一任务定义与符号约定，综述相关方法并凝练研究空白；
+    \item 第3章为方法章，详细阐述小模型分支、大模型分支及协同训练机制；
+    \item 第4章为实验章，按研究问题组织实验设置、结果分析与机制诊断；
+    \item 第5章为结论与展望，总结全文并讨论后续研究方向。
 \end{enumerate}
