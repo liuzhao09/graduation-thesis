@@ -1,5 +1,41 @@
 \documentclass{sysuthesis}
 
+\graphicspath{{figures/}}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{array}
+
+\definecolor{KeyBorder}{HTML}{C73B2F}
+\definecolor{KeyBg}{HTML}{FFF8F5}
+\definecolor{PromptBg}{HTML}{F6F8FB}
+\definecolor{PromptBorder}{HTML}{C9D3E4}
+\definecolor{TokBg}{HTML}{EAF3FF}
+\definecolor{TokText}{HTML}{1F4E8C}
+
+\newcommand{\keytag}[1]{\textbf{\kaishu #1}}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcommand{\tok}[1]{%
+  \tcbox[
+    on line,
+    colback=TokBg,
+    colframe=PromptBorder,
+    boxrule=0.4pt,
+    arc=1pt,
+    left=3pt,right=3pt,top=1pt,bottom=1pt
+  ]{\texttt{\textcolor{TokText}{#1}}}%
+}
+
+\newtcolorbox{promptbox}{
+  colback=PromptBg,
+  colframe=PromptBorder,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  fonttitle=\bfseries,
+  title=Prompt Template
+}
+
 \input{docs/info}
 \input{docs/abstract}
 
@@ -16,8 +52,6 @@
 \maketableofcontents
 \makeenglishtableofcontents
 \newclearpage
-\include{docs/abbr}
-\newclearpage
 
 \mainmatter
 \include{docs/chap01}
@@ -29,6 +63,13 @@
 \include{docs/chap04}
 \newclearpage
 \include{docs/chap05}
+\newclearpage
+\appendix
+\include{docs/abbr}
+\newclearpage
+\include{docs/appx_method}
+\newclearpage
+\include{docs/appx_exp}
 \newclearpage
 
 \backmatter

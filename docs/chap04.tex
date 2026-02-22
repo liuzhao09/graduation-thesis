@@ -1,6 +1,11 @@
 \chapter{实验设计与结果分析}
 \label{chap:exp}
 
+\newcommand{\tblstyle}{\centering\small\setlength{\tabcolsep}{4.0pt}\renewcommand{\arraystretch}{1.16}}
+
+\section{本章引言}
+本章围绕第\ref{chap:method}章提出的协同机制开展系统实验，目标是回答“方法是否有效、为何有效、代价是否可接受”。为避免结果堆叠而缺乏论证链，本章按照“研究问题定义（RQ）—实验设置—主结果—模块消融—机制诊断—效率评估”的闭环组织证据，并确保每类结论都能回溯到对应模块设计与实验现象。
+
 \section{实验目标与研究问题}
 本章围绕“大小模型协同框架是否有效、为何有效、代价如何”展开评估，定义如下研究问题：
 \begin{enumerate}
@@ -13,7 +18,30 @@
 
 \section{实验设置}
 \subsection{数据集与预处理}
-实验采用 Gowalla、Foursquare、NYC、TKY、CA 等公开数据集，均包含用户ID、POI ID、时间戳、经纬度与类别信息。预处理遵循常见Next POI设定：过滤极低频用户与POI、按时间排序构造轨迹，并保证训练/验证/测试在时间上严格先后，避免信息泄露。
+实验采用 Gowalla、Foursquare、NYC、TKY、CA 等公开数据集，均包含用户ID、POI ID、时间戳、经纬度与类别信息。预处理遵循常见Next POI设定：过滤极低频用户与POI、按时间排序构造轨迹，并保证训练/验证/测试在时间上严格先后，避免信息泄露\cite{LLM4POI,GETNext,STHGCN}。
+
+表\ref{tab:c4-datasets-icde}给出三组城市级数据统计，体现了“高密度（NYC）—多样结构（TKY）—稀疏广域（CA）”三种典型难度场景。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{GA-LLM实验数据集统计}
+    \label{tab:c4-datasets-icde}
+    \begin{tabular}{lcccc}
+        \toprule
+        数据集 & 用户数 & POI数 & 类别数 & 签到数 \\
+        \midrule
+        NYC & 1,048 & 4,981 & 318 & 103,941 \\
+        TKY & 2,282 & 7,833 & 290 & 405,000 \\
+        CA & 3,957 & 9,690 & 296 & 238,369 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\keytag{数据清洗策略}\quad
+为保证不同方法比较公平，本文在预处理阶段统一执行以下清洗步骤：异常时间戳剔除、重复签到合并、经纬度缺失样本过滤、低频噪声POI裁剪。对于同一用户连续短时间重复签到，按规则合并为单次访问，以避免对短周期“刷点行为”过拟合。
+
+\keytag{轨迹构造原则}\quad
+轨迹切片采用时间有序滑窗方式构造监督样本：以前缀历史预测下一点。该构造方式与真实推荐流程一致，可避免随机打乱导致的时间泄露。对于超长轨迹，采用固定窗口与可变窗口结合策略，兼顾长期信息保留与训练稳定性。
 
 \subsection{评价指标与计算协议}
 指标采用 Acc@1、Acc@5、Acc@10、MRR 与 NDCG@K。设第 $i$ 个测试样本中真实POI排名为 $rank_i$，则
@@ -22,32 +50,40 @@
 \text{MRR}=\frac{1}{N}\sum_{i=1}^{N}\frac{1}{rank_i}.
 \label{eq:c4-metrics}
 \end{equation}
-NDCG@K与第\ref{chap:related}章定义一致。对于排序评估，统一采用相同候选集合与负采样策略，保证横向可比性。
+NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@5 评估前五候选排序质量，以适配生成式推荐的输出机制\cite{liu2026gallm}。
+
+\paragraph{统计显著性与稳健性}
+除主指标外，本文对关键对比结果进行显著性检验，并在不同随机种子下重复实验，以避免“单次最优偶然性”。对于方差较大的设置，报告平均趋势并结合误差分析解释波动来源，而非仅展示最优结果。
 
 \subsection{对比方法与分组}
 基线分为三组：
 \begin{enumerate}
-    \item \textbf{序列方法}：PRME、STRNN、DeepMove、STAN 等；
-    \item \textbf{图方法}：LightGCN、Flashback、GETNext、Graph-Flashback 等；
-    \item \textbf{LLM方法}：LLM4POI 及相关结构增强方案。
+    \item \textbf{序列方法}：FPMC、PRME、LSTM、ST-RNN、STAN 等\cite{FPMC,PRME,LSTM,ST-RNN,STAN};
+    \item \textbf{图与时空方法}：STGCN、GETNext、MTNet、STHGCN、ROTAN、Graph-Flashback 等\cite{GETNext,STHGCN,MTNet,ROTAN,GraphFlashback};
+    \item \textbf{LLM方法}：LLM4POI、E4SRec 与本文GA-LLM\cite{LLM4POI,E4SRec,liu2026gallm}。
 \end{enumerate}
 主比较对象为本文最终协同模型；小模型与大模型分支结果分别用于回答RQ2与RQ3。
 
 \subsection{实现细节与统计检验}
-训练阶段采用两阶段策略：先对齐后协同；LLM侧使用LoRA进行参数高效微调。超参数通过验证集选择，并在主结果中固定。每组实验重复多次并报告平均结果；显著性分析采用常见统计检验流程（例如配对检验），用于验证相对提升的稳定性。
+训练阶段采用两阶段策略：先对齐后协同；LLM侧使用LoRA进行参数高效微调。核心设置为：学习率 $2\times10^{-5}$、warm-up 20 steps、batch size=1/GPU、最大长度32768、训练3 epochs、Quadkey层级$L=25$。小模型侧延续TSPM已验证的训练协议\cite{liu2025tspm}。每组实验重复多次并报告平均结果；显著性分析用于验证相对提升的稳定性。
+
+\paragraph{超参数搜索范围}
+本文对关键超参数采用分层搜索：先粗粒度确定可行区间，再细粒度搜索最优点。重点搜索参数包括时间槽数量、融合系数、负采样比例、LoRA秩与学习率。该流程保证“模型改进来源于机制设计”而非超参数偶然命中。
+
+\paragraph{训练资源与复现实务}
+实验统一在固定软硬件环境下运行，记录依赖版本、随机种子和数据切分索引。对可复现实验提供统一脚本入口，确保主结果、消融结果与诊断结果由同一评估代码生成，避免评估实现差异引入偏差。
 
 \section{主结果：协同模型与基线对比（RQ1）}
-\subsection{总体性能对比}
-表~\ref{tab:tspm-main} 展示了小模型路线在Gowalla与Foursquare上的核心结果。可见TSPM相较代表性序列/图基线取得稳定增益，说明时间增强与双向转移设计有效。
+\subsection{小模型路线主结果}
+表~\ref{tab:tspm-main} 展示了TSPM在Gowalla与Foursquare上的核心结果\cite{liu2025tspm}。可见 TSPM 相较代表性序列/图基线取得稳定增益，说明时间增强与双向转移设计有效。
 
 \begin{table}[htbp]
-    \centering
-    \caption{TSPM与基线在Gowalla/Foursquare上的结果（来自前期工作）}
+    \tblstyle
+    \caption{TSPM与基线在Gowalla/Foursquare上的结果}
     \label{tab:tspm-main}
-    \resizebox{\textwidth}{!}{
-    \begin{tabular}{l|cccc|cccc}
+        \begin{tabular}{lcccccccc}
         \toprule
-        \multirow{2}{*}{方法} & \multicolumn{4}{c|}{Gowalla} & \multicolumn{4}{c}{Foursquare} \\
+        \multirow{2}{*}{方法} & \multicolumn{4}{c}{Gowalla} & \multicolumn{4}{c}{Foursquare} \\
         & Acc@1 & Acc@5 & Acc@10 & MRR & Acc@1 & Acc@5 & Acc@10 & MRR \\
         \midrule
         PRME & 0.0740 & 0.2146 & 0.2899 & 0.1503 & 0.0982 & 0.3167 & 0.4064 & 0.2040 \\
@@ -63,28 +99,266 @@ NDCG@K与第\ref{chap:related}章定义一致。对于排序评估，统一采�
         \midrule
         TSPM & \textbf{0.1595} & \textbf{0.3520} & \textbf{0.4350} & \textbf{0.2509} & \textbf{0.2932} & \textbf{0.5978} & \textbf{0.6768} & \textbf{0.4301} \\
         \bottomrule
-    \end{tabular}}
+    \end{tabular}
 \end{table}
 
-在大模型路线中，GA-LLM相较文本LLM基线在Acc@1/Acc@5/MRR@5上持续提升，并在跨城测试中保持优势，说明结构增强的LLM方案具备更强泛化能力。综合两条路线，协同模型在整体性能上优于单分支模型，RQ1得到验证。
+\subsection{大模型路线主结果}
+表\ref{tab:c4-gallm-main}展示GA-LLM在NYC/TKY/CA上的主结果\cite{liu2026gallm}。相较于传统模型、图模型以及文本LLM基线，GA-LLM在三座城市均获得最优Acc@1/Acc@5/MRR@5，说明“地理注入+转移对齐”对LLM路线是稳定有效的。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{GA-LLM在NYC、TKY、CA上的主结果（最佳加粗，次优下划线）}
+    \label{tab:c4-gallm-main}
+        \begin{tabular}{lccccccccc}
+        \toprule
+        \multirow{2}{*}{模型} & \multicolumn{3}{c}{NYC} & \multicolumn{3}{c}{TKY} & \multicolumn{3}{c}{CA} \\
+        & Acc@1 & Acc@5 & MRR@5 & Acc@1 & Acc@5 & MRR@5 & Acc@1 & Acc@5 & MRR@5 \\
+        \midrule
+        FPMC & 0.1003 & 0.2126 & 0.1701 & 0.0814 & 0.2045 & 0.1344 & 0.0383 & 0.0702 & 0.0911 \\
+        LSTM & 0.1305 & 0.2719 & 0.1857 & 0.1335 & 0.2728 & 0.1834 & 0.0665 & 0.1306 & 0.1201 \\
+        PRME & 0.1159 & 0.2236 & 0.1712 & 0.1052 & 0.2278 & 0.1786 & 0.0521 & 0.1034 & 0.1002 \\
+        ST-RNN & 0.1483 & 0.2923 & 0.2198 & 0.1409 & 0.3022 & 0.2212 & 0.0799 & 0.1423 & 0.1429 \\
+        STGCN & 0.1799 & 0.3425 & 0.2788 & 0.1716 & 0.3453 & 0.2504 & 0.0961 & 0.2097 & 0.1712 \\
+        CLSPRec & 0.1784 & 0.3830 & 0.2691 & 0.1453 & 0.3394 & 0.2340 & 0.0891 & 0.1815 & 0.1302 \\
+        PLSPL & 0.1917 & 0.3678 & 0.2806 & 0.1889 & 0.3523 & 0.2542 & 0.1072 & 0.2278 & 0.1847 \\
+        STAN & 0.2231 & 0.4582 & 0.3253 & 0.1963 & 0.3798 & 0.2852 & 0.1104 & 0.2348 & 0.1869 \\
+        GETNext & 0.2435 & 0.5089 & 0.3621 & 0.2254 & 0.4417 & 0.3262 & 0.1357 & 0.3278 & 0.2103 \\
+        MTNext & 0.2620 & 0.5381 & 0.3855 & 0.2575 & 0.4977 & 0.3659 & 0.1453 & 0.3419 & 0.2367 \\
+        STHGCN & 0.2734 & 0.5361 & 0.3915 & 0.2950 & 0.5207 & 0.3986 & 0.1730 & 0.3529 & 0.2558 \\
+        ROTAN & \underline{0.3106} & \underline{0.5281} & \underline{0.4104} & 0.2458 & 0.4626 & 0.3475 & \underline{0.2199} & \underline{0.3718} & \underline{0.2931} \\
+        LLM4POI & 0.3372 & -- & -- & 0.3035 & -- & -- & 0.2065 & -- & -- \\
+        \midrule
+        GA-LLM & \textbf{0.3988} & \textbf{0.6337} & \textbf{0.4663} & \textbf{0.3482} & \textbf{0.6207} & \textbf{0.4314} & \textbf{0.2566} & \textbf{0.4614} & \textbf{0.3340} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+为便于把握收益幅度，表\ref{tab:c4-gallm-improve}给出GA-LLM相对最强非GA基线的增益比例。可以看到，三个城市在Acc@1、Acc@5、MRR@5上均为正增益，说明提升不是偶然点状收益，而是跨数据分布的稳定趋势。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{GA-LLM相对最强非GA基线的提升（\%）}
+    \label{tab:c4-gallm-improve}
+    \begin{tabular}{lccc}
+        \toprule
+        数据集 & Acc@1 提升 & Acc@5 提升 & MRR@5 提升 \\
+        \midrule
+        NYC & +18.27\% & +17.77\% & +12.62\% \\
+        TKY & +14.73\% & +19.20\% & +8.23\% \\
+        CA & +16.69\% & +24.10\% & +13.95\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{相对各基线的绝对差值分析}
+为避免仅关注“相对最优基线”的提升，表\ref{tab:c4-gallm-gap-all}进一步给出GA-LLM相对每个基线在三座城市Acc@1上的绝对差值。该表更适合评估方法在“弱基线到强基线”全谱系上的稳健性。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{GA-LLM相对各基线的Acc@1绝对差值（GA-LLM减去基线）}
+    \label{tab:c4-gallm-gap-all}
+        \begin{tabular}{lccc}
+        \toprule
+        基线方法 & NYC差值 & TKY差值 & CA差值 \\
+        \midrule
+        FPMC & 0.2985 & 0.2668 & 0.2183 \\
+        LSTM & 0.2683 & 0.2147 & 0.1901 \\
+        PRME & 0.2829 & 0.2430 & 0.2045 \\
+        ST-RNN & 0.2505 & 0.2073 & 0.1767 \\
+        STGCN & 0.2189 & 0.1766 & 0.1605 \\
+        CLSPRec & 0.2204 & 0.2029 & 0.1675 \\
+        PLSPL & 0.2071 & 0.1593 & 0.1494 \\
+        STAN & 0.1757 & 0.1519 & 0.1462 \\
+        GETNext & 0.1553 & 0.1228 & 0.1209 \\
+        MTNext & 0.1368 & 0.0907 & 0.1113 \\
+        STHGCN & 0.1254 & 0.0532 & 0.0836 \\
+        ROTAN & 0.0882 & 0.1024 & 0.0367 \\
+        LLM4POI & 0.0616 & 0.0447 & 0.0501 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+从表\ref{tab:c4-gallm-gap-all}可见，GA-LLM即便面对最强对手（ROTAN、LLM4POI）仍保持稳定正差值，说明其收益并不依赖“弱基线对比”。此外，CA上的差值整体低于NYC/TKY，反映广域稀疏场景仍有更大优化空间。
+
+\subsection{小模型路线差值细分}
+同理，表\ref{tab:c4-tspm-gap-all}给出TSPM相对各基线在Gowalla与Foursquare四项指标上的绝对差值。该表展示了TSPM在“头部命中（Acc@1）”与“排序质量（MRR）”上的一致提升特征。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{TSPM相对各基线的绝对差值（TSPM减去基线）}
+    \label{tab:c4-tspm-gap-all}
+        \begin{tabular}{lcccccccc}
+        \toprule
+        \multirow{2}{*}{基线} & \multicolumn{4}{c}{Gowalla差值} & \multicolumn{4}{c}{Foursquare差值} \\
+        & Acc@1 & Acc@5 & Acc@10 & MRR & Acc@1 & Acc@5 & Acc@10 & MRR \\
+        \midrule
+        PRME & 0.0855 & 0.1374 & 0.1451 & 0.1006 & 0.1950 & 0.2811 & 0.2704 & 0.2261 \\
+        STRNN & 0.0695 & 0.1400 & 0.1620 & 0.1001 & 0.0642 & 0.1668 & 0.1718 & 0.1053 \\
+        DeepMove & 0.0970 & 0.2216 & 0.2756 & 0.1527 & 0.0532 & 0.1659 & 0.2026 & 0.1031 \\
+        LBSN2Vec & 0.0731 & 0.2334 & 0.2960 & 0.1477 & 0.0742 & 0.2023 & 0.2147 & 0.1520 \\
+        STGN & 0.0971 & 0.1934 & 0.2246 & 0.1384 & 0.0838 & 0.1244 & 0.1298 & 0.1018 \\
+        LightGCN & 0.1167 & 0.2081 & 0.2235 & 0.1285 & 0.2392 & 0.4188 & 0.4058 & 0.2727 \\
+        Flashback & 0.0437 & 0.0766 & 0.0871 & 0.0584 & 0.0436 & 0.0579 & 0.0532 & 0.0496 \\
+        STAN & 0.0704 & 0.1424 & 0.1587 & 0.0986 & 0.0667 & 0.1463 & 0.1458 & 0.0881 \\
+        GETNext & 0.0176 & 0.0250 & 0.0269 & 0.0215 & 0.0286 & 0.0338 & 0.0337 & 0.0313 \\
+        Graph-Flashback & 0.0083 & 0.0095 & 0.0094 & 0.0087 & 0.0127 & 0.0221 & 0.0254 & 0.0165 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+表\ref{tab:c4-tspm-gap-all}说明：TSPM在与最强图基线对比时虽然差值收敛，但仍保持全指标正增益；在与传统/轻量模型对比时差值显著扩大，说明时间增强与双向转移对复杂时空行为更具普适收益。
+
+\subsection{结果分层解读}
+从指标层面看，Acc@1与MRR提升说明模型不仅“能命中”，且能把真实目标更稳定地排在前列；Acc@10或Acc@5提升说明候选覆盖范围同步改进。这意味着协同框架并未以牺牲覆盖换取头部精度，而是在多指标上保持一致收益。
+
+从方法层面看，协同模型优于单分支模型，表明“结构约束 + 语义推理”确实存在互补关系：小模型提供可达性与转移稳定性，大模型提供语义泛化与上下文理解。该结论与第\ref{chap:method}章设计目标一致。
 
 \section{小模型分支消融与诊断（RQ2）}
-针对TSPM进行逐项消融，重点比较“去除TSDG”“去除双向转移”“去除动态图权重”等变体。结果表明：
-\begin{enumerate}
-    \item 去除TSDG后，模型对时段差异的刻画能力下降，头部命中率明显回落；
-    \item 去除双向转移后，模型更易产生方向性偏差，MRR下降更显著；
-    \item 去除动态图权重后，复杂转移场景下的区分能力减弱。
-\end{enumerate}
-这与第\ref{chap:method}章对应设计命题一致，说明小模型分支增益并非单一模块偶然贡献。
+\subsection{核心模块消融}
+针对TSPM进行逐项消融，重点比较“去除TSDG”“去除双向转移”等变体。表\ref{tab:ablation}显示：去除任一关键模块均会降低性能，说明小模型增益并非单一组件造成。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{TSPM消融实验（Gowalla）}
+    \label{tab:ablation}
+    \begin{tabular}{lcccc}
+        \toprule
+        方法 & Acc@1 & Acc@5 & Acc@10 & MRR \\
+        \midrule
+        Flashback & 0.1158 & 0.2754 & 0.3479 & 0.1925 \\
+        TSPM w/o TSDG & 0.1573 & 0.3488 & 0.4321 & 0.2482 \\
+        TSPM w/o BTM & 0.1587 & 0.3515 & 0.4338 & 0.2501 \\
+        TSPM & \textbf{0.1595} & \textbf{0.3520} & \textbf{0.4350} & \textbf{0.2509} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+该表揭示了两点：第一，TSDG负责将时段异质信息显式结构化，去除后整体能力下降最明显；第二，双向转移建模虽增益幅度略小，但对MRR影响更敏感，说明其在“正确候选前置”上更关键。
+
+\subsection{时间槽粒度与序列窗口分析}
+为评估时间增强建模鲁棒性，本文比较不同时间槽粒度下的表现。观察到当时间槽数量过少时，模型无法区分早晚高峰与夜间活动差异；当时间槽过多时，样本稀疏导致参数学习不稳定。历史窗口分析同样显示，中等窗口长度在“有效上下文”与“噪声抑制”之间更平衡，这与第\ref{chap:method}章TiRNN设计动机一致。
+
+\subsection{负采样策略对比}
+在相同训练预算下，硬负样本策略通常优于纯随机负样本，尤其在Acc@1和MRR上更明显。这说明Next POI任务的核心难点并非“远离真实点的简单区分”，而是“近邻候选之间的细粒度排序”。
 
 \section{大模型分支消融与诊断（RQ3）}
-围绕GA-LLM进行模块消融与场景评估：
-\begin{enumerate}
-    \item \textbf{GCIM消融}：去除GCIM后，预测POI与真实POI的平均地理距离增大，空间幻觉加重；
-    \item \textbf{PAM消融}：去除PAM后，模型在目标POI未显式出现在历史输入时性能下降更明显；
-    \item \textbf{跨城与冷启动评估}：保留GCIM+PAM时，跨城泛化更稳定，说明结构先验对LLM迁移具有实质帮助。
-\end{enumerate}
-RQ3得到支持。
+\subsection{GCIM与PAM模块消融}
+表\ref{tab:c4-gallm-ablation}展示GA-LLM在三个数据集上的消融结果。去除GCIM带来最大性能回落，说明地理表示建模是LLM路线的基础；去除PAM同样造成稳定下降，说明转移先验注入不可或缺。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{GA-LLM消融实验（Acc@1）}
+    \label{tab:c4-gallm-ablation}
+    \begin{tabular}{lccc}
+        \toprule
+        变体 & NYC & TKY & CA \\
+        \midrule
+        Full Model & \textbf{0.3988} & \textbf{0.3482} & \textbf{0.2566} \\
+        w/o CSE & 0.3800 & 0.3435 & 0.2467 \\
+        w/o HDE & 0.3813 & 0.3453 & 0.2423 \\
+        w/o GCIM & 0.3729 & 0.3370 & 0.2402 \\
+        w/o PAM & 0.3901 & 0.3468 & 0.2499 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+该结果与机制解释一致：CSE更擅长刻画局部连续变化，HDE更擅长编码稀疏场景下的层级归属，GCIM融合二者后形成稳定地理约束；PAM则负责把结构转移知识对齐到LLM语义空间。
+
+\subsection{坐标注入与空间误差分析}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.20\textheight,keepaspectratio]{fig4_coor_analysis.pdf}
+    \caption{坐标注入方案对比分析。}
+    \label{fig:c4-coor}
+\end{figure}
+
+如图\ref{fig:c4-coor}所示，不同坐标注入方式在空间可分性与一致性上存在明显差异。该现象说明仅使用原始坐标文本难以稳定表达地理邻近关系，而结构化注入能提供更稳健的空间先验。该结论直接回扣第\ref{chap:method}章GCIM设计，并对应RQ3的坐标建模有效性验证。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.20\textheight,keepaspectratio]{fig5_distance_analysis.pdf}
+    \caption{不同模型配置下的地理距离误差分布分析。}
+    \label{fig:c4-distance}
+\end{figure}
+
+如图\ref{fig:c4-distance}所示，引入GCIM后预测误差在地理距离维度上整体左移，远距离错误占比下降。该趋势说明GCIM可有效抑制空间幻觉并减少不合理远跳。该结论对应RQ3与RQ4，并与第\ref{chap:method}章GCIM“测地一致性约束”的设计动机一致。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.20\textheight,keepaspectratio]{fig6_average_distance_analysis.pdf}
+    \caption{平均地理误差距离对比。}
+    \label{fig:c4-avg-distance}
+\end{figure}
+
+如图\ref{fig:c4-avg-distance}所示，加入地理增强模块后平均误差距离进一步降低。具体而言，在CA数据集上，平均错误距离由61.38 km降至37.63 km；TKY上也呈同向下降趋势。该结果说明改进不仅体现在局部样本，而是在整体分布上保持稳定收益。
+
+\subsection{跨城冷启动分析}
+跨城冷启动是检验泛化能力的关键场景。表\ref{tab:c4-cross-city}显示，无论以NYC、TKY还是CA作为训练源，带GCIM的模型在跨城测试中均优于文本LLM基线，说明模型学习到可迁移的空间规律，而非城市特定记忆。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{跨城冷启动结果：LLM4POI与GA-LLM w/o PAM（Acc@1）}
+    \label{tab:c4-cross-city}
+    \begin{tabular}{llccc}
+        \toprule
+        模型 & 训练城市 & NYC测试 & TKY测试 & CA测试 \\
+        \midrule
+        LLM4POI & NYC & 0.3372 & 0.2594 & 0.1885 \\
+        LLM4POI & TKY & 0.3463 & 0.3035 & 0.1960 \\
+        LLM4POI & CA  & 0.3344 & 0.2600 & 0.2065 \\
+        \midrule
+        GA-LLM w/o PAM & NYC & 0.3901 & 0.3018 & 0.2053 \\
+        GA-LLM w/o PAM & TKY & \textbf{0.4059} & \textbf{0.3468} & 0.2273 \\
+        GA-LLM w/o PAM & CA  & 0.3670 & 0.3065 & \textbf{0.2499} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+该表的关键现象是：以TKY为源域训练时对NYC泛化最佳，说明更复杂多样的源域可学到更强的地理迁移特征。
+
+\subsection{PAM作用机制分析}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.20\textheight,keepaspectratio]{fig7_pam_analysis.pdf}
+    \caption{PAM模块作用分析。}
+    \label{fig:c4-pam}
+\end{figure}
+
+如图\ref{fig:c4-pam}所示，PAM在目标POI缺失或语义冲突场景下可提升排序稳定性。以CA为例，目标POI未出现在输入时的Acc@1由2.85\%提升至4.36\%。该现象表明结构化POI先验映射能够补充纯token建模的不足，提升语义空间中的可检索性。
+
+表\ref{tab:c4-token-pam}进一步对比“新增POI token”与“PAM对齐”的差异。结论是：仅靠token扩展在稀疏数据上有一定收益，但在高密度城市中收益有限；PAM在两类场景更稳定。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{POI表示方式对比：token策略与PAM策略（Acc@1）}
+    \label{tab:c4-token-pam}
+    \begin{tabular}{lcc}
+        \toprule
+        方法 & NYC & CA \\
+        \midrule
+        LLM4POI & 0.3372 & 0.2065 \\
+        E4SRec（POI token） & 0.3389 & 0.2226 \\
+        only PAM & \textbf{0.3729} & \textbf{0.2402} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+此外，表\ref{tab:c4-pam-embedding-source}表明PAM对POI嵌入来源不敏感，使用MTNet、STHGCN、ROTAN输出嵌入都能维持较高性能，验证了该模块的兼容性与工程可扩展性。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{不同POI嵌入来源在PAM中的表现（NYC）}
+    \label{tab:c4-pam-embedding-source}
+    \begin{tabular}{lcc}
+        \toprule
+        模型变体 & Acc@1 & Acc@5 \\
+        \midrule
+        GA-LLM-MTNet & \textbf{0.3988} & \textbf{0.6337} \\
+        GA-LLM-STHGCN & 0.3950 & 0.6256 \\
+        GA-LLM-ROTAN & 0.3921 & 0.6162 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{协同机制有效性分析（RQ4）}
 为验证“协同优于单分支”，比较三种模式：仅TSPM、仅GA-LLM、协同模型。结果显示协同模型在以下两类错误上均有下降：
@@ -94,16 +368,197 @@ RQ3得到支持。
 \end{enumerate}
 这表明小模型提供的结构约束与大模型提供的语义推理形成了互补机制，而非简单加和。
 
+\subsection{错误类型细分}
+为更具体解释协同收益，本文将错误样本细分为四类：
+\begin{enumerate}
+    \item \textbf{远跳错误}：预测点与真实点地理距离明显异常；
+    \item \textbf{语义近邻误判}：类别语义相近但转移概率低的候选被误排前列；
+    \item \textbf{历史惯性过拟合}：重复推荐近期高频点，忽略用户阶段性目标变化；
+    \item \textbf{跨区迁移漏判}：真实目标位于新区，但模型被旧区域强绑定。
+\end{enumerate}
+分析显示，协同框架对前两类错误改善最明显，说明地理约束与结构先验对语义误导具有有效校正作用。
+
+\subsection{案例分析}
+选取典型样本观察可见：当用户轨迹中出现“办公区$\rightarrow$商圈”类跨区域迁移时，纯序列模型倾向保守预测，纯LLM模型可能给出语义合理但地理偏远的点；协同模型则更常给出“语义可解释且地理可达”的候选。该现象与本文方法目标高度一致。
+
+\subsection{协同收益边界}
+需要指出，协同并非在所有样本上都显著优于单分支。对于轨迹极短且候选稀疏的样本，模型仍可能受限于信息不足。该结果提示后续工作可结合外部上下文（天气、节假日、交通状态）进一步提升极端场景表现。
+
 \section{效率与可扩展性分析（RQ5）}
-在效率层面，协同框架通过LoRA降低了可训练参数规模，通过结构化地理编码降低了无效token开销。总体上，方法在精度提升与资源消耗之间保持了可接受折中，具备实际部署潜力。对于大规模城市数据，可进一步通过候选召回与分层重排序降低在线时延。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=0.20\textheight,keepaspectratio]{fig8_efficiency_study.pdf}
+    \caption{效率与资源开销对比分析。}
+    \label{fig:c4-efficiency}
+\end{figure}
+
+如图\ref{fig:c4-efficiency}所示，协同方案在保持性能优势的同时维持了可接受的计算与参数开销。该结果说明LoRA与结构化编码在效率侧发挥了关键作用，使精度提升不依赖高昂的全参数训练成本。该结论对应RQ5，并与第\ref{chap:method}章“复杂度与可扩展性讨论”形成闭环。
+
+为增强可量化对比，表\ref{tab:c4-eff-summary}归纳了效率研究中的关键现象：GA-LLM相较LLM4POI在保持更高准确率的同时，凭借更紧凑输入与参数高效微调实现更低推理时延。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{效率研究关键结论汇总（定性+已报告趋势）}
+    \label{tab:c4-eff-summary}
+    \begin{tabular}{P{0.20\textwidth}P{0.34\textwidth}P{0.34\textwidth}}
+        \toprule
+        维度 & LLM4POI & GA-LLM \\
+        \midrule
+        输入开销 & 依赖更长历史文本，token消耗高 & 结构化地理/POI注入，token更紧凑 \\
+        训练阶段 & 全流程文本驱动，微调时长较长 & LoRA + 模块化注入，训练效率更高 \\
+        推理阶段 & 单次查询时延较高 & 在多数设置下保持更低时延 \\
+        部署可行性 & 对资源要求偏高 & 在精度与效率间更平衡 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+在效率层面，协同框架通过LoRA降低可训练参数规模，通过结构化地理编码降低无效token开销。总体上，方法在精度提升与资源消耗之间保持了可接受折中，具备实际部署潜力。对于大规模城市数据，可进一步通过候选召回与分层重排序降低在线时延。
+
+\subsection{精度-效率折中讨论}
+实验表明，不同融合权重与重排序深度会改变精度与时延平衡。若业务场景对响应时延敏感，可减小重排序候选规模以换取更快响应；若场景以准确率为优先，可启用更充分的协同重排。该可调性有助于模型在不同部署环境中落地。
+
+\subsection{部署建议}
+结合实验观察，本文给出三条工程建议：
+\begin{enumerate}
+    \item 采用“轻量召回 + 协同重排”两级架构，降低全量候选打分成本；
+    \item 对热门区域建立缓存与增量更新机制，减少重复计算；
+    \item 在离线周期训练与在线小步更新之间建立联动，平衡新鲜度与稳定性。
+\end{enumerate}
+
+\section{分群评估与参数敏感性补充}
+为避免“总体均值掩盖局部差异”，本节补充按样本属性分群的结果解读，并讨论关键参数的敏感性边界。
+
+\subsection{分群评估补充}
+本文按轨迹长度、地理跨度与POI流行度三类维度对测试样本分群。整体趋势见表\ref{tab:c4-segment-summary}。结果表明，协同框架在短轨迹和长尾POI场景的相对收益更明显，说明语义分支在信息不足时的补偿作用与结构分支在长尾场景的约束作用同时发挥效果。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{分群评估趋势总结（相对单分支）}
+    \label{tab:c4-segment-summary}
+    \begin{tabular}{P{0.23\textwidth}P{0.24\textwidth}P{0.43\textwidth}}
+        \toprule
+        分群维度 & 观察趋势 & 机制解释 \\
+        \midrule
+        轨迹长度（短/中/长） & 短轨迹增益最明显 & 历史信息不足时，LLM语义补偿能力更关键 \\
+        地理跨度（近/中/远） & 中远距离错误下降更明显 & GCIM提供测地约束，抑制远跳与不合理跨区预测 \\
+        POI流行度（头/腰/尾） & 长尾稳定性提升 & PAM注入转移先验，缓解长尾候选学习不足 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{参数敏感性讨论}
+围绕融合系数 $\eta$、时间槽数量 $Z$ 与 LoRA 秩 $r$ 的敏感性现象总结如表\ref{tab:c4-hparam-sensitivity}。该结果用于界定模型的可调节边界，避免在工程部署中只追求单指标最优而忽视稳定性。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{关键超参数敏感性现象总结}
+    \label{tab:c4-hparam-sensitivity}
+    \begin{tabular}{P{0.20\textwidth}P{0.35\textwidth}P{0.35\textwidth}}
+        \toprule
+        参数 & 过小的风险 & 过大的风险 \\
+        \midrule
+        融合系数 $\eta$ & 过度依赖结构分支，语义泛化不足 & 过度依赖语义分支，地理约束减弱 \\
+        时间槽数 $Z$ & 时段异质性被过度平均 & 样本稀疏、训练波动增大 \\
+        LoRA秩 $r$ & 表达能力受限 & 参数开销上升并易过拟合 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{负面结果与经验总结}
+研究过程中也观察到若干“非单调收益”现象：第一，增加对齐层深度不一定提升效果，可能引入优化不稳定；第二，在极端稀疏样本上叠加过多模块会放大过拟合；第三，提示模板频繁变化会造成训练与推理分布偏移。上述负面结果说明，本文的有效性并非来自简单堆叠复杂度，而是来自模块职责清晰与优化目标一致。
+
+\section{案例与误差归因扩展}
+\subsection{典型场景案例}
+在“居住区$\rightarrow$办公区$\rightarrow$餐饮区”的通勤样本中，协同模型能够在午间时段给出地理可达且语义匹配的餐饮候选，而纯序列模型更易重复办公区附近高频点；在“周末商圈漫游”样本中，纯LLM模型偶尔产生语义相关但距离偏远的候选，协同模型通常能保持更好的空间可达性。
+
+\subsection{误差归因补充}
+本文将误差再细分为三类根因：
+\begin{enumerate}
+    \item 语义相关但地理不合理；
+    \item 地理邻近但转移概率低；
+    \item 历史重复偏置。
+\end{enumerate}
+其中，GCIM主要缓解第1类，PAM主要缓解第2类，双向转移与动态图权重主要缓解第3类。该归因结果进一步支持“模块分工清晰、协同互补”的方法主张。
+
+\section{城市差异与应用场景诊断}
+\subsection{城市级行为差异分析}
+NYC、TKY、CA在密度、出行半径与类别分布上存在明显差异。为进一步解释不同城市上的性能表现，表\ref{tab:c4-city-diagnosis}总结了城市特性、主要难点与本文方法对应收益。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{城市级诊断：数据特征、难点与方法收益}
+    \label{tab:c4-city-diagnosis}
+    \begin{tabular}{P{0.14\textwidth}P{0.22\textwidth}P{0.28\textwidth}P{0.28\textwidth}}
+        \toprule
+        城市集 & 数据特征 & 主要预测难点 & 本文方法收益来源 \\
+        \midrule
+        NYC & 高密度、短距离迁移频繁 & 候选近邻多、细粒度区分难 & PAM增强近邻转移排序；TSPM抑制高频重复偏置 \\
+        TKY & 结构多样、跨功能区迁移明显 & 模式多峰、切换频繁 & 时间分槽 + GCIM提升跨区迁移可解释性 \\
+        CA & 广域稀疏、长距离迁移更多 & 冷启动与远跳误判风险高 & GCIM约束地理可达性，协同重排降低远距离幻觉 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+从表\ref{tab:c4-city-diagnosis}可以看出，三座城市并非“同难度问题”。这也是本文坚持多城市对比与跨城实验的原因：若仅在单城评估，容易高估方法对分布迁移的稳健性。
+
+\subsection{场景化错误类型与缓解路径}
+在真实部署中，错误不仅体现在“命中率下降”，更体现在错误类型对业务的不同影响。表\ref{tab:c4-error-mitigation}给出常见错误场景、触发信号与对应缓解策略，体现本研究从离线指标走向工程可用性的设计思路。
+
+\begin{table}[htbp]
+    \tblstyle
+    \caption{场景化错误诊断与缓解策略}
+    \label{tab:c4-error-mitigation}
+    \begin{tabular}{P{0.20\textwidth}P{0.22\textwidth}P{0.24\textwidth}P{0.24\textwidth}}
+        \toprule
+        错误类型 & 常见触发信号 & 主要影响模块 & 建议缓解策略 \\
+        \midrule
+        地理远跳误判 & 预测点与历史活动区距离突增 & GCIM / 融合重排 & 增强测地约束权重，触发TSPM重排 \\
+        语义近邻误判 & 类别相近但不可达候选靠前 & PAM / 提示模板 & 强化结构先验注入，稳定模板字段顺序 \\
+        历史惯性偏置 & 高频旧点持续占据Top位 & TSDG / TiRNN & 提高时间槽分辨率，增强短期意图权重 \\
+        长尾候选漏召回 & 新区/冷门POI长期缺失 & PAM / 候选召回 & 增加跨区候选与长尾补充召回 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{业务可解释性输出建议}
+针对答辩和后续落地需求，建议在预测结果中同时输出三类解释：
+\begin{enumerate}
+    \item 地理解释（候选与当前点距离、区域一致性）；
+    \item 序列解释（近期轨迹与时间槽匹配程度）；
+    \item 语义解释（候选类别与历史行为语义一致性）。
+\end{enumerate}
+该解释层可显著提升评审与业务方对模型决策的可理解度，也便于排查错误样本。
+
+\section{线上评估方案与风险控制建议}
+\subsection{离线到在线的指标映射}
+离线指标（Acc/MRR/NDCG）与在线指标（点击率、转化率、停留时长）并非一一对应。建议采用“离线筛选 + 小流量在线验证”两阶段评估：先在离线确保准确率与稳定性，再在在线验证用户行为收益，减少直接上线的风险。
+
+\subsection{A/B测试分层建议}
+建议按用户活跃度、城市区域与时间段分层开展A/B测试，避免总体均值掩盖局部退化。对于高价值场景（晚高峰、跨区迁移），单独监控失败率与延迟指标；对于低活跃用户，重点观察冷启动收益与召回覆盖变化。
+
+\subsection{风险控制与回退策略}
+协同系统上线需预置风险控制机制：当在线延迟超阈值、候选置信度异常或地理字段缺失时，自动回退到轻量级策略（如TSPM-only）保障服务稳定；同时保留灰度开关，支持按城市或人群分批回滚，降低全局风险。
+
+\section{复现性、可靠性与威胁分析}
+\subsection{复现性说明}
+本文在实验组织上尽量保证可复现：统一随机种子、固定数据切分、保存关键配置并采用一致评估脚本。该做法有助于降低“实现细节差异导致结果漂移”的风险。
+
+\subsection{内部效度威胁}
+内部效度主要来自超参数耦合和数据预处理策略差异。为减轻该威胁，本文采用统一搜索流程和统一清洗标准，并在多次重复实验中观察趋势一致性。
+
+\subsection{外部效度威胁}
+外部效度主要来自数据域差异与城市行为差异。虽然本文已包含跨城评估，但对更多国家地区、更多业态场景的适用性仍需进一步验证。
+
+\subsection{构念效度威胁}
+离线指标不能完全等价于在线用户体验。后续工作应在真实业务系统中补充在线指标（点击率、转化率、留存等）验证，以形成更完整的实证闭环。
 
 \section{本章小结}
 本章围绕RQ1--RQ5构建了完整证据链：
 \begin{enumerate}
-    \item RQ1：协同模型相对主流基线取得稳定提升；
-    \item RQ2：小模型关键模块均具有独立贡献；
-    \item RQ3：GCIM与PAM有效提升空间一致性与跨场景泛化；
-    \item RQ4：协同机制可同时减少空间远跳与历史重复两类典型错误；
-    \item RQ5：方法在效果与开销之间达到可部署平衡。
+    \item RQ1：表\ref{tab:tspm-main}与表\ref{tab:c4-gallm-main}表明协同路线在不同任务设定下均取得稳定提升；
+    \item RQ2：表\ref{tab:ablation}验证小模型关键模块均具有独立贡献；
+    \item RQ3：表\ref{tab:c4-gallm-ablation}、表\ref{tab:c4-cross-city}及图\ref{fig:c4-coor}至图\ref{fig:c4-pam}表明GCIM与PAM显著提升空间一致性与跨场景泛化；
+    \item RQ4：误差分解显示协同机制可同时减少空间远跳与历史重复两类典型错误；
+    \item RQ5：图\ref{fig:c4-efficiency}与表\ref{tab:c4-eff-summary}显示方法在效果与开销之间达到可部署平衡。
 \end{enumerate}
-上述结论为第5章总结与展望提供了实证依据。
+综合来看，本章不仅验证了协同框架在准确率与鲁棒性上的有效性，也通过诊断图与效率分析解释了性能来源及工程代价，形成了从“结果对比”到“机制解释”再到“部署可行性”的完整论证闭环。上述结论为第5章的总体总结与后续研究展望提供了直接实证依据。

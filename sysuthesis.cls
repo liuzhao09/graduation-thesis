@@ -102,24 +102,75 @@
 \setlist[description]{nosep}
 
 % 页眉、页脚、脚注设定
-\renewcommand{\headrulewidth}{0.5pt}
+\definecolor{SYSUHeaderGray}{gray}{0.45}
 \renewcommand{\footrulewidth}{0pt}
-\renewcommand{\chaptermark}[1]{ \markboth{#1}{} }
+% 页眉显示与章节标题一致：有章号时显示“第X章 标题”，无章号时仅显示标题
+\renewcommand{\chaptermark}[1]{%
+    \if@mainmatter
+        \ifnum\value{chapter}>0
+            \markboth{第\thechapter{}章 #1}{}
+        \else
+            \markboth{#1}{}
+        \fi
+    \else
+        \markboth{#1}{}
+    \fi
+}
 % 采用带圈数字符号代替*号脚注
 \xeCJKsetcharclass{`①}{`⑩}{1}
-% 默认页面页眉页脚样式
-\fancypagestyle{plain}{
-    \fancyhf{}
-    % 页码位于页脚居中
-    \fancyfoot[C]{\zihao{-5}\thepage}
-    % 居中式页眉，内容为中山大学硕士/博士学位论文
-    \fancyhead[C]{\zihao{-5}中山大学硕士学位论文}
-}
-\pagestyle{plain}
 
-% 中英文摘要页面样式
-\fancypagestyle{cAbstract}{}
-\fancypagestyle{eAbstract}{}
+% 后续普通页：仅细线，无文字
+\fancypagestyle{thesisnormal}{
+    \fancyhf{}
+    \fancyfoot[C]{\zihao{-5}\thepage}
+    \fancyhead[C]{}
+    \renewcommand{\headrulewidth}{0.4pt}
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% 章节首页：灰色标题 + 上粗下细双线
+\fancypagestyle{chapterstart}{
+    \fancyhf{}
+    \fancyfoot[C]{\zihao{-5}\thepage}
+    \fancyhead[C]{\zihao{-5}\textcolor{SYSUHeaderGray}{\leftmark}}
+    \renewcommand{\headrule}{%
+        \hrule\@height 1.2pt\@width\headwidth
+        \vskip 0.8pt
+        \hrule\@height 0.2pt\@width\headwidth
+        \vskip -2.0pt
+    }
+    \renewcommand{\footrulewidth}{0pt}
+}
+
+% book类章节首页默认调用plain样式，映射为章节首页样式
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\zihao{-5}\thepage}\fancyhead[C]{\zihao{-5}\textcolor{SYSUHeaderGray}{\leftmark}}\renewcommand{\headrule}{\hrule\@height 1.2pt\@width\headwidth\vskip 0.8pt\hrule\@height 0.2pt\@width\headwidth\vskip -2.0pt}\renewcommand{\footrulewidth}{0pt}}
+\pagestyle{thesisnormal}
+
+% 中英文摘要页面样式：双线页眉、无文字
+\fancypagestyle{cAbstract}{
+    \fancyhf{}
+    \fancyfoot[C]{\zihao{-5}\thepage}
+    \fancyhead[C]{}
+    \renewcommand{\headrule}{%
+        \hrule\@height 1.2pt\@width\headwidth
+        \vskip 0.8pt
+        \hrule\@height 0.2pt\@width\headwidth
+        \vskip -2.0pt
+    }
+    \renewcommand{\footrulewidth}{0pt}
+}
+\fancypagestyle{eAbstract}{
+    \fancyhf{}
+    \fancyfoot[C]{\zihao{-5}\thepage}
+    \fancyhead[C]{}
+    \renewcommand{\headrule}{%
+        \hrule\@height 1.2pt\@width\headwidth
+        \vskip 0.8pt
+        \hrule\@height 0.2pt\@width\headwidth
+        \vskip -2.0pt
+    }
+    \renewcommand{\footrulewidth}{0pt}
+}
 
 % 表格与图片标题设定
 \renewcommand{\thefigure}{\thechapter-\arabic{figure}}
@@ -202,6 +253,7 @@
 \def\@cdegree{硕士}
 
 \newlength{\@title@width}
+\newlength{\@title@signblockwidth}
 
 \renewcommand\maketitle {
     \begin{titlepage}
@@ -223,11 +275,12 @@
             \vfill
 
             \setlength{\@title@width}{8cm}
+            \setlength{\@title@signblockwidth}{\textwidth}
             \zihao{4}\songti
-            \begin{tabular}{l}
-                答辩委员会主席（签名）：\underline{\makebox[\@title@width][c]{~}}\\[20pt]
-                委员（签名）：\underline{\makebox[\@title@width][c]{~}}
-            \end{tabular}
+            \begin{tabular*}{\@title@signblockwidth}{@{\extracolsep{\fill}}lr}
+                答辩委员会主席（签名）： & \underline{\makebox[\@title@width][c]{~}}\\[20pt]
+                委员（签名）： & \underline{\makebox[\@title@width][c]{~}}
+            \end{tabular*}
 
         \end{center}
     \end{titlepage}
@@ -345,7 +398,7 @@
     \newclearpage
 }
 \newcommand\maketableofcontents{
-    \pagestyle{plain}
+    \pagestyle{thesisnormal}
     \tableofcontents
     \newclearpage
 }
@@ -365,6 +418,9 @@
 \newcommand\makeenglishtableofcontents{
     \begingroup
     \chapter*{Contents}
+    \markboth{Contents}{}
+    \thispagestyle{chapterstart}
+    \pagestyle{thesisnormal}
     \zihao{-4}\songti
     \setlength{\parindent}{0pt}
     \def\sysuen@chapter##1##2{\noindent ##1\dotfill ##2\par}
@@ -483,13 +539,12 @@
     }
 
     \zihao{-4}\songti \linespread{1.5}\selectfont
-    \pagestyle{plain}
+    \pagestyle{thesisnormal}
 }
 
 \renewcommand\backmatter{
     \@mainmatterfalse
-    \fancypagestyle{plain}{ }
-    \pagestyle{plain}
+    \pagestyle{thesisnormal}
 }
 
 % 参考文献
@@ -543,10 +598,7 @@
 % 附录样式
 \renewcommand\appendix{\par
     \@mainmattertrue
-    \fancypagestyle{plain}{
-        %\fancyhead[R]{\zihao{-5} 附录\thechapter \leftmark}
-    }
-    \pagestyle{plain}
+    \pagestyle{thesisnormal}
     \setcounter{chapter}{0}
     \setcounter{section}{0}
     \gdef\@chapapp{\appendixname}

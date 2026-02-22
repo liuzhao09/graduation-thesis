@@ -1,15 +1,70 @@
 \chapter{大小模型协同学习方法}
 \label{chap:method}
+\newcommand{\cThreeTblStyle}{\centering\small\setlength{\tabcolsep}{4.8pt}\renewcommand{\arraystretch}{1.15}}
+
+\section{本章引言}
+基于第\ref{chap:related}章给出的研究空白与建模原则，本章给出本文方法的完整实现方案，重点回答“协同框架如何搭建、关键模块如何工作、训练与推理如何落地”三个问题。为保证论证清晰，本章按小模型分支、大模型分支和协同训练策略依次展开，并将每个模块与对应研究问题（RQ）建立映射关系，从而为第\ref{chap:exp}章的实验验证提供可追溯的机制假设。本文方法综合继承了前期工作 TSPM 与 GA-LLM 的有效设计思想\cite{liu2025tspm,liu2026gallm}，并在毕业论文中进一步统一为可协同的单一框架。
 
 \section{总体框架与设计动机}
 基于第\ref{chap:related}章的问题分析，本文方法由三个部分构成：
 \begin{enumerate}
-    \item 小模型分支 TSPM：学习时间敏感的时空转移结构；
-    \item 大模型分支 GA-LLM：增强地理连续性建模与POI先验注入；
+    \item 小模型分支 TSPM：学习时间敏感的时空转移结构\cite{liu2025tspm};
+    \item 大模型分支 GA-LLM：增强地理连续性建模与POI先验注入\cite{liu2026gallm};
     \item 融合分支：通过嵌入对齐与两阶段训练实现协同优化。
 \end{enumerate}
 
-设计动机是将小模型的结构归纳偏置与大模型的语义推理能力进行互补融合，避免单一路线在精度、鲁棒性或泛化能力上的短板。
+设计动机是将小模型的结构归纳偏置与大模型的语义推理能力进行互补融合，避免单一路线在精度、鲁棒性或泛化能力上的短板。序列/图模型在局部转移建模上具有优势\cite{GETNext,STHGCN,ROTAN,MTNet}，而LLM在语义迁移与复杂上下文理解上更强\cite{LLM4POI,LLaRA,SeCor}；本文的关键是构建一条低损耗的信息通道，使二者不再相互替代，而是协同增益。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.92\textwidth]{fig3_framework.pdf}
+    \caption{大小模型协同框架总览：输入轨迹经TSPM与GA-LLM双分支编码后，通过对齐与协同训练得到最终Top-$K$推荐结果。}
+    \label{fig:c3-framework}
+\end{figure}
+
+如图\ref{fig:c3-framework}所示，框架完整展示了从轨迹输入、双分支特征学习到协同输出的端到端信息流。该结构说明本文并非简单模型拼接，而是通过映射与联合优化实现结构知识和语义知识的协同。该设计对应第\ref{chap:exp}章RQ1与RQ4，用于验证协同机制相对单分支的整体收益。
+
+\subsection{输入构建与数据流定义}
+为便于实现与复现，本文将输入组织为三类并行流：
+\begin{enumerate}
+    \item \textbf{序列流}：由时间有序POI序列构成，用于TSPM提取局部与短期迁移模式；
+    \item \textbf{结构流}：由动态图邻接关系构成，用于建模高阶转移与区域约束；
+    \item \textbf{语义流}：由轨迹文本、POI语义token与地理token构成，用于GA-LLM进行语义推理。
+\end{enumerate}
+三类输入在特征层保持相对独立，在损失层与推理层进行耦合。该设计可避免“早期强融合导致互相干扰”，并降低训练初期梯度不稳定风险。
+
+\subsection{核心符号与问题映射}
+为避免符号重复，本章仅使用第\ref{chap:related}章给定的任务定义，并补充实现级变量。核心符号见表\ref{tab:c3-symbols}。
+
+\begin{table}[htbp]
+    \cThreeTblStyle
+    \caption{方法章核心符号说明}
+    \label{tab:c3-symbols}
+    \begin{tabular}{P{0.22\textwidth}P{0.70\textwidth}}
+        \toprule
+        符号 & 含义 \\
+        \midrule
+        $\mathcal{U},\mathcal{L}$ & 用户集合与POI集合 \\
+        $\mathbf{e}_i,\mathbf{E}_u$ & POI嵌入与用户嵌入 \\
+        $T_i$ & 第 $i$ 次访问对应时间槽嵌入 \\
+        $\boldsymbol{\xi}^{out},\boldsymbol{\xi}^{in}$ & 双向转移表示（转出/转入） \\
+        $\boldsymbol{\xi}_{seq}$ & 历史序列聚合表示 \\
+        $\mathbf{E}_{GPS}$ & GCIM输出的地理表示 \\
+        $\mathbf{E}_{poi}$ & PAM映射后的POI语义表示 \\
+        $\mathcal{L}_{time},\mathcal{L}_{seq}$ & TSPM中时间转移损失与序列损失 \\
+        $\mathcal{L}_{geo},\mathcal{L}_{align},\mathcal{L}_{gen}$ & 测地一致性损失、跨空间对齐损失与生成损失 \\
+        $\eta$ & 推理阶段LLM与TSPM融合权重 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{协同设计原则}
+本文在框架层遵循三条工程原则：
+\begin{enumerate}
+    \item \textbf{先对齐后协同}：先保证不同空间表示可互相读取，再进行联合优化；
+    \item \textbf{模块可插拔}：GCIM、PAM与TSPM均可独立启停，便于消融诊断；
+    \item \textbf{训练资源可控}：大模型侧以参数高效微调为主，避免全参更新带来的成本激增。
+\end{enumerate}
 
 \section{小模型分支：TSPM}
 \subsection{时间增强序列动态图（TSDG）}
@@ -23,7 +78,29 @@
 \label{eq:c3-xi-in}
 \end{equation}
 
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.43\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Time_enhanced_left.pdf}
+        \caption{传统连续序列}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.53\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Time_enhanced_right.pdf}
+        \caption{时间增强序列}
+    \end{subfigure}
+    \caption{传统序列与时间增强序列的建模对比。}
+    \label{fig:c3-time-compare}
+\end{figure}
+
+如图\ref{fig:c3-time-compare}所示，传统序列将不同时间段的迁移关系混合建模，而时间增强序列能显式区分时段特征。该现象说明“同一POI在不同时段具有不同转移分布”是必须建模的结构事实。该结论直接回扣本节TSDG设计，并将在第\ref{chap:exp}章RQ2中通过消融实验验证。
+
 \textbf{待验证命题：}显式时间分槽可提升模型对时段异质行为的建模能力（对应第\ref{chap:exp}章RQ2）。
+
+\paragraph{时间分槽策略讨论}
+时间分槽粒度过粗会掩盖行为差异，过细会造成样本稀疏。本文采用“以行为节律为导向”的折中策略，即优先保证每个时段具有足够样本密度，再在验证集上微调分槽数量。该策略相比固定等距切分更贴近真实城市活动节奏。
 
 \subsection{双向转移建模}
 为同时建模“从哪里来”和“将去哪里”，采用双向对比损失：
@@ -34,6 +111,9 @@
 其中 $+$ 与 $-$ 分别表示正负样本POI。
 
 \textbf{待验证命题：}双向转移优于单向转移，可减少路径偏置并提升下一跳预测稳定性（对应RQ2）。
+
+\paragraph{损失函数直观解释}
+式\eqref{eq:c3-ltime}的核心是将“当前点到真实下一点”的距离压缩，同时将“当前点到负样本点”的距离拉开。与单向建模相比，双向表示可同时约束“出边合理性”和“入边合理性”，从而减少只依赖历史高频模式造成的方向偏置。
 
 \subsection{序列偏好建模与动态图权重}
 将最近 $k$ 个访问拼接得到序列表示：
@@ -60,6 +140,9 @@ s^d_{i,j}=\exp\left(-\rho_1\|\boldsymbol{\xi}_{seq}-\mathbf{e}_j\|_2^2-\rho_2\|\
 
 \textbf{待验证命题：}动态图权重可提升复杂迁移场景下的区分能力（对应RQ2、RQ4）。
 
+\paragraph{负采样策略}
+为避免训练信号过于简单，本文采用“同区域硬负样本 + 跨区域随机负样本”混合策略：前者提高局部区分难度，后者维持全局判别边界。该策略有助于提升模型在近邻候选中的排序精度，并减少模型仅学习区域标签的风险。
+
 \subsection{TiRNN预测头}
 为建模多步历史依赖，TiRNN对过去 $K$ 个隐状态加权融合：
 \begin{equation}
@@ -71,6 +154,9 @@ s^d_{i,j}=\exp\left(-\rho_1\|\boldsymbol{\xi}_{seq}-\mathbf{e}_j\|_2^2-\rho_2\|\
 \hat{\mathbf{y}}_t=\text{Softmax}(\mathbf{W}_f[\hat{\mathbf{h}}_t\Vert\mathbf{E}_u]).
 \label{eq:c3-tirnn}
 \end{equation}
+
+\paragraph{预测头设计动机}
+TiRNN并非替代前述结构模块，而是作为“时序聚合终端”整合动态图编码结果。通过显式聚合多步隐状态，模型可以在“短期活动惯性”和“中期出行计划”之间动态权衡，从而减少单步过拟合问题。
 
 \section{大模型分支：GA-LLM}
 \subsection{GCIM：地理坐标注入模块}
@@ -84,9 +170,12 @@ GCIM采用“层级离散 + 连续频域”双分支编码：
 \label{eq:c3-egps}
 \end{equation}
 
-该模块通过测地一致性约束降低空间幻觉。
+针对第\ref{chap:intro}章图\ref{fig:c1-gcim-motivation}所示的空间错位问题，GCIM在实现层面通过Quadkey分支编码层级区域结构，通过Fourier分支编码连续距离变化，并在投影层完成统一融合。该设计使地理关系以结构化方式进入LLM输入空间，为后续地理一致性约束提供可优化的表示基础。
 
 \textbf{待验证命题：}GCIM可显著改善地理一致性并降低远跳错误（对应RQ3、RQ4）。
+
+\paragraph{为何采用Quadkey + Fourier}
+Quadkey适合表达“区域层级归属”，Fourier适合表达“连续坐标变化模式”\cite{GeoSAN,STiSAN,liu2026gallm}。前者提供离散空间结构，后者提供连续距离敏感性，二者互补后可同时保留地理分区稳定性与局部变化分辨率。该设计可避免仅离散编码导致的边界不连续，也避免仅连续编码导致的区域语义缺失。
 
 \subsection{PAM：POI对齐模块}
 PAM将图模型POI表示映射到LLM语义空间：
@@ -95,16 +184,46 @@ PAM将图模型POI表示映射到LLM语义空间：
 \label{eq:c3-epoi}
 \end{equation}
 
-相比纯token方式，PAM可显式注入转移先验。
+针对第\ref{chap:intro}章图\ref{fig:c1-pam-motivation}所示的转移先验缺失问题，PAM在实现层面构建“结构表征到语义表征”的线性映射通道，并将图模型中的迁移知识注入LLM语义空间。该路径避免了仅靠token共现学习关系的局限，使模型在候选稀疏和目标未显式出现时仍可利用结构先验进行推断。
 
 \textbf{待验证命题：}PAM可提升目标POI未显式出现时的预测能力（对应RQ3、RQ4）。
 
+\paragraph{对齐目标}
+PAM的目标不是“替代LLM语义”，而是建立一条可学习映射，使图模型中可迁移的结构关系能够在LLM空间中被读取和利用。换言之，PAM承担的是“知识通道”角色，核心价值在于降低跨空间信息损失。
+
 \subsection{结构化提示构造}
 采用“轨迹文本 + 专用token”混合提示：
-\begin{quote}
-This is the historical trajectory of user u: ... <POI $p_i$>, <GPS $g_i$> ... Which POI will user u visit next?
-\end{quote}
-其中 `<GPS>` 由GCIM编码，`<POI>` 由PAM编码。
+\begin{promptbox}
+\textit{This is the historical trajectory of user $u$:}\\
+$\ldots$ \tok{<POI $p_i$>}, \tok{<GPS $g_i$>} $\ldots$\\
+\textit{Which POI will user $u$ visit next?}
+\end{promptbox}
+其中 \tok{<GPS>} 由GCIM编码，\tok{<POI>} 由PAM编码。
+
+\paragraph{提示工程细节}
+在提示中，本文将“历史轨迹事实”与“候选判别指令”分段组织，避免模型将任务目标与背景描述混淆。实践中，保持模板稳定、字段顺序固定、特殊token语义单一，可显著提升训练与推理一致性。
+
+\subsection{模块到研究问题的对应关系}
+为保证“方法提出即有验证对象”，本文将核心模块与RQ映射如表\ref{tab:c3-rq-map}。
+
+\begin{table}[htbp]
+    \cThreeTblStyle
+    \caption{模块设计与研究问题映射}
+    \label{tab:c3-rq-map}
+    \begin{tabular}{P{0.22\textwidth}P{0.44\textwidth}P{0.24\textwidth}}
+        \toprule
+        模块 & 主要目标 & 对应RQ \\
+        \midrule
+        TSDG + 时间分槽 & 捕获时段异质迁移 & RQ2 \\
+        双向转移建模 & 降低方向偏置、提升下一跳稳定性 & RQ2, RQ4 \\
+        动态图权重 & 强化复杂邻域区分能力 & RQ2, RQ4 \\
+        GCIM & 提升地理一致性、抑制远跳错误 & RQ3, RQ4 \\
+        PAM & 注入POI转移先验，改善缺失目标推断 & RQ3, RQ4 \\
+        LoRA协同训练 & 平衡性能与训练成本 & RQ5 \\
+        融合重排序 & 在效果与时延间可调部署 & RQ1, RQ5 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{融合策略：协同训练与推理}
 \subsection{两阶段训练流程}
@@ -114,11 +233,155 @@ This is the historical trajectory of user u: ... <POI $p_i$>, <GPS $g_i$> ... Wh
 \label{eq:c3-ltotal}
 \end{equation}
 
+\paragraph{训练稳定性策略}
+联合训练中，不同损失尺度差异会导致优化不稳定。本文采用以下策略缓解：先进行warm-up对齐训练，再逐步提高联合损失权重；对梯度范数进行裁剪；采用早停与验证集监控防止过拟合。上述策略在不增加模型复杂度的情况下提升了收敛稳定性。
+
+\subsection{训练流程说明（实现视角）}
+为便于复现实验，协同训练可归纳为以下步骤：
+\begin{enumerate}
+    \item 构建轨迹样本并并行生成序列流、结构流与语义流输入；
+    \item 在阶段一中最小化 $\mathcal{L}_{geo}+\mathcal{L}_{align}$，得到稳定空间映射；
+    \item 在阶段二中引入 $\mathcal{L}_{gen}$ 与 $\mathcal{L}_{TSPM}$，执行联合优化；
+    \item 每个epoch后在验证集监控 Acc@1、Acc@5、MRR@5 与平均地理误差；
+    \item 保存最优checkpoint并输出可复现实验配置。
+\end{enumerate}
+
 \subsection{推理机制}
 推理时，先由GCIM与PAM将地理与转移信息注入提示，再由LLM输出候选分布；可选地结合TSPM分数进行重排序，以得到最终Top-$K$结果。
+
+\subsection{协同打分与重排序}
+为在推理阶段实现灵活部署，本文采用可控融合打分：
+\begin{equation}
+s(\ell)=\eta\cdot s_{\text{llm}}(\ell)+(1-\eta)\cdot s_{\text{tspm}}(\ell),
+\label{eq:c3-fusion-score}
+\end{equation}
+其中 $\eta\in[0,1]$ 为融合系数。在线上时延敏感场景可取较大 $\eta$ 以减少重排序开销；在精度优先场景可适当降低 $\eta$ 强化结构约束。
+
+\subsection{关键超参数与默认配置}
+结合前期实验设置\cite{liu2025tspm,liu2026gallm}，核心配置如表\ref{tab:c3-hparams}。其中大模型侧采用统一长上下文微调设置，小模型侧采用与TSPM一致的搜索区间并在验证集确定最优值。
+
+\begin{table}[htbp]
+    \cThreeTblStyle
+    \caption{关键超参数与默认配置}
+    \label{tab:c3-hparams}
+    \begin{tabular}{P{0.23\textwidth}P{0.18\textwidth}P{0.47\textwidth}}
+        \toprule
+        参数 & 默认值 & 说明 \\
+        \midrule
+        基座LLM & Llama-2-7b-longlora-32k & 大模型主干\cite{liu2026gallm} \\
+        学习率（LLM侧） & $2\times 10^{-5}$ & 常数学习率，20步warm-up \\
+        训练轮数（LLM侧） & 3 epochs & 各数据集统一设置 \\
+        最大序列长度 & 32768 & 支持长轨迹输入 \\
+        Batch Size / GPU & 1 & 与长上下文显存预算匹配 \\
+        Quadkey层级 $L$ & 25 & 城市场景下兼顾精度与效率 \\
+        时间槽数量 $z$ & 验证集选择 & 典型候选为 $[4,6,8,12]$ \\
+        融合权重 $\eta$ & 验证集选择 & 控制LLM与TSPM打分占比 \\
+        LoRA秩 $r$ & 验证集选择 & 控制可训练参数规模 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \section{复杂度与可扩展性讨论}
 训练成本主要来自三部分：TSPM动态图更新、LLM前向计算与跨模型对齐。相较于全参数微调，LoRA将可训练参数控制在低秩子空间，显著降低显存与训练时间开销。推理阶段可按场景启用“仅LLM预测”或“LLM+TSPM重排序”两种模式，在效果与时延之间灵活折中。
 
+\subsection{时间复杂度分析}
+设批大小为 $B$，序列长度为 $L$，隐藏维度为 $d$，动态图平均邻居数为 $K_n$，LLM层数为 $H$。则主要计算量可近似写为：
+\begin{enumerate}
+    \item \textbf{TSPM编码}：$\mathcal{O}(B\cdot L\cdot d^2 + B\cdot L\cdot K_n\cdot d)$；
+    \item \textbf{GCIM/PAM注入}：$\mathcal{O}(B\cdot L\cdot d^2)$；
+    \item \textbf{LLM前向（LoRA）}：$\mathcal{O}(B\cdot L\cdot H\cdot d^2)$（主导项）。
+\end{enumerate}
+因此总体瓶颈仍在LLM前向，参数高效微调的价值在于显著减少反向传播所需的可训练参数与显存开销。
+
+\subsection{空间复杂度分析}
+空间开销由三部分组成：模型参数、激活缓存与动态图索引。相较全参微调，LoRA将可训练参数限制在低秩矩阵，显著降低优化器状态占用；动态图仅保留Top-$K_n$邻居，避免全图稠密存储。该组合使模型更易在单机多卡或中等算力环境下训练。
+
+\subsection{可复现实现建议}
+为提升结果复现概率，本文建议遵循以下实践：
+\begin{enumerate}
+    \item 固定随机种子并记录数据切分索引；
+    \item 保存每轮最优检查点与关键超参数配置；
+    \item 将评估脚本与训练脚本解耦，避免指标实现漂移；
+    \item 对核心实验进行多次重复并报告平均趋势而非单次最优值。
+\end{enumerate}
+
+\section{工程实现细节与落地策略}
+除理论模块外，毕业论文还需要给出“可运行”的工程闭环。本节补充数据管线、训练调度与线上部署细节，以体现方法的可实施性。
+
+\subsection{数据管线与样本构造}
+\keytag{轨迹切片规则}\quad
+本文统一采用前缀预测范式：给定用户轨迹 $ \mathcal{T}_{u}=\{x_1,\ldots,x_n\}$，构造监督样本
+\begin{equation}
+(\{x_1,\ldots,x_t\},x_{t+1}),\quad t\in[1,n-1].
+\end{equation}
+该范式与真实推荐流程一致，可避免后缀信息泄露，并便于在离线与在线阶段共享样本定义。
+
+\keytag{时间槽映射}\quad
+对时间戳先进行本地时区对齐，再映射为时间槽索引。为减少节律冲突，工作日与休息日使用统一分槽规则，并附加二值标记。该设计可在不增加大量参数的情况下增强周内与周末差异建模能力。
+
+\keytag{候选集合构建}\quad
+候选集合由“全局候选 + 局部地理候选 + 高频回访候选”三部分组成：全局候选保证覆盖，地理候选保证可达性，高频候选保证个性化稳定性。该三路召回可显著降低全量打分开销，并为重排序阶段提供更高质量候选池。
+
+\subsection{分支接口与调度机制}
+\paragraph{TSPM分支接口}
+TSPM分支输入由 POI 索引序列、时间槽序列与用户索引组成，输出包括候选打分与中间结构表示。中间表示将作为PAM对齐的辅助信号，使结构知识在跨空间映射时损失更小。
+
+\paragraph{GCIM/PAM流水线}
+GCIM执行“坐标归一化--层级编码--频域编码--投影融合”；PAM执行“结构嵌入读取--线性投影--语义空间对齐”。两条流水线在训练时共享批内样本索引，可减少跨模块数据搬运开销。
+
+\paragraph{动态图更新策略}
+本文优先采用“按epoch离线更新图权重”的稳定策略，而非按batch增量更新。前者虽牺牲部分即时性，但可显著减少训练震荡并提升复现实验一致性，更适合作为论文主结果设置。
+
+\subsection{两阶段训练的工程化约束}
+阶段一仅优化对齐相关参数，目标是建立跨空间可读表示；阶段二引入任务损失执行联合优化。为保证稳定性，本文采用以下调度约束：对齐阶段较大学习率、联合阶段较小学习率；按验证集 Acc@1 与 MRR@5 双指标早停；保存“最优检查点 + 最近检查点”双副本，便于回滚与复盘。
+
+\subsection{推理服务化与异常回退}
+在线部署时，建议将推理划分为“轻量召回--协同重排”两级。对于高不确定样本（如前两名分数接近、跨区迁移、冷启动样本）触发TSPM重排；其余样本走轻量路径以控制时延。当出现地理字段缺失、模板解析失败或模型超时时，回退到 TSPM-only 路线以保证服务可用性。
+
+\subsection{实施清单}
+为保证答辩阶段能够展示完整工程闭环，建议按表\ref{tab:c3-impl-checklist}准备交付物。
+
+\begin{table}[htbp]
+    \cThreeTblStyle
+    \caption{方法实现交付清单}
+    \label{tab:c3-impl-checklist}
+    \begin{tabular}{P{0.26\textwidth}P{0.62\textwidth}}
+        \toprule
+        交付项 & 说明 \\
+        \midrule
+        数据清洗与切分脚本 & 固定过滤规则、切分索引与版本哈希，确保实验可复验 \\
+        训练配置文件 & 记录学习率、损失权重、随机种子、LoRA参数与时间槽设置 \\
+        评估脚本与指标单测 & 统一Acc/MRR/NDCG计算逻辑，避免实现漂移 \\
+        模型检查点规范 & 保留最优与最近检查点，支持恢复训练与结果回溯 \\
+        日志与可视化面板 & 监控损失曲线、梯度范数与验证指标，支撑异常定位 \\
+        部署回退策略文档 & 定义失败条件、回退路径与服务降级流程 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{与代表方法的能力对照}
+为突出本文协同路线的必要性，表\ref{tab:c3-capability-compare}从“时间异质建模、地理连续约束、转移先验注入、跨城泛化、部署成本可控”等维度对比代表方法能力边界。可以看出，单一路线通常只能覆盖局部能力，而协同设计能够在多个关键维度上同时满足要求。
+
+\begin{table}[htbp]
+    \cThreeTblStyle
+    \caption{代表方法能力边界对照（“\\checkmark”表示具备主能力）}
+    \label{tab:c3-capability-compare}
+    \begin{tabular}{P{0.18\textwidth}ccccc}
+        \toprule
+        方法 & 时间异质 & 地理连续 & 转移先验 & 跨城泛化 & 成本可控 \\
+        \midrule
+        PRME / FPMC &  &  & \checkmark &  & \checkmark \\
+        ST-RNN / STAN & \checkmark &  &  &  & \checkmark \\
+        GETNext / STHGCN & \checkmark & \checkmark & \checkmark &  &  \\
+        LLM4POI &  &  &  & \checkmark &  \\
+        TSPM & \checkmark & \checkmark & \checkmark &  & \checkmark \\
+        GA-LLM & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+        本文协同框架 & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+该对照表对应两个结论：第一，传统方法和纯LLM方法的短板具有互补性；第二，协同框架并非“叠加模块”，而是围绕关键能力缺口做最小闭环补齐。第\ref{chap:exp}章将通过RQ1--RQ5逐项验证这种能力补齐是否转化为可测量收益。
+
 \section{本章小结}
-本章在统一框架下给出了小模型分支、大模型分支与协同训练机制的完整设计，并明确了各模块在实验章中对应的验证命题。下一章将围绕研究问题给出可复现实验设置与系统评估结果。
+本章完成了协同方法的结构化设计。首先构建了统一框架并明确双分支信息流；其次在小模型侧设计TSDG、双向转移与动态图权重机制，以增强时空结构表达；再次在大模型侧设计GCIM与PAM，以注入地理连续性与POI转移先验；最后给出两阶段训练与推理流程，并讨论复杂度与可扩展性。新增的符号表、模块-RQ映射与参数配置表使方法定义更具可复现性，也为下一章按RQ组织的实验验证提供了明确的模块级假设与实现接口。
