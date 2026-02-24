@@ -81,8 +81,8 @@
 围绕上述路线，本文研究内容可进一步细化为四项工作：
 \begin{enumerate}
     \item \textbf{任务分析与基线整理}：系统梳理Next POI领域中的序列、图与LLM三类方法，统一问题定义、指标解释与实验比较边界；
-    \item \textbf{小模型机制设计}：围绕时间异质性与迁移方向性，设计TSDG与双向转移建模，并通过动态图权重增强复杂场景区分能力；
-    \item \textbf{大模型增强设计}：围绕地理连续性与转移先验缺失，设计GCIM与PAM模块，将结构先验以可训练方式注入LLM；
+    \item \textbf{小模型机制设计}：围绕时间异质性与迁移方向性，设计时间增强序列动态图（Time-enhanced Sequence-based Dynamic Graph, TSDG）与双向转移建模，并通过动态图权重增强复杂场景区分能力；
+    \item \textbf{大模型增强设计}：围绕地理连续性与转移先验缺失，设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），将结构先验以可训练方式注入LLM；
     \item \textbf{实验验证与诊断分析}：基于RQ组织实验证据，覆盖主结果、消融、误差类型、效率开销与部署讨论，形成“设置-结果-解释”闭环。
 \end{enumerate}
 从论文完成度角度，本文不仅给出模型结果，也强调问题定义、机制解释、局限分析与复现细节，以满足毕业论文对研究深度与工作态度的要求。
@@ -100,7 +100,7 @@
 \begin{enumerate}
     \item 提出面向Next POI任务的大小模型协同框架，统一时空结构建模与语义推理过程；
     \item 设计时间增强序列动态图与双向转移建模机制，提升小模型对复杂出行规律的表达能力；
-    \item 设计地理坐标注入模块（GCIM）与POI对齐模块（PAM），缓解LLM空间幻觉并增强跨场景泛化；
+    \item 设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），缓解LLM空间幻觉并增强跨场景泛化；
     \item 构建围绕研究问题的实验评估流程，从总体性能、模块贡献、协同有效性与效率开销四个维度验证方法有效性。
 \end{enumerate}
 

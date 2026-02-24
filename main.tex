@@ -29,11 +29,14 @@
 }
 
 \newtcolorbox{promptbox}{
+  breakable,
   colback=PromptBg,
   colframe=PromptBorder,
   boxrule=0.6pt,
   arc=2pt,
   left=8pt,right=8pt,top=6pt,bottom=6pt,
+  before skip=6pt,
+  after skip=6pt,
   fonttitle=\bfseries,
   title=Prompt Template
 }
@@ -42,6 +45,7 @@
 \input{docs/abstract}
 
 \begin{document}
+\raggedbottom
 
 \frontmatter
 \pagenumbering{Roman}

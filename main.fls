@@ -585,6 +585,8 @@ INPUT ./figures/Time_enhanced_left.pdf
 INPUT ./figures/Time_enhanced_left.pdf
 INPUT ./figures/Time_enhanced_right.pdf
 INPUT ./figures/Time_enhanced_right.pdf
+INPUT ./figures/TiRNN.pdf
+INPUT ./figures/TiRNN.pdf
 INPUT ./docs/chap04.tex
 INPUT ./docs/chap04.tex
 OUTPUT docs/chap04.aux
