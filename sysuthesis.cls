@@ -210,7 +210,10 @@
 \renewcommand{\cftaftertoctitle}{\hfill}
 \renewcommand{\cftafterlottitle}{\hfill}
 \renewcommand{\cftafterloftitle}{\hfill}
-\renewcommand{\cftnodots}{\cftdotsep}     % 使用点指示页数
+\renewcommand{\cftdotsep}{0.8}            % 目录点线更密
+\renewcommand{\cftchapleader}{\normalfont\cftdotfill{\cftdotsep}}   % 点线不加粗
+\renewcommand{\cftsecleader}{\normalfont\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\normalfont\cftdotfill{\cftdotsep}}
 
 \addtolength{\cftchapnumwidth}{3\ccwd}
 \newcommand\mybold[1]{\textit{\textbf{#1}}}

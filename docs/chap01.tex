@@ -12,6 +12,8 @@
 
 与传统项目推荐相比，Next POI任务受地理可达性、时间节律、活动语义与行为路径连续性的共同约束\cite{PRME,ST-RNN,HST-LSTM,STAN,GETNext}。随着移动终端与位置服务平台普及，签到轨迹数据不仅记录“去过哪里”，还隐含“何时去、从哪里来、下一步去哪”的动态规律，为时空序列建模提供了基础\cite{feng2018deepmove,yang2020flashback,GraphFlashback,SNPM,STHGCN}。这一数据与问题特性也使其在学术研究与工程应用层面都具有持续价值\cite{AGCL,MTNet,ROTAN,TSPN-RA,DCPR}。
 
+近两年生成式推荐进一步改变了建模方式，即将“候选打分”转化为“下一条交互标识生成”。从 P5~\cite{p5recsys2022} 统一范式到针对ID构造与约束生成的 CID~\cite{cid2023}、GenRec~\cite{genrec2023}、Tiger~\cite{tiger2023neurips}，再到强调协同语义对齐的 IDGenRec~\cite{idgenrec2024sigir}，研究重点逐步从“能生成”转向“生成可控、可对齐、可落地”。这一趋势与Next POI任务高度相关，因为下一地点预测本质上也是在强约束空间中生成合法且可达的目标标识。
+
 \subsection{研究意义}
 本文工作的意义主要体现在理论与应用两个层面。
 \begin{enumerate}
@@ -89,6 +91,8 @@
 为保证后续方法设计与实验结论具备可比性与可追溯性，本文在文献层面采用“经典基础 + 近年进展 + 前沿融合”的三层梳理框架。经典基础涵盖协同过滤、序列建模与排序学习等工作\cite{koren2009matrix,rendle2009bpr,rendle2010factorizing,grbovic2015commerce,hidasi2016gru4rec}；近年进展重点关注Next POI任务中的时空序列与图学习路线\cite{cheng2013where,kong2018hst,sun2020where,luo2021stan,CFPRec}；前沿融合聚焦LLM驱动推荐与结构先验注入路线\cite{li2023instructrec,hou2024recgpt,bao2023chatrec,lin2024llmrank,sun2024promptrec}。
 
 面向Next POI这一具体问题，本文重点参考三类证据。第一类是“纯时空/图模型”证据，包括空间门控、超图、对比学习与扩散协同等方向\cite{zhao2019stgn,yang2019lbsn2vec,yang2020flashback,zhou2020sgl,DCPR}。第二类是“语义增强”证据，包括语义城市建模与跨模态地理表示学习\cite{Pasquale2024City,M3PA,CLIP,wav2vec,liu2024mobilityfm}。第三类是“LLM推荐框架”证据，包括检索增强、协同对齐与推理链增强方法\cite{ReLLa,SeCor,GraphGPT,qu2024onerecthink,zhou2023unicorn}，以及近两年面向Next POI的最新模型进展\cite{zhuang2024tau,feng2025lrsa,wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}。上述证据共同支持本文采用“结构建模 + 语义增强 + 协同训练”的总体定位。
+
+围绕“标识构造-语义对齐-受约束生成”的技术主线，本文将相关进展进一步映射到自身问题：在构造层，借鉴 CID~\cite{cid2023} 与 Tiger~\cite{tiger2023neurips} 的语义ID思路提升POI标识表达能力；在对齐层，参考 CLLM4Rec~\cite{cllm4rec2024www}、A-LLMRec~\cite{allmrec2024kdd} 与 IDGenRec~\cite{idgenrec2024sigir} 的协同对齐范式；在生成层，结合 TALLRec~\cite{tallrec2023} 与 GenRec~\cite{genrec2023} 的受约束生成实践，服务于Next POI的可达性与一致性目标。
 
 \section{主要贡献与论文结构安排}
 \subsection{主要贡献}

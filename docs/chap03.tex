@@ -44,12 +44,12 @@
         \toprule
         符号 & 含义 \\
         \midrule
-        $\mathcal{U},\mathcal{L}$ & 用户集合与POI集合 \\
+        $\mathcal{U},\mathcal{P}$ & 用户集合与POI集合 \\
         $\mathbf{e}_i,\mathbf{E}_u$ & POI嵌入与用户嵌入 \\
         $T_i$ & 第 $i$ 次访问对应时间槽嵌入 \\
         $\boldsymbol{\xi}^{out},\boldsymbol{\xi}^{in}$ & 双向转移表示（转出/转入） \\
         $\boldsymbol{\xi}_{seq}$ & 历史序列聚合表示 \\
-        $\mathbf{E}_{GPS}$ & GCIM输出的地理表示 \\
+        $\mathbf{E}_{gps}$ & GCIM输出的地理表示 \\
         $\mathbf{E}_{poi}$ & PAM映射后的POI语义表示 \\
         $\mathcal{L}_{time},\mathcal{L}_{seq}$ & TSPM中时间转移损失与序列损失 \\
         $\mathcal{L}_{geo},\mathcal{L}_{align},\mathcal{L}_{gen}$ & 测地一致性损失、跨空间对齐损失与生成损失 \\
@@ -210,12 +210,12 @@ GCIM采用“层级离散 + 连续频域”双分支编码，其中连续频域�
 
 融合地理表示定义为：
 \begin{equation}
-\mathbf{E}_{GPS}=\mathbf{W}_{GPS}[\mathbf{E}_{quad}\Vert\mathbf{E}_{fourier}].
+\mathbf{E}_{gps}=\mathbf{W}_{gps}[\mathbf{E}_{quad}\Vert\mathbf{E}_{fourier}].
 \label{eq:c3-egps}
 \end{equation}
-式中：\symline{$\mathbf{E}_{GPS}$}{最终地理编码；\\}
+式中：\symline{$\mathbf{E}_{gps}$}{最终地理编码；\\}
 \hphantom{式中：}\symline{$\mathbf{E}_{quad}$}{Quadkey层级编码；\\}
-\hphantom{式中：}\symline{$\mathbf{W}_{GPS}$}{融合投影参数。}
+\hphantom{式中：}\symline{$\mathbf{W}_{gps}$}{融合投影参数。}
 
 针对第\ref{chap:intro}章图\ref{fig:c1-gcim-motivation}所示的空间错位问题，GCIM在实现层面通过Quadkey分支编码层级区域结构，通过Fourier分支编码连续距离变化，并在投影层完成统一融合。该设计使地理关系以结构化方式进入LLM输入空间，为后续地理一致性约束提供可优化的表示基础。
 
