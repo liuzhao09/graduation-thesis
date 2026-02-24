@@ -5,15 +5,20 @@
 
 \section{双向转移损失推导补充}
 \subsection{目标函数重述}
-第\ref{chap:method}章中，双向转移损失可写为
+第\ref{chap:method}章中，双向转移损失可写为：
 \begin{equation}
 \mathcal{L}_{time}=-\sum_t \log\sigma\left(d^-_t-d^+_t\right),
 \end{equation}
-其中
+式中：\symline{$\mathcal{L}_{time}$}{双向转移损失；\\}
+$d^-_t,d^+_t$ 分别表示负样本与正样本距离项。\\
+距离项定义为：
 \begin{equation}
 d^+_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{+,T}\|_2^2,\quad
 d^-_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2.
 \end{equation}
+式中：\symline{$\boldsymbol{\xi}^{out}_{i,T}$}{当前POI在时间槽 $T$ 的转出表示；\\}
+$\boldsymbol{\xi}^{in}_{+,T},\boldsymbol{\xi}^{in}_{-,T}$ 分别表示正负样本转入表示；\\
+\hphantom{式中：}\symline{$\|\cdot\|_2^2$}{平方欧氏距离。\\}
 该目标本质上是对“正负距离差”进行最大化。
 
 \subsection{梯度方向解释}
@@ -28,6 +33,9 @@ d^-_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2.
 \begin{equation}
 \mathcal{L}_{seq}=-\sum_t \log\sigma\left(\|\boldsymbol{\xi}_{seq}-\mathbf{e}_t^-\|_2^2-\|\boldsymbol{\xi}_{seq}-\mathbf{e}_{t+1}^+\|_2^2\right).
 \end{equation}
+式中：\symline{$\mathcal{L}_{seq}$}{序列对比损失；\\}
+\hphantom{式中：}\symline{$\boldsymbol{\xi}_{seq}$}{历史序列聚合表示；\\}
+$\mathbf{e}_t^-,\mathbf{e}_{t+1}^+$ 分别表示负样本与真实下一POI嵌入。
 
 \subsection{优化含义}
 该目标推动序列表征靠近真实下一点并远离负样本点。与交叉熵相比，对比损失更关注“相对排序关系”，与Top-$K$推荐目标更一致。
@@ -37,10 +45,14 @@ d^-_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2.
 
 \section{协同融合打分讨论}
 \subsection{线性融合合理性}
-本文采用
+本文采用如下融合打分函数：
 \begin{equation}
 s(\ell)=\eta s_{llm}(\ell)+(1-\eta)s_{tspm}(\ell)
 \end{equation}
+式中：\symline{$s(\ell)$}{候选POI $\ell$ 的融合分数；\\}
+\hphantom{式中：}\symline{$s_{llm}(\ell)$}{大模型分支打分；\\}
+\hphantom{式中：}\symline{$s_{tspm}(\ell)$}{小模型分支打分；\\}
+\hphantom{式中：}\symline{$\eta$}{融合系数。\\}
 作为推理阶段融合方式。线性融合的优点是可解释、可调、部署简单。其不足是难以捕捉复杂非线性交互，但在工程上具有较高稳定性与可控性。
 
 \subsection{融合系数选择}

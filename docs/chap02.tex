@@ -1,34 +1,47 @@
 \chapter{相关研究与问题分析}
 \label{chap:related}
+\newcommand{\cTwoTblStyle}{\centering\zihao{5}\songti\rmfamily\setlength{\tabcolsep}{4.0pt}\renewcommand{\arraystretch}{1.16}}
 
 \section{本章引言}
 本章目标是建立全文统一的问题分析基线，回答“已有研究做到什么程度、仍缺什么、本文据此如何建模”三个问题。具体而言，本章首先给出全篇唯一的任务定义与符号体系，并说明评价指标的语义与实验协议边界；随后分别综述小模型路线与大模型路线的代表工作及其局限；最后将文献证据收敛为可执行的研究空白（Gap）和建模原则（DP），为第\ref{chap:method}章的方法设计提供直接依据。
 
 \section{任务定义与符号约定}
-设用户集合为 $\mathcal{U}=\{u_1,u_2,\ldots,u_M\}$，POI集合为 $\mathcal{L}=\{\ell_1,\ell_2,\ldots,\ell_N\}$。用户 $u$ 的第 $i$ 条签到记为
+设用户集合为 $\mathcal{U}=\{u_1,u_2,\ldots,u_M\}$，POI集合为 $\mathcal{L}=\{\ell_1,\ell_2,\ldots,\ell_N\}$。用户 $u$ 的第 $i$ 条签到定义为：
 \begin{equation}
 x_i=(u,\ell_i,t_i,g_i,c_i),
 \label{eq:c2-checkin}
 \end{equation}
-其中 $\ell_i$ 为POI标识，$t_i$ 为时间戳，$g_i=(lat_i,lon_i)$ 为地理坐标，$c_i$ 为类别语义。用户轨迹表示为
+式中：\symline{$u$}{用户标识；\\}
+\hphantom{式中：}\symline{$\ell_i$}{第 $i$ 次签到对应的POI标识；\\}
+\hphantom{式中：}\symline{$t_i$}{签到时间戳；\\}
+\hphantom{式中：}\symline{$g_i=(lat_i,lon_i)$}{经纬度坐标；\\}
+\hphantom{式中：}\symline{$c_i$}{POI类别语义标签。}
+
+用户轨迹表示为：
 \begin{equation}
 \mathcal{T}_u=\{x_1,x_2,\ldots,x_n\},\quad t_1<t_2<\cdots<t_n.
 \label{eq:c2-traj}
 \end{equation}
+式中：\symline{$\mathcal{T}_u$}{用户 $u$ 的时间有序签到序列；\\}
+\hphantom{式中：}\symline{$n$}{轨迹长度；\\}
+\hphantom{式中：}\symline{$t_1<t_2<\cdots<t_n$}{轨迹按时间严格递增排序。}
 
-Next POI任务可表示为学习映射
+Next POI任务可表示为学习映射：
 \begin{equation}
 f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{L},
 \label{eq:c2-task}
 \end{equation}
+式中：\symline{$f$}{预测函数；\\}
+\hphantom{式中：}\symline{$\hat{\ell}_{n+1}$}{模型预测的下一POI；\\}
+\hphantom{式中：}\symline{$\mathcal{L}$}{候选POI全集。}
 使真实下一POI $\ell_{n+1}$ 在候选排序中尽可能靠前。若输出Top-$K$列表，记为 $\hat{\mathbf{y}}_u=[\hat{\ell}^{(1)},\ldots,\hat{\ell}^{(K)}]$。
 
 为减少后续章节符号歧义，表\ref{tab:c2-notation}给出本文高频符号及含义。
 \begin{table}[htbp]
-    \centering
+    \cTwoTblStyle
     \caption{核心符号说明}
     \label{tab:c2-notation}
-    \begin{tabular}{p{0.18\textwidth}p{0.74\textwidth}}
+    \begin{tabular}{p{0.30\textwidth}p{0.62\textwidth}}
         \toprule
         符号 & 含义 \\
         \midrule
@@ -55,25 +68,36 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{L},
 \end{enumerate}
 这些边界并不削弱问题价值，而是用于保证比较公平与可复现。对超出边界的场景（如极短轨迹、无坐标、实时概念漂移），将在第\ref{chap:conclusion}章与附录中讨论可能扩展路径。
 
-\section{评价指标与实验协议说明}
-本文采用 Acc@K、MRR 与 NDCG@K 评价排序质量：
+\subsection{评价指标与实验协议说明}
+本文采用 Acc@K、MRR 与 NDCG@K 评价排序质量，对应公式定义为：
 \begin{equation}
 \text{Acc@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\mathbf{1}(r_n\le K),
 \label{eq:c2-acc}
 \end{equation}
+式中：\symline{$\mathcal{D}$}{测试样本集合；\\}
+\hphantom{式中：}\symline{$|\mathcal{D}|$}{测试样本总数；\\}
+\hphantom{式中：}\symline{$r_n$}{第 $n$ 个样本中真实POI的排序位次；\\}
+\hphantom{式中：}\symline{$\mathbf{1}(\cdot)$}{指示函数，条件满足时取1，否则取0。}
+
 \begin{equation}
 \text{MRR}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{1}{r_n},
 \label{eq:c2-mrr}
 \end{equation}
+式中：\symline{$r_n$}{越小表示真实POI排名越靠前；\\}
+\hphantom{式中：}\symline{$\frac{1}{r_n}$}{第 $n$ 个样本的倒数排名得分；\\}
+MRR表示全体样本倒数排名的平均值。
+
 \begin{equation}
 \text{NDCG@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{\mathbf{1}(r_n\le K)}{\log_2(r_n+1)}.
 \label{eq:c2-ndcg}
 \end{equation}
-其中 $r_n$ 为第 $n$ 个样本中真实POI的排名。Acc@K反映命中能力，MRR强调首个正确结果的位置，NDCG@K更关注头部排序质量。
+式中：\symline{$\log_2(r_n+1)$}{位置折损项；\\}
+\hphantom{式中：}\symline{$\mathbf{1}(r_n\le K)$}{真实POI是否进入Top-$K$；\\}
+NDCG@K对前排命中赋予更高权重。Acc@K反映命中能力，MRR强调首个正确结果位置，NDCG@K更关注头部排序质量。
 
 本节仅说明指标含义与使用理由。数据划分、负采样、显著性检验和实现细节统一在第\ref{chap:exp}章给出。
 
-\subsection{指标解释补充}
+\subsubsection{指标解释补充}
 在Next POI场景中，不同指标对应不同系统目标：
 \begin{enumerate}
     \item \textbf{Acc@1} 反映“第一推荐是否可直接点击”，通常对用户体验最敏感；
@@ -83,39 +107,40 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{L},
 \end{enumerate}
 因此，本文不以单一指标给出结论，而是从“首位可用性、候选覆盖、排序质量”三个维度综合判断方法有效性。
 
-\section{小模型路线综述：序列与图方法}
-\subsection{序列建模方法}
+\section{相关工作综述与研究进展}
+\subsection{小模型路线综述：序列与图方法}
+\subsubsection{序列建模方法}
 FPMC~\cite{FPMC}、PRME~\cite{PRME} 等方法以“偏好建模 + 转移建模”为核心；ST-RNN~\cite{ST-RNN}、HST-LSTM~\cite{HST-LSTM}、LSTPM~\cite{LSTPM}、STAN~\cite{STAN} 将时空上下文与注意力机制引入序列编码；CLSPRec~\cite{CLSPRec}、FHCRec~\cite{FHCRec} 进一步通过对比学习提升稀疏场景鲁棒性。
 
 \textbf{局限与启示：}序列模型对局部行为刻画精细，但在时间异质性显式建模和跨用户高阶迁移利用上仍不足，提示本文需引入“时间分段建模 + 结构化转移先验”。
 
-\paragraph{进一步讨论}
+\topichead{进一步讨论}
 序列路线的另一个共性问题是对“远距离兴趣跳转”的解释不足。仅凭短期历史时，模型容易将预测压向高频近邻点，导致在跨区域通勤、目的性出行等场景中出现系统性偏差。这一现象提示我们：仅提升序列编码器深度并不能自然解决可达性与结构先验问题，仍需显式引入图结构或地理约束。
 
-\subsection{图建模方法}
+\subsubsection{图建模方法}
 GETNext~\cite{GETNext}、GraphFlashback~\cite{GraphFlashback}、STHGCN~\cite{STHGCN}、SNPM~\cite{SNPM} 等方法通过POI图或异构图学习高阶关系，缓解稀疏监督问题；ROTAN~\cite{ROTAN}、MTNet~\cite{MTNet} 则强化时间动态建模。
 
 \textbf{局限与启示：}图方法在结构学习上表现突出，但动态图更新成本和异构信息融合复杂度较高，提示本文需在表达能力与可部署性之间做轻量平衡。
 
-\paragraph{进一步讨论}
+\topichead{进一步讨论}
 图路线通常依赖全局邻接关系学习高阶迁移，这一优势在数据充足时十分明显，但也带来两个工程问题：其一，动态图重构与邻居采样在大规模场景中开销较高；其二，图表示与语言语义空间缺乏天然对齐，导致与LLM协作时存在“信息可用但难注入”的鸿沟。本文后续PAM模块即针对第二个问题给出对齐路径。
 
-\section{大模型路线综述：LLM驱动推荐}
-\subsection{LLM在推荐中的应用}
+\subsection{大模型路线综述：LLM驱动推荐}
+\subsubsection{LLM在推荐中的应用}
 CoLLM~\cite{CoLLM}、CoRAL~\cite{CoRAL}、LLMRec~\cite{LLMRec}、ReLLa~\cite{ReLLa} 等工作验证了LLM在语义理解、长上下文推理和长尾泛化中的潜力；SeCor~\cite{SeCor}、LLaRA~\cite{LLaRA} 进一步展示了LLM在序列推荐中的可行性。
 
-\subsection{LLM在Next POI中的进展}
+\subsubsection{LLM在Next POI中的进展}
 LLM4POI~\cite{LLM4POI} 将任务转为提示生成，验证了冷启动潜力；GA-LLM~\cite{liu2026gallm} 针对空间幻觉与转移先验缺失提出地理坐标注入与POI对齐机制，显著改善地理一致性。
 
 \textbf{局限与启示：}现有LLM方案普遍面临坐标语义稀疏、空间连续性不足和转移先验注入弱的问题，说明Next POI场景需要“结构先验 + 语义推理”的协同机制，而非纯文本提示。
 
-\subsection{小结性对比}
+\subsubsection{小结性对比}
 为更清晰地展示三类方法的能力边界，表\ref{tab:c2-compare}给出总结性比较。
 \begin{table}[htbp]
-    \centering
+    \cTwoTblStyle
     \caption{序列、图与LLM路线能力边界对比}
     \label{tab:c2-compare}
-    \begin{tabular}{p{0.16\textwidth}p{0.23\textwidth}p{0.23\textwidth}p{0.30\textwidth}}
+    \begin{tabular}{p{0.13\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.29\textwidth}}
         \toprule
         路线 & 主要优势 & 主要短板 & 对本文设计启示 \\
         \midrule
@@ -126,26 +151,26 @@ LLM4POI~\cite{LLM4POI} 将任务转为提示生成，验证了冷启动潜力；
     \end{tabular}
 \end{table}
 
-\section{生成式推荐与显式推理研究进展}
+\subsection{生成式推荐与显式推理研究进展}
 随着生成式推荐的发展，研究重点已从“把推荐写成文本生成”逐步转向“让模型显式地进行中间推理”。这一路线强调：在复杂推荐任务中，仅靠隐式注意力难以稳定地执行约束推断，显式推理链、检索增强与结构对齐是提升稳定性的关键。
 
-\subsection{从指令调优到统一生成框架}
+\subsubsection{从指令调优到统一生成框架}
 近年来，LLM推荐研究在范式上呈现三步演化。第一步是将推荐任务指令化并进行参数高效微调，如 InstructRec、RecGPT 与 Chat-REC\cite{li2023instructrec,hou2024recgpt,bao2023chatrec}。第二步是将召回、排序与解释统一到单一生成框架，如 LLMRec、CoLLM 与 CoRAL\cite{LLMRec,CoLLM,CoRAL}。第三步是在统一框架中加入外部检索与结构先验以缓解幻觉和不一致，如 ReLLa、SeCor 与 LLaRA\cite{ReLLa,SeCor,LLaRA}。围绕该路线，也出现了排序增强、记忆增强与提示优化等工作\cite{lin2024llmrank,fan2024memo,sun2024promptrec,wu2024ragrec}，并催生了更系统的综述研究\cite{gao2023llm4rs,lin2024genrecsurvey,zhang2024llmrecsurvey,chen2024rsfm}。
 
-\subsection{显式推理范式：OneRec 与 OneRec-Think 类工作}
+\subsubsection{显式推理范式：OneRec 与 OneRec-Think 类工作}
 与“直接生成答案”不同，显式推理范式强调中间决策轨迹，例如候选过滤、约束检查、理由归纳与自我校验。OneRec及其后续显式推理扩展（如 OneRec-Think）体现了这一趋势\cite{qu2024onerec,qu2024onerecthink}。同类工作还将链式思考与智能体规划引入推荐推断过程\cite{wu2024thinkrec,yao2024agent4rec,xu2024hybridrec}。这类方法的共同点是：模型不只输出最终推荐，还输出可追溯的中间依据，从而提升一致性与可解释性。
 
 对Next POI任务而言，显式推理的价值主要在三点：其一，可将“距离可达性、时段约束、历史路径方向”显式纳入决策；其二，可将结构先验作为推理证据而非黑盒隐变量；其三，可在错误分析中定位到底是语义误判还是约束违背。这与本文“GCIM + PAM + 协同重排序”的思路在方法论上是一致的，即把不可控隐式学习转化为可诊断的显式推断流程。
 
-\subsection{与本文方法的关系}
+\subsubsection{与本文方法的关系}
 本文不直接复制通用 CoT 模板，而是采用“结构对齐 + 轻量协同”的技术路线。原因在于：Next POI场景具有强时空约束与低时延要求，若直接引入冗长推理链，可能带来明显时延与鲁棒性波动。相比之下，本文将推理需求压缩为“可学习对齐模块 + 可控融合打分”，在效率和稳定性上更适合部署场景。
 
-\section{中文研究脉络与本土场景启示}
+\subsection{中文研究脉络与本土场景启示}
 中文学术界在推荐系统、序列推荐和图推荐方面已形成较系统研究脉络\cite{liu2024cn1,zhang2023cn2,wang2023cn3,li2024cn4}。在时空行为建模与位置推荐方面，研究重点逐步转向“地理约束 + 行为节律”的联合建模\cite{zhao2022cn5,he2021cn6,sun2022cn7,yang2023cn8,zheng2024cn14}。在大模型推荐与生成式推荐方面，近年的讨论集中于可解释性、RAG与工程落地\cite{chen2024cn9,gao2024cn10,huang2024cn11,xu2024cn12,qian2024cn15}，并与城市时空智能应用形成交叉\cite{liu2023cn13}。
 
 这些中文研究对本文有两点直接启示。第一，真实业务中“可解释 + 可部署”通常与“离线最优”同等重要，方法设计不能只追求指标提升。第二，国内LBS与本地生活场景具备高密度、强约束、强实时特征，要求推荐模型在地理一致性与时延之间做更细粒度权衡。本文采用协同框架而非单一路线，正是基于上述工程现实做出的方法选择。
 
-\section{扩展文献归纳}
+\subsection{扩展文献归纳}
 为完整刻画本文研究语境，本文参考了经典协同过滤与排序学习文献\cite{koren2009matrix,rendle2009bpr,rendle2010factorizing,he2017ncf}，以及序列推荐主线工作\cite{hidasi2016gru4rec,kang2018sasrec,sun2019bert4rec,zhang2023sequentialsurvey}。在图推荐与自监督学习方面，重点参考了轻量图卷积、知识图增强与图对比学习工作\cite{he2020lightgcn,wang2019kgat,zhou2020sgl,lin2022simgcl,wu2022gnnrecsurvey}。
 
 在时空推荐与Next POI方向，本文重点覆盖了序列、图与混合路线的代表方法\cite{cheng2013where,he2016inferring,FPMC,PRME,ST-RNN}，以及近期性能较强的时空图方法\cite{GETNext,GraphFlashback,SNPM,ROTAN,MTNet}。在LLM与基础模型方向，本文参考了通用推荐增强、POI专用增强与显式推理工作\cite{LLM4POI,liu2026gallm,zheng2024poillm,wang2024georecllm,qu2024onerecthink}。
@@ -165,12 +190,16 @@ LLM4POI~\cite{LLM4POI} 将任务转为提示生成，验证了冷启动潜力；
     \item \textbf{DP-3（协同训练可部署）：} 通过两阶段训练和参数高效微调实现稳定融合。
 \end{enumerate}
 
-相应地，本文联合优化目标写为
+相应地，本文联合优化目标写为：
 \begin{equation}
 \mathcal{L}=\mathcal{L}_{\text{small}}+\lambda_1\mathcal{L}_{\text{align}}+\lambda_2\mathcal{L}_{\text{llm}}+\lambda_3\mathcal{L}_{\text{reg}},
 \label{eq:c2-joint}
 \end{equation}
-其中各损失项分别对应时空结构学习、跨模型对齐、生成/分类学习与复杂度控制。
+式中：\symline{$\mathcal{L}_{\text{small}}$}{小模型时空结构学习损失；\\}
+\hphantom{式中：}\symline{$\mathcal{L}_{\text{align}}$}{跨空间对齐损失；\\}
+\hphantom{式中：}\symline{$\mathcal{L}_{\text{llm}}$}{大模型任务损失；\\}
+\hphantom{式中：}\symline{$\mathcal{L}_{\text{reg}}$}{正则化项；\\}
+\hphantom{式中：}\symline{$\lambda_1,\lambda_2,\lambda_3$}{各损失项的权重系数。}
 
 \subsection{从研究空白到研究问题（RQ）映射}
 为保证后续实验可以直接检验建模假设，本文将 Gap/DP 与 RQ 的映射关系明确如下：

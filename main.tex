@@ -14,6 +14,8 @@
 
 \newcommand{\keytag}[1]{\textbf{\kaishu #1}}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\symline}[2]{#1——#2}
+\newcommand{\topichead}[1]{\par\medskip\noindent\textbf{\heiti #1}\par\noindent}
 
 \newcommand{\tok}[1]{%
   \tcbox[
@@ -48,7 +50,6 @@
 \makedisclaim
 \newclearpage
 \makeabstract
-\cacheenglishtoc
 \maketableofcontents
 \makeenglishtableofcontents
 \newclearpage
@@ -64,13 +65,6 @@
 \newclearpage
 \include{docs/chap05}
 \newclearpage
-\appendix
-\include{docs/abbr}
-\newclearpage
-\include{docs/appx_method}
-\newclearpage
-\include{docs/appx_exp}
-\newclearpage
 
 \backmatter
 \phantomsection\label{ref:start}
@@ -78,5 +72,12 @@
 \setlength{\bibsep}{0em}
 \bibliographystyle{bibtex-style/gbt7714-2015-numerical}
 {\zihao{5}\rmfamily\songti\bibliography{reference}}
+\newclearpage
+
+\appendix
+\include{docs/appendix}
+\newclearpage
+\include{docs/postscript}
+\newclearpage
 
 \end{document}

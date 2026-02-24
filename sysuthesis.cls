@@ -177,6 +177,11 @@
 \renewcommand{\thetable}{\arabic{chapter}-\arabic{table}}
 \setlength\heavyrulewidth{1.5pt}
 \captionsetup{font=small,format=hang}
+\DeclareCaptionFont{sysutablefont}{\zihao{5}\songti\rmfamily}
+\captionsetup[table]{font=sysutablefont,format=hang}
+\AtBeginEnvironment{table}{\zihao{5}\songti\rmfamily}
+\AtBeginEnvironment{table*}{\zihao{5}\songti\rmfamily}
+\AtBeginEnvironment{longtable}{\zihao{5}\songti\rmfamily}
 % 公式标题设定
 \renewcommand{\theequation}{\arabic{chapter}-\arabic{equation}}
 
@@ -423,72 +428,7 @@
     \pagestyle{thesisnormal}
     \zihao{-4}\songti
     \setlength{\parindent}{0pt}
-    \def\sysuen@chapter##1##2{\noindent ##1\dotfill ##2\par}
-    \def\sysuen@section##1##2{\hspace*{1.8em}##1\dotfill ##2\par}
-    \def\sysuen@subsection##1##2{\hspace*{3.6em}##1\dotfill ##2\par}
-    \def\sysuen@subsubsection##1##2{\hspace*{5.4em}##1\dotfill ##2\par}
-    \sysuen@chapter{Abstract (Chinese)}{I}
-    \sysuen@chapter{Abstract}{II}
-    \sysuen@chapter{List of Abbreviations}{VII}
-    \sysuen@chapter{Chapter 1 Introduction}{1}
-    \sysuen@section{1.1 Research Background}{1}
-    \sysuen@section{1.2 Problem Definition and Notations}{1}
-    \sysuen@section{1.3 Fundamentals of Recommender Systems and Sequential Modeling}{2}
-    \sysuen@subsection{1.3.1 Matrix Factorization and Implicit Feedback Learning}{2}
-    \sysuen@subsection{1.3.2 Temporal and Attention-based Modeling}{2}
-    \sysuen@subsection{1.3.3 Fundamentals of Graph Neural Networks}{3}
-    \sysuen@section{1.4 LLM Introduction and Core Challenges}{3}
-    \sysuen@section{1.5 Research Idea and Technical Route}{4}
-    \sysuen@section{1.6 Main Contributions and Innovations}{4}
-    \sysuen@section{1.7 Thesis Organization}{4}
-    \sysuen@chapter{Chapter 2 Related Work and Problem Analysis}{6}
-    \sysuen@section{2.1 Overview of the Next POI Recommendation Task}{6}
-    \sysuen@section{2.2 Recommender System Fundamentals and Evaluation Metrics}{6}
-    \sysuen@subsection{2.2.1 From Static Recommendation to Sequential Recommendation}{6}
-    \sysuen@subsection{2.2.2 Typical Optimization Objectives}{7}
-    \sysuen@subsection{2.2.3 Common Evaluation Metrics}{7}
-    \sysuen@section{2.3 Small-model Route: Sequential and Graph Methods}{7}
-    \sysuen@subsection{2.3.1 Sequential Modeling Methods}{7}
-    \sysuen@subsection{2.3.2 Graph Modeling Methods}{8}
-    \sysuen@section{2.4 Large-model Route: LLM-driven Recommendation}{9}
-    \sysuen@subsection{2.4.1 LLM Applications in Recommender Systems}{9}
-    \sysuen@subsection{2.4.2 Progress of LLMs in Next POI Recommendation}{10}
-    \sysuen@subsection{2.4.3 Current Major Bottlenecks}{10}
-    \sysuen@section{2.5 Research Gaps and Problem Formulation}{10}
-    \sysuen@section{2.6 Chapter Summary}{11}
-    \sysuen@chapter{Chapter 3 Collaborative Learning with Small and Large Models}{12}
-    \sysuen@section{3.1 Task Definition and Overall Framework}{12}
-    \sysuen@section{3.2 Small-model Branch: TSPM}{12}
-    \sysuen@subsection{3.2.1 Time-enhanced Sequential Dynamic Graph (TSDG)}{12}
-    \sysuen@subsection{3.2.2 Bidirectional Transition Modeling}{13}
-    \sysuen@subsection{3.2.3 Sequential Preference Modeling and Dynamic Graph Weights}{13}
-    \sysuen@subsection{3.2.4 TiRNN Prediction Head}{13}
-    \sysuen@section{3.3 Large-model Branch: GA-LLM}{14}
-    \sysuen@subsection{3.3.1 Problem Motivation}{14}
-    \sysuen@subsection{3.3.2 GCIM: Geographic Coordinate Injection Module}{14}
-    \sysuen@subsection{3.3.3 PAM: POI Alignment Module}{14}
-    \sysuen@subsection{3.3.4 Structured Prompt Construction}{15}
-    \sysuen@section{3.4 Fusion Strategy: Small-Large Model Collaborative Training}{15}
-    \sysuen@subsection{3.4.1 Two-stage Training Procedure}{15}
-    \sysuen@subsection{3.4.2 Inference Mechanism}{15}
-    \sysuen@section{3.5 Chapter Summary}{15}
-    \sysuen@chapter{Chapter 4 Experimental Design and Results Analysis}{16}
-    \sysuen@section{4.1 Experimental Objectives and Research Questions}{16}
-    \sysuen@section{4.2 Datasets and Evaluation Metrics}{16}
-    \sysuen@subsection{4.2.1 Datasets}{16}
-    \sysuen@subsection{4.2.2 Evaluation Metrics}{16}
-    \sysuen@section{4.3 Small-model Experiments: TSPM Results}{16}
-    \sysuen@subsection{4.3.1 Overall Comparison Results}{16}
-    \sysuen@subsection{4.3.2 Ablation Study Results}{17}
-    \sysuen@section{4.4 Large-model Experiments: GA-LLM Results}{17}
-    \sysuen@subsection{4.4.1 Key Findings}{17}
-    \sysuen@subsection{4.4.2 GCIM Analysis}{17}
-    \sysuen@subsection{4.4.3 PAM Analysis}{18}
-    \sysuen@subsection{4.4.4 Efficiency and Scalability}{18}
-    \sysuen@section{4.5 Comprehensive Discussion on the Fusion Model}{18}
-    \sysuen@section{4.6 Experimental Summary}{18}
-    \sysuen@chapter{Conclusion and Future Work}{19}
-    \sysuen@chapter{References}{20}
+    \InputIfFileExists{docs/eng_toc_entries.tex}{}{}
     \endgroup
     \newclearpage
 }
@@ -502,6 +442,8 @@
             beforeskip = {0pt},
             afterskip = {16.5pt},
             format = {\centering},
+            number = {\arabic{chapter}},
+            name = {第,章},
             nameformat = {\zihao{-2}\heiti},
             titleformat = {\zihao{-2}\heiti}
         },
