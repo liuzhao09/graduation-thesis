@@ -259,6 +259,27 @@
 \newcommand\cdegree[1]{\def\@cdegree{#1}}
 \def\@ccollege{中山大学人工智能学院}
 \def\@cdegree{硕士}
+\IfFontExistsTF{Baoli SC}{
+    \setCJKfamilyfont{coverli}{Baoli SC}
+}{
+    \IfFontExistsTF{Libian SC}{
+        \setCJKfamilyfont{coverli}{Libian SC}
+    }{
+        \IfFontExistsTF{STLiti}{
+            \setCJKfamilyfont{coverli}{STLiti}
+        }{
+            \IfFontExistsTF{LiSu}{
+                \setCJKfamilyfont{coverli}{LiSu}
+            }{
+                \IfFontExistsTF{FZLiShu-S01}{
+                    \setCJKfamilyfont{coverli}{FZLiShu-S01}
+                }{
+                    \setCJKfamilyfont{coverli}{STSong}
+                }
+            }
+        }
+    }
+}
 
 \newlength{\@title@width}
 \newlength{\@title@signblockwidth}
@@ -266,32 +287,40 @@
 \renewcommand\maketitle {
     \begin{titlepage}
         \begin{center}
-            \songti
-            \zihao{3}\bfseries\@ccollege\\[8pt]
-            \zihao{2}\bfseries 研究生学位论文\\[5em]
-
-            \zihao{3}\songti\@covertitlefirst\\[10pt]
-            \zihao{-4}\rmfamily\@covertitlesecond\\[4em]
-
-            \begin{tabular}{ll}
-                \zihao{4}学位申请人： & \zihao{4}\@cauthor \\
-                \zihao{4}专业名称： & \zihao{4}\@cmajor \\
-                \zihao{4}导师姓名及职称： & \zihao{4}\@cmentor \\
-                \zihao{4}学位： & \zihao{4}\@cdegree \\
-            \end{tabular}
-
+            \vspace*{0.30\textheight}
+            {\zihao{1}\CJKfamily{coverli}\@ccollege}\\[18pt]
+            {\zihao{-0}\CJKfamily{coverli}研究生学位论文}
             \vfill
-
-            \setlength{\@title@width}{8cm}
-            \setlength{\@title@signblockwidth}{\textwidth}
-            \zihao{4}\songti
-            \begin{tabular*}{\@title@signblockwidth}{@{\extracolsep{\fill}}lr}
-                答辩委员会主席（签名）： & \underline{\makebox[\@title@width][c]{~}}\\[20pt]
-                委员（签名）： & \underline{\makebox[\@title@width][c]{~}}
-            \end{tabular*}
-
         \end{center}
     \end{titlepage}
+
+    \clearpage
+    \thispagestyle{empty}
+    \begin{center}
+        \songti
+        \vspace*{0.10\textheight}
+        {\zihao{3}\songti\@covertitlefirst}\\[10pt]
+        {\zihao{-4}\rmfamily\@covertitlesecond}\\[4em]
+
+        \vspace*{6em}
+        \begin{tabular}{@{}l@{}}
+            {\zihao{4}\songti\makebox[10em][s]{学位申请人：}\hspace{1.2em}\@cauthor}\\[8pt]
+            {\zihao{4}\songti\makebox[10em][s]{专业名称：}\hspace{1.2em}\@cmajor}\\[8pt]
+            {\zihao{4}\songti\makebox[10em][s]{导师姓名及职称：}\hspace{1.2em}\@cmentor}
+        \end{tabular}
+
+        \vspace*{4.2cm}
+
+        \setlength{\@title@width}{5.8cm}
+        \zihao{4}\songti
+        \hspace*{2.0em}
+        \begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+            {\heiti\makebox[12em][l]{答辩委员会主席（签名）：}} & \underline{\makebox[\@title@width][c]{~}}\\[20pt]
+            {\heiti\makebox[12em][l]{委员（签名）：}} & \underline{\makebox[\@title@width][c]{~}}
+        \end{tabular}
+
+    \end{center}
+    \newpage
     \newclearpage
 }
 
