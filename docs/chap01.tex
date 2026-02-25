@@ -12,25 +12,25 @@
 
 与传统项目推荐相比，Next POI任务受地理可达性、时间节律、活动语义与行为路径连续性的共同约束\cite{PRME,ST-RNN,HST-LSTM,STAN,GETNext}。随着移动终端与位置服务平台普及，签到轨迹数据不仅记录“去过哪里”，还隐含“何时去、从哪里来、下一步去哪”的动态规律，为时空序列建模提供了基础\cite{feng2018deepmove,yang2020flashback,GraphFlashback,SNPM,STHGCN}。这一数据与问题特性也使其在学术研究与工程应用层面都具有持续价值\cite{AGCL,MTNet,ROTAN,TSPN-RA,DCPR}。
 
-近两年生成式推荐进一步改变了建模方式，即将“候选打分”转化为“下一条交互标识生成”。从 P5~\cite{p5recsys2022} 统一范式到针对ID构造与约束生成的 CID~\cite{cid2023}、GenRec~\cite{genrec2023}、Tiger~\cite{tiger2023neurips}，再到强调协同语义对齐的 IDGenRec~\cite{idgenrec2024sigir}，研究重点逐步从“能生成”转向“生成可控、可对齐、可落地”。这一趋势与Next POI任务高度相关，因为下一地点预测本质上也是在强约束空间中生成合法且可达的目标标识。
+近两年生成式推荐进一步改变了建模方式，即将“候选打分”转化为“下一条交互条目ID生成”。从 P5~\cite{p5recsys2022} 统一范式到针对ID构造与约束生成的 CID~\cite{cid2023}、GenRec~\cite{genrec2023}、Tiger~\cite{tiger2023neurips}，再到强调协同语义对齐的 IDGenRec~\cite{idgenrec2024sigir}，研究重点逐步从“能生成”转向“生成可控、可对齐、可落地”。这一趋势与Next POI任务高度相关，因为下一地点预测本质上也是在强约束空间中生成合法且可达的目标POI ID。
 
 \subsection{研究意义}
-本文工作的意义主要体现在理论与应用两个层面。
+本文工作的意义主要体现在理论、方法与应用三个层面。
 \begin{enumerate}
-    \item \textbf{理论意义}：Next POI任务位于“时空序列建模 + 图结构学习 + 语言语义推理”的交叉区域\cite{zhang2023sequentialsurvey,wu2022gnnrecsurvey,cao2024trajllm,li2024spatialfm,gao2023llm4rs}。围绕该任务构建统一框架，有助于回答结构归纳偏置与大模型语义能力如何协同的问题。
-    \item \textbf{方法意义}：现有方法多在单一维度较优，例如序列方法擅长局部时序\cite{hidasi2016gru4rec,li2017narm,liu2018stamp,hidasi2018gru4rec2,qin2020fmlp}、图方法擅长高阶关系\cite{ying2018pin,wu2019session,he2020lightgcn,wang2019kgat,lin2022simgcl}、LLM方法擅长语义泛化\cite{LLMRec,CoLLM,CoRAL,LLaRA,GraphGPT}。本文尝试给出可部署的融合路径。
-    \item \textbf{应用意义}：在本地生活、城市出行和文旅推荐等场景中，系统需在有限时空约束下提供可执行推荐\cite{gao2022spatiotemporalsurvey,liu2023cn13,zheng2024cn14,wang2024georecllm,zheng2024poillm}。若预测结果与真实地理规律不一致，即使语义上合理也难形成有效服务。
+    \item {\heiti\bfseries 理论意义：}Next POI任务位于“时空序列建模 + 图结构学习 + 语言语义推理”的交叉区域\cite{zhang2023sequentialsurvey,wu2022gnnrecsurvey,cao2024trajllm,li2024spatialfm,gao2023llm4rs}。围绕该任务构建统一框架，有助于回答结构归纳偏置与大模型语义能力如何协同的问题。
+    \item {\heiti\bfseries 方法意义：}现有方法多在单一维度较优，例如序列方法\cite{hidasi2016gru4rec,li2017narm,liu2018stamp,hidasi2018gru4rec2,qin2020fmlp}擅长局部时序、图方法\cite{ying2018pin,wu2019session,he2020lightgcn,wang2019kgat,lin2022simgcl}擅长高阶关系、LLM方法\cite{LLMRec,CoLLM,CoRAL,LLaRA,GraphGPT}擅长语义泛化。本文尝试给出可部署的融合路径。
+    \item {\heiti\bfseries 应用意义：}在本地生活、城市出行和文旅推荐等场景中，系统需在有限时空约束下提供可执行推荐\cite{gao2022spatiotemporalsurvey,liu2023cn13,zheng2024cn14,wang2024georecllm,zheng2024poillm}。若预测结果与真实地理规律不一致，即使语义上合理也难形成有效服务。
 \end{enumerate}
 
 \section{研究问题、问题陈述与核心挑战}
 \subsection{研究问题分解}
 为避免“问题过大、方法过散”，本文将总体目标分解为五个可验证子问题，并在后文通过RQ体系进行闭环验证：
 \begin{enumerate}
-    \item \textbf{P1：时段异质性建模}。同一POI在不同时间段具有不同的转移规律，如何以低额外成本显式建模该异质性；
-    \item \textbf{P2：双向转移表达}。下一跳预测不仅取决于“当前点指向谁”，也取决于“目标点通常从哪里来”，如何同时表达转出与转入偏好；
-    \item \textbf{P3：地理连续性注入}。LLM语义空间不天然满足地理邻近关系，如何将经纬度与空间层级先验注入语义编码流程；
-    \item \textbf{P4：结构先验跨空间对齐}。图模型学得的POI关系如何映射到LLM语义空间，并在推理阶段持续发挥作用；
-    \item \textbf{P5：协同训练可部署}。在效果提升之外，如何保证训练成本、推理时延与参数规模仍处于可接受范围。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P1：时段异质性建模}。同一POI在不同时间段具有不同的转移规律，如何以低额外成本显式建模该异质性；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P2：双向转移表达}。下一跳预测不仅取决于“当前点指向谁”，也取决于“目标点通常从哪里来”，如何同时表达转出与转入偏好；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P3：地理连续性注入}。LLM语义空间不天然满足地理邻近关系，如何将经纬度与空间层级先验注入语义编码流程；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P4：结构先验跨空间对齐}。图模型学得的POI关系如何映射到LLM语义空间，并在推理阶段持续发挥作用；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P5：协同训练可部署}。在效果提升之外，如何保证训练成本、推理时延与参数规模仍处于可接受范围。
 \end{enumerate}
 通过上述分解，本文将“是否有效”与“为什么有效”区分处理，从而避免仅凭主结果表格给出结论。
 
@@ -39,28 +39,28 @@
 
 本文不在绪论中展开完整符号体系与公式定义，统一的任务定义与符号约定放在第\ref{chap:related}章给出，作为全文的单一依据。
 
-\subsection{核心挑战}
-尽管现有研究已在时空推荐方向取得进展，面向真实出行场景的Next POI建模仍面临以下挑战：
-\begin{enumerate}
-    \item \textbf{时间异质性挑战}：同一POI在不同时段的转移模式差异显著，统一转移机制容易造成偏差\cite{ST-RNN,zhao2019stgn,STAN,STiSAN,MTNet}；
-    \item \textbf{空间连续性挑战}：经纬度与语义表示空间之间缺乏天然同构，纯文本建模容易产生地理不一致预测\cite{GeoSAN,li2020gcnpoi,li2024large,LLM4POI,Jonathan2023Gpt}；
-    \item \textbf{转移先验注入挑战}：仅依赖文本上下文时，模型难以充分利用POI图中的高阶转移关系\cite{GraphFlashback,SNPM,STHGCN,SeCor,STKG-PLM}；
-    \item \textbf{协同优化挑战}：小模型结构先验与大模型语义能力在统一框架内稳定协同仍缺乏系统方案\cite{ReLLa,CoRAL,xu2024hybridrec,wu2024ragrec,qu2024onerecthink}。
-\end{enumerate}
-
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{fig1_GCIM_c1.pdf}
-    \caption{空间连续性挑战示意：原始坐标文本难以稳定保持地理邻近关系，导致语义空间与地理空间错位。}
+    \bicaption{空间连续性挑战示意：（a）预测误差分布与平均地理误差对比，显示纯文本LLM更易产生远距离偏移；（b）坐标文本token化示例，显示地理上邻近的坐标在离散token空间中可能被映射为差异较大的符号序列。}{Illustration of the spatial continuity challenge: (a) comparison of error distribution and mean geographic error distance; (b) a tokenization example showing that geographically close coordinates may become distant in discrete token space.}
     \label{fig:c1-gcim-motivation}
 \end{figure}
 
-如图\ref{fig:c1-gcim-motivation}所示，直接将坐标作为文本输入时，模型难以在语义空间中保持真实地理邻近结构。该现象说明Next POI任务需要专门的地理编码机制，而非仅依赖通用文本建模。基于这一挑战，本文在第\ref{chap:method}章设计GCIM模块以增强空间一致性。
+\subsection{核心挑战}
+尽管现有研究已在时空推荐方向取得进展，面向真实出行场景的Next POI建模仍面临以下挑战：
+\begin{enumerate}
+    \item {\heiti\bfseries 时间异质性挑战：}同一POI在不同时段的转移模式差异显著，统一转移机制容易造成偏差\cite{ST-RNN,zhao2019stgn,STAN,STiSAN,MTNet}；
+    \item {\heiti\bfseries 空间连续性挑战：}经纬度与语义表示空间之间缺乏天然同构，纯文本建模容易产生地理不一致预测\cite{GeoSAN,li2020gcnpoi,li2024large,LLM4POI,Jonathan2023Gpt}；
+    \item {\heiti\bfseries 转移先验注入挑战：}仅依赖文本上下文时，模型难以充分利用POI图中的高阶转移关系\cite{GraphFlashback,SNPM,STHGCN,SeCor,STKG-PLM}；
+    \item {\heiti\bfseries 协同优化挑战：}小模型结构先验与大模型语义能力在统一框架内稳定协同仍缺乏系统方案\cite{ReLLa,CoRAL,xu2024hybridrec,wu2024ragrec,qu2024onerecthink}。
+\end{enumerate}
+
+如图\ref{fig:c1-gcim-motivation}(a)所示，纯文本LLM在若干数据集上的平均误差距离相对更大，说明其对空间邻近关系的保持不稳定；如图\ref{fig:c1-gcim-motivation}(b)所示，直接坐标文本输入会受到token离散切分影响，导致“地理接近”与“语义接近”不一致。两部分现象共同说明Next POI任务需要专门的地理编码机制，而非仅依赖通用文本建模。基于这一挑战，本文在第\ref{chap:method}章设计GCIM模块以增强空间一致性。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.92\textwidth]{fig2_PAM_c2.pdf}
-    \caption{转移先验注入挑战示意：仅依赖token语义难以恢复POI图中的高阶迁移关系。}
+    \bicaption{转移先验注入挑战示意：仅依赖token语义难以恢复POI图中的高阶迁移关系。}{Illustration of transfer-prior injection challenge: token-level semantics alone are insufficient to recover high-order transitions in the POI graph.}
     \label{fig:c1-pam-motivation}
 \end{figure}
 
@@ -80,10 +80,10 @@
 \subsection{研究内容与工作安排}
 围绕上述路线，本文研究内容可进一步细化为四项工作：
 \begin{enumerate}
-    \item \textbf{任务分析与基线整理}：系统梳理Next POI领域中的序列、图与LLM三类方法，统一问题定义、指标解释与实验比较边界；
-    \item \textbf{小模型机制设计}：围绕时间异质性与迁移方向性，设计时间增强序列动态图（Time-enhanced Sequence-based Dynamic Graph, TSDG）与双向转移建模，并通过动态图权重增强复杂场景区分能力；
-    \item \textbf{大模型增强设计}：围绕地理连续性与转移先验缺失，设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），将结构先验以可训练方式注入LLM；
-    \item \textbf{实验验证与诊断分析}：基于RQ组织实验证据，覆盖主结果、消融、误差类型、效率开销与部署讨论，形成“设置-结果-解释”闭环。
+    \item {\heiti\bfseries 任务分析与基线整理：}系统梳理Next POI领域中的序列、图与LLM三类方法，统一问题定义、指标解释与实验比较边界；
+    \item {\heiti\bfseries 小模型机制设计：}围绕时间异质性与迁移方向性，设计时间增强序列动态图（Time-enhanced Sequence-based Dynamic Graph, TSDG）与双向转移建模，并通过动态图权重增强复杂场景区分能力；
+    \item {\heiti\bfseries 大模型增强设计：}围绕地理连续性与转移先验缺失，设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），将结构先验以可训练方式注入LLM；
+    \item {\heiti\bfseries 实验验证与诊断分析：}基于RQ组织实验证据，覆盖主结果、消融、误差类型、效率开销与部署讨论，形成“设置-结果-解释”闭环。
 \end{enumerate}
 从论文完成度角度，本文不仅给出模型结果，也强调问题定义、机制解释、局限分析与复现细节，以满足毕业论文对研究深度与工作态度的要求。
 
@@ -92,7 +92,7 @@
 
 面向Next POI这一具体问题，本文重点参考三类证据。第一类是“纯时空/图模型”证据，包括空间门控、超图、对比学习与扩散协同等方向\cite{zhao2019stgn,yang2019lbsn2vec,yang2020flashback,zhou2020sgl,DCPR}。第二类是“语义增强”证据，包括语义城市建模与跨模态地理表示学习\cite{Pasquale2024City,M3PA,CLIP,wav2vec,liu2024mobilityfm}。第三类是“LLM推荐框架”证据，包括检索增强、协同对齐与推理链增强方法\cite{ReLLa,SeCor,GraphGPT,qu2024onerecthink,zhou2023unicorn}，以及近两年面向Next POI的最新模型进展\cite{zhuang2024tau,feng2025lrsa,wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}。上述证据共同支持本文采用“结构建模 + 语义增强 + 协同训练”的总体定位。
 
-围绕“标识构造-语义对齐-受约束生成”的技术主线，本文将相关进展进一步映射到自身问题：在构造层，借鉴 CID~\cite{cid2023} 与 Tiger~\cite{tiger2023neurips} 的语义ID思路提升POI标识表达能力；在对齐层，参考 CLLM4Rec~\cite{cllm4rec2024www}、A-LLMRec~\cite{allmrec2024kdd} 与 IDGenRec~\cite{idgenrec2024sigir} 的协同对齐范式；在生成层，结合 TALLRec~\cite{tallrec2023} 与 GenRec~\cite{genrec2023} 的受约束生成实践，服务于Next POI的可达性与一致性目标。
+围绕“ID构造-语义对齐-受约束生成”的技术主线，本文将相关进展进一步映射到自身问题：在构造层，借鉴 CID~\cite{cid2023} 与 Tiger~\cite{tiger2023neurips} 的语义ID思路提升POI ID表达能力；在对齐层，参考 CLLM4Rec~\cite{cllm4rec2024www}、A-LLMRec~\cite{allmrec2024kdd} 与 IDGenRec~\cite{idgenrec2024sigir} 的协同对齐范式；在生成层，结合 TALLRec~\cite{tallrec2023} 与 GenRec~\cite{genrec2023} 的受约束生成实践，服务于Next POI的可达性与一致性目标。
 
 \section{主要贡献与论文结构安排}
 \subsection{主要贡献}

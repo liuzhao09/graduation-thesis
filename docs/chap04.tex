@@ -9,20 +9,20 @@
 \section{实验目标与研究问题}
 本章围绕“双路线方法是否有效、为何有效、代价如何”展开评估，定义如下研究问题：
 \begin{enumerate}
-    \item \textbf{RQ1（总体有效性）}：相比序列、图和LLM基线，TSPM与GA-LLM两条路线是否均能稳定提升性能？
-    \item \textbf{RQ2（小模型机制）}：TSDG、双向转移与动态图权重等设计是否带来独立增益？
-    \item \textbf{RQ3（大模型机制）}：GCIM与PAM是否有效缓解空间幻觉并提升冷启动/跨城泛化？
-    \item \textbf{RQ4（互补有效性）}：两条路线在误差类型上是否呈现可解释互补，关键错误是否得到改善？
-    \item \textbf{RQ5（效率与部署）}：该框架在时间、显存与参数开销上是否具备可部署性？
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}RQ1（总体有效性）：}相比序列、图和LLM基线，TSPM与GA-LLM两条路线是否均能稳定提升性能？
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}RQ2（小模型机制）：}TSDG、双向转移与动态图权重等设计是否带来独立增益？
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}RQ3（大模型机制）：}GCIM与PAM是否有效缓解空间幻觉并提升冷启动/跨城泛化？
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}RQ4（互补有效性）：}两条路线在误差类型上是否呈现可解释互补，关键错误是否得到改善？
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}RQ5（效率与部署）：}该框架在时间、显存与参数开销上是否具备可部署性？
 \end{enumerate}
 
 \section{实验设置}
 \subsection{数据集与预处理}
-为避免“母数据集”和“城市子集”混用造成理解混乱，本文先给出统一口径。原始公开数据源包括：Gowalla\footnote{\url{http://snap.stanford.edu/data/loc-gowalla.html}} 与 Foursquare\footnote{\url{https://sites.google.com/site/yangdingqi/home}}。其中，Gowalla 时间跨度为 2009 年 2 月至 2010 年 10 月；Foursquare 时间跨度为 2012 年 4 月至 2014 年 1 月\cite{liu2025tspm}。两者均包含用户ID、POI ID、时间戳、经纬度与类别信息。
+为避免“母数据集”和“城市子集”混用造成理解混乱，本文先给出统一口径。原始公开数据源包括：Gowalla\footnote{\url{http://snap.stanford.edu/data/loc-gowalla.html}} 与 Foursquare\footnote{\url{https://sites.google.com/site/yangdingqi/home}}。其中，Gowalla 时间跨度为 2009 年 2 月至 2010 年 10 月；Foursquare 时间跨度为 2012 年 4 月至 2014 年 1 月。两者均包含用户ID、POI ID、时间戳、经纬度与类别信息。
 
 \topichead{两条模型路线的数据使用差异}
-\textbf{TSPM路线：}使用母数据集 Gowalla 与 Foursquare 进行训练与评估，侧重验证“时间分槽 + 双向转移 + 动态图”在通用 Next POI 场景下的有效性\cite{liu2025tspm}。\\
-\textbf{GA-LLM路线：}使用城市/区域子集 NYC、TKY、CA，其中 NYC（New York City, United States）与 TKY（Tokyo, Japan）由 Foursquare 按城市切分得到，CA（California, United States）由 Gowalla 按区域切分得到；其时间范围分别继承对应母数据集的原始时间跨度\cite{LLM4POI,liu2026gallm}。该设置主要用于评估大模型在“跨城市分布差异、长尾与地理泛化”条件下的表现。
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}TSPM路线：}使用母数据集 Gowalla 与 Foursquare 进行训练与评估，侧重验证“时间分槽 + 双向转移 + 动态图”在通用 Next POI 场景下的有效性。\\
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}GA-LLM路线：}使用城市/区域子集 NYC、TKY、CA，其中 NYC（New York City, United States）与 TKY（Tokyo, Japan）由 Foursquare 按城市切分得到，CA（California, United States）由 Gowalla 按区域切分得到；其时间范围分别继承对应母数据集的原始时间跨度\cite{LLM4POI}。该设置主要用于评估大模型在“跨城市分布差异、长尾与地理泛化”条件下的表现。
 
 预处理遵循统一 Next POI 协议：过滤签到次数少于10的用户与POI、按时间排序构造轨迹，并采用时间顺序的 80\%/10\%/10\% 训练-验证-测试划分，避免信息泄露\cite{LLM4POI,GETNext,STHGCN}。
 
@@ -30,7 +30,7 @@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{GA-LLM实验数据集统计}
+    \bitablecaption{GA-LLM实验数据集统计}{Statistics of datasets used in GA-LLM experiments.}
     \label{tab:c4-datasets-icde}
     \begin{tabular}{lcccc}
         \toprule
@@ -60,7 +60,7 @@
 \hphantom{式中：}\symline{$rank_i$}{第 $i$ 个样本中真实POI的排名位置；\\}
 \hphantom{式中：}\symline{$\mathbb{I}(rank_i\le k)$}{是否命中Top-$k$的指示函数；\\}
 \hphantom{式中：}\symline{$\frac{1}{rank_i}$}{该样本的倒数排名得分。\\}
-NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@5 评估前五候选排序质量，以适配生成式推荐的输出机制\cite{liu2026gallm}。
+NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@5 评估前五候选排序质量，以适配生成式推荐的输出机制。
 需要说明的是：传统基线按全候选列表报告标准 MRR；GA-LLM 路线按生成式输出口径报告 MRR@5。为保证比较公平，本文在对应表格中显式标注指标口径，不将二者混写为同一指标。
 
 \topichead{统计显著性与稳健性}
@@ -69,14 +69,14 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \subsection{对比方法与分组}
 基线分为三组：
 \begin{enumerate}
-    \item \textbf{序列方法}：FPMC、PRME、LSTM、ST-RNN、STAN 等\cite{FPMC,PRME,LSTM,ST-RNN,STAN};
-    \item \textbf{图与时空方法}：STGCN、GETNext、MTNet、STHGCN、ROTAN、Graph-Flashback 等\cite{GETNext,STHGCN,MTNet,ROTAN,GraphFlashback};
-    \item \textbf{LLM方法}：LLM4POI、E4SRec 与本文GA-LLM\cite{LLM4POI,E4SRec,liu2026gallm}。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}序列方法：}FPMC、PRME、LSTM、ST-RNN、STAN 等\cite{FPMC,PRME,LSTM,ST-RNN,STAN};
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}图与时空方法：}STGCN、GETNext、MTNet、STHGCN、ROTAN、Graph-Flashback 等\cite{GETNext,STHGCN,MTNet,ROTAN,GraphFlashback};
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}LLM方法：}LLM4POI、E4SRec 与本文GA-LLM\cite{LLM4POI,E4SRec}。
 \end{enumerate}
 主比较对象分别为TSPM与GA-LLM主模型；小模型与大模型分支结果分别用于回答RQ2与RQ3。
 
 \subsection{实现细节与统计检验}
-训练阶段采用两阶段策略：先对齐后协同；LLM侧使用LoRA进行参数高效微调。核心设置为：学习率 $2\times10^{-5}$、warm-up 20 steps、batch size=1/GPU、最大长度32768、训练3 epochs、Quadkey层级$L=25$。小模型侧延续TSPM已验证的训练协议\cite{liu2025tspm}。每组实验重复多次并报告平均结果；显著性分析用于验证相对提升的稳定性。
+训练阶段采用两阶段策略：先对齐后协同；LLM侧使用LoRA进行参数高效微调。核心设置为：学习率 $2\times10^{-5}$、warm-up 20 steps、batch size=1/GPU、最大长度32768、训练3 epochs、Quadkey层级$L=25$。小模型侧采用第\ref{chap:method}章给出的统一训练协议。每组实验重复多次并报告平均结果；显著性分析用于验证相对提升的稳定性。
 
 \topichead{超参数搜索范围}
 本文对关键超参数采用分层搜索：先粗粒度确定可行区间，再细粒度搜索最优点。重点搜索参数包括时间槽数量、beam size、输出Top-$K$规模、负采样比例、LoRA秩与学习率。该流程保证“模型改进来源于机制设计”而非超参数偶然命中。
@@ -86,12 +86,12 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \section{主结果：双路线模型与基线对比（RQ1）}
 \subsection{小模型路线主结果}
-表~\ref{tab:tspm-main} 展示了TSPM在Gowalla与Foursquare上的核心结果\cite{liu2025tspm}。可见 TSPM 相较代表性序列/图基线取得稳定增益，说明时间增强与双向转移设计有效。
+表~\ref{tab:tspm-main} 展示了TSPM在Gowalla与Foursquare上的核心结果。可见 TSPM 相较代表性序列/图基线取得稳定增益，说明时间增强与双向转移设计有效。
 以最强基线 Graph-Flashback 为参照，TSPM 在 Gowalla 上取得 \redbf{Acc@1 +5.49\%}、\bluebf{MRR +3.59\%}；在 Foursquare 上取得 \redbf{Acc@1 +4.53\%}、\bluebf{MRR +3.99\%}。这说明改进不仅提升“是否命中”，也提升“命中的排序位置”。
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{TSPM与基线在Gowalla/Foursquare上的结果}
+    \bitablecaption{TSPM与基线在Gowalla/Foursquare上的结果（相对最强非本文基线的提升经 paired t-test 检验达到显著水平，$p<0.05$）}{Results of TSPM and baselines on Gowalla and Foursquare (improvements over the strongest non-ours baseline are significant under paired t-test, $p<0.05$).}
     \label{tab:tspm-main}
         \resizebox{\textwidth}{!}{
         \begin{tabular}{lcccccccc}
@@ -118,12 +118,12 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \end{table}
 
 \subsection{大模型路线主结果}
-表\ref{tab:c4-gallm-main}展示GA-LLM在NYC/TKY/CA上的主结果\cite{liu2026gallm}。相较于传统模型、图模型以及文本LLM基线，GA-LLM在三座城市均获得最优Acc@1/Acc@5/MRR@5，说明“地理注入+转移对齐”对LLM路线是稳定有效的。
+表\ref{tab:c4-gallm-main}展示GA-LLM在NYC/TKY/CA上的主结果。相较于传统模型、图模型以及文本LLM基线，GA-LLM在三座城市均获得最优Acc@1/Acc@5/MRR@5，说明“地理注入+转移对齐”对LLM路线是稳定有效的。
 相对最强非GA基线，GA-LLM 在三城的 Acc@1 提升分别为 \redbf{18.27\%（NYC）}、\redbf{14.73\%（TKY）}、\redbf{16.69\%（CA）}；Acc@5 提升最高达到 \bluebf{24.10\%（CA）}。
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{GA-LLM在NYC、TKY、CA上的主结果（最佳加粗，次优下划线）}
+    \bitablecaption{GA-LLM在NYC、TKY、CA上的主结果（最佳加粗，次优下划线；相对最强非本文基线的提升经 paired t-test 检验达到显著水平，$p<0.05$）}{Main results of GA-LLM on NYC, TKY, and CA (best in bold, second-best underlined; improvements over the strongest non-ours baseline are significant under paired t-test, $p<0.05$).}
     \label{tab:c4-gallm-main}
         \resizebox{\textwidth}{!}{
         \begin{tabular}{lccccccccc}
@@ -155,7 +155,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 表\ref{tab:c4-gallm-main}最后一行已汇总GA-LLM相对最强非GA基线的提升比例。三个城市在Acc@1、Acc@5、MRR@5上均为正增益，说明提升不是偶然点状收益，而是跨数据分布的稳定趋势。
 
 \subsection{代表性差值抽样分析}
-为避免“超大差值表”影响阅读，本文仅抽取代表性对照做细化分析。对于 GA-LLM（见表\ref{tab:c4-gallm-main}）：在 NYC 上相对最强图基线 ROTAN 的 Acc@1 绝对差值为 \redbf{+0.0882}（0.3988 vs 0.3106）；在 TKY 上相对最强图基线 STHGCN 的差值为 \bluebf{+0.0532}（0.3482 vs 0.2950）；在 CA 上相对 LLM4POI 的差值为 \redbf{+0.0501}（0.2566 vs 0.2065）。这三组对照说明 GA-LLM 的优势同时覆盖“图基线强项场景”和“文本LLM场景”。
+本文仅抽取代表性对照做细化分析。对于 GA-LLM（见表\ref{tab:c4-gallm-main}）：在 NYC 上相对最强图基线 ROTAN 的 Acc@1 绝对差值为 \redbf{+0.0882}（0.3988 vs 0.3106）；在 TKY 上相对最强图基线 STHGCN 的差值为 \bluebf{+0.0532}（0.3482 vs 0.2950）；在 CA 上相对 LLM4POI 的差值为 \redbf{+0.0501}（0.2566 vs 0.2065）。这三组对照说明 GA-LLM 的优势同时覆盖“图基线强项场景”和“文本LLM场景”。
 
 对于 TSPM（见表\ref{tab:tspm-main}）：在 Gowalla 上相对最强基线 Graph-Flashback 的 Acc@1 绝对差值为 \bluebf{+0.0083}（0.1595 vs 0.1512），对应 MRR 差值 \bluebf{+0.0087}（0.2509 vs 0.2422）；在 Foursquare 上对应差值为 \bluebf{+0.0127}（Acc@1）与 \bluebf{+0.0165}（MRR）。该结果表明 TSPM 在强基线条件下依然维持稳定正增益，且改进主要体现在“头部命中与排序质量同步提升”。
 
@@ -171,7 +171,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{TSPM消融实验（Gowalla）}
+    \bitablecaption{TSPM消融实验（Gowalla）}{Ablation study of TSPM on Gowalla.}
     \label{tab:ablation}
     \begin{tabular}{lcccc}
         \toprule
@@ -188,19 +188,13 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 该表揭示了两点：第一，TSDG负责将时段异质信息显式结构化，去除后整体能力下降最明显；第二，双向转移建模虽增益幅度略小，但对MRR影响更敏感，说明其在“正确候选前置”上更关键。
 进一步按 Acc@1 计算相对提升：完整 TSPM 相比 \textit{w/o TSDG} 为 \redbf{+1.40\%}（0.1595 vs 0.1573），相比 \textit{w/o BTM} 为 \bluebf{+0.50\%}（0.1595 vs 0.1587）。这说明 TSDG 是主增益来源，BTM 是稳定排序质量的补充增益来源。
 
-\subsubsection{时间槽粒度与序列窗口分析}
-为评估时间增强建模鲁棒性，本文比较不同时间槽粒度下的表现。观察到当时间槽数量过少时，模型无法区分早晚高峰与夜间活动差异；当时间槽过多时，样本稀疏导致参数学习不稳定。历史窗口分析同样显示，中等窗口长度在“有效上下文”与“噪声抑制”之间更平衡，这与第\ref{chap:method}章TiRNN设计动机一致。
-
-\subsubsection{负采样策略对比}
-在相同训练预算下，困难负样本策略通常优于纯随机负样本，尤其在 Acc@1 和 MRR 上更明显。这说明 Next POI 任务的核心难点并非“远离真实点的简单区分”，而是“近邻候选之间的细粒度排序”。
-
 \subsection{大模型分支消融与诊断（RQ3）}
 \subsubsection{GCIM与PAM模块消融}
 表\ref{tab:c4-gallm-ablation}展示GA-LLM在三个数据集上的消融结果。去除GCIM带来最大性能回落，说明地理表示建模是LLM路线的基础；去除PAM同样造成稳定下降，说明转移先验注入不可或缺。
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{GA-LLM消融实验（Acc@1）}
+    \bitablecaption{GA-LLM消融实验（Acc@1）}{Ablation study of GA-LLM (Acc@1).}
     \label{tab:c4-gallm-ablation}
     \begin{tabular}{lccc}
         \toprule
@@ -223,7 +217,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{GCIM内部消融（Acc@1）}
+    \bitablecaption{GCIM内部消融（Acc@1）}{Internal ablation of GCIM (Acc@1).}
     \label{tab:c4-gcim-inner-ablation}
     \begin{tabular}{lcc}
         \toprule
@@ -242,7 +236,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{GCIM关键超参数实验：n-gram深度与Quadkey层级}
+    \bitablecaption{GCIM关键超参数实验：n-gram深度与Quadkey层级}{Key hyperparameter study of GCIM: n-gram depth and Quadkey level.}
     \label{tab:c4-gcim-hparam}
     \begin{tabular}{lcccccc}
         \toprule
@@ -265,7 +259,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig4_coor_analysis.pdf}
-    \caption{坐标注入方案对比分析。}
+    \bicaption{坐标注入方案对比分析。}{Comparison of coordinate injection strategies.}
     \label{fig:c4-coor}
 \end{figure}
 
@@ -278,7 +272,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig5_distance_analysis.pdf}
-    \caption{不同模型配置下的地理距离误差分布分析。}
+    \bicaption{不同模型配置下的地理距离误差分布分析。}{Distribution analysis of geographic distance errors under different model configurations.}
     \label{fig:c4-distance}
 \end{figure}
 
@@ -291,7 +285,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig6_average_distance_analysis.pdf}
-    \caption{平均地理误差距离对比。}
+    \bicaption{平均地理误差距离对比。}{Comparison of mean geographic error distance.}
     \label{fig:c4-avg-distance}
 \end{figure}
 
@@ -306,7 +300,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{跨城冷启动结果：LLM4POI与GA-LLM \textit{w/o PAM}（Acc@1）}
+    \bitablecaption{跨城冷启动结果：LLM4POI与GA-LLM \textit{w/o PAM}（Acc@1）}{Cross-city cold-start results: LLM4POI vs. GA-LLM \textit{w/o PAM} (Acc@1).}
     \label{tab:c4-cross-city}
     \begin{tabular}{llccc}
         \toprule
@@ -331,7 +325,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig7_pam_analysis.pdf}
-    \caption{PAM模块作用分析。}
+    \bicaption{PAM模块作用分析。}{Analysis of the PAM module effect.}
     \label{fig:c4-pam}
 \end{figure}
 
@@ -345,7 +339,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{POI表示方式对比：token策略与PAM策略（Acc@1）}
+    \bitablecaption{POI表示方式对比：token策略与PAM策略（Acc@1）}{Comparison of POI representation methods: token strategy vs. PAM strategy (Acc@1).}
     \label{tab:c4-token-pam}
     \begin{tabular}{lcc}
         \toprule
@@ -362,7 +356,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{不同POI嵌入来源在PAM中的表现（NYC）}
+    \bitablecaption{不同POI嵌入来源在PAM中的表现（NYC）}{Performance of different POI embedding sources in PAM (NYC).}
     \label{tab:c4-pam-embedding-source}
     \begin{tabular}{lcc}
         \toprule
@@ -385,7 +379,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig8_efficiency_study.pdf}
-    \caption{效率与资源开销对比分析。}
+    \bicaption{效率与资源开销对比分析。}{Comparison of efficiency and resource overhead.}
     \label{fig:c4-efficiency}
 \end{figure}
 
@@ -399,7 +393,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{效率研究关键结论汇总（定性+已报告趋势）}
+    \bitablecaption{效率研究关键结论汇总（定性+已报告趋势）}{Summary of key findings in efficiency study (qualitative trends with reported observations).}
     \label{tab:c4-eff-summary}
     \begin{tabular}{P{0.20\textwidth}P{0.34\textwidth}P{0.34\textwidth}}
         \toprule
@@ -418,7 +412,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{模型规模与POI骨干组合实验（NYC）}
+    \bitablecaption{模型规模与POI骨干组合实验（NYC）}{Experiments on model scale and POI backbone combinations (NYC).}
     \label{tab:c4-llm-scale}
     \begin{tabular}{lccc}
         \toprule
@@ -442,7 +436,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 \begin{table}[htbp]
     \tblstyle
-    \caption{训练策略对比（NYC）}
+    \bitablecaption{训练策略对比（NYC）}{Comparison of training strategies (NYC).}
     \label{tab:c4-train-strategy}
     \begin{tabular}{lcc}
         \toprule
@@ -454,31 +448,8 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-\subsection{复杂度推断与工程化讨论（非主实验）}
-本节用于给出工程实现层面的复杂度推断，不作为本文主实验结论。围绕“轨迹长度变化”和“生成解码规模变化”两个维度，可得到如下经验性判断：随着轨迹长度增加，推理时延与显存占用通常稳定增长；随着 beam size 与 Top-$K$ 增大，时延增长通常更明显，符合“生成解码主导成本”的复杂度预期。该现象与第\ref{chap:method}章复杂度分析一致，可用于部署时的容量规划参考。
-
-\begin{table}[htbp]
-    \tblstyle
-    \caption{可扩展性补充实验的趋势总结}
-    \label{tab:c4-scalability-trend}
-    \begin{tabular}{P{0.24\textwidth}P{0.30\textwidth}P{0.36\textwidth}}
-        \toprule
-        变化维度 & 观测现象 & 启示 \\
-        \midrule
-        轨迹长度增大 & 推理时延、显存占用稳定上升 & 时延可通过截断策略与解码规模控制 \\
-        Beam size / Top-$K$增大 & 时延上升更明显，显存增幅相对平缓 & 在精度与时延之间做任务化折中配置 \\
-        稀疏区域样本增多 & 长尾样本波动增大 & 可通过PAM先验注入与样本补偿策略提升稳定性 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-在效率层面，GA-LLM路线通过LoRA降低可训练参数规模，通过结构化地理编码降低无效token开销。总体上，方法在精度提升与资源消耗之间保持了可接受折中，具备实际部署潜力。对于大规模城市数据，可进一步通过解码参数控制与缓存机制降低在线时延。
-
-\subsection{精度-效率折中讨论}
-实验表明，不同 beam size、Top-$K$ 输出规模与提示长度会改变精度与时延平衡。若业务场景对响应时延敏感，可减小 beam size 或 Top-$K$ 以换取更快响应；若场景以准确率为优先，可适当扩大解码分支并增强提示上下文。该可调性有助于模型在不同部署环境中落地。
-
-\subsection{部署建议}
-以下建议属于工程落地可选方案，不属于本文离线实验协议。本文给出三条可实施建议：
+\subsection{部署策略}
+以下内容属于工程落地可选方案，不属于本文离线实验协议。本文给出三条可实施策略：
 \begin{enumerate}
     \item 采用“GA-LLM直推 + 解码规模控制”的主链路，稳定输出并控制时延；
     \item 对热门区域建立缓存与增量更新机制，减少重复计算；

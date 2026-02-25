@@ -10,18 +10,16 @@
 \subsubsection{序列建模方法}
 FPMC~\cite{FPMC}、PRME~\cite{PRME} 等方法以“偏好建模 + 转移建模”为核心；ST-RNN~\cite{ST-RNN}、HST-LSTM~\cite{HST-LSTM}、LSTPM~\cite{LSTPM}、STAN~\cite{STAN} 将时空上下文与注意力机制引入序列编码；CLSPRec~\cite{CLSPRec}、FHCRec~\cite{FHCRec} 进一步通过对比学习提升稀疏场景鲁棒性。
 
-\textbf{局限与启示：}序列模型对局部行为刻画精细，但在时间异质性显式建模和跨用户高阶迁移利用上仍不足，提示本文需引入“时间分段建模 + 结构化转移先验”。
+\indent{\heiti\addCJKfontfeatures{AutoFakeBold=2}局限与启示：}序列模型对局部行为刻画精细，但在时间异质性显式建模和跨用户高阶迁移利用上仍不足，提示本文需引入“时间分段建模 + 结构化转移先验”。
 
-\topichead{进一步讨论}
-序列路线的另一个共性问题是对“远距离兴趣跳转”的解释不足。仅凭短期历史时，模型容易将预测压向高频近邻点，导致在跨区域通勤、目的性出行等场景中出现系统性偏差。这一现象提示我们：仅提升序列编码器深度并不能自然解决可达性与结构先验问题，仍需显式引入图结构或地理约束。
+\indent{\heiti\addCJKfontfeatures{AutoFakeBold=2}进一步讨论：}序列路线对“远距离兴趣跳转”的解释能力不足。仅凭短期历史时，模型容易偏向高频近邻点，在跨区域通勤与目的性出行场景中出现系统性偏差；因此，仅提升序列编码器深度并不能自然解决可达性与结构先验问题，仍需显式引入图结构或地理约束。
 
 \subsubsection{图建模方法}
 GETNext~\cite{GETNext}、GraphFlashback~\cite{GraphFlashback}、STHGCN~\cite{STHGCN}、SNPM~\cite{SNPM} 等方法通过POI图或异构图学习高阶关系，缓解稀疏监督问题；ROTAN~\cite{ROTAN}、MTNet~\cite{MTNet} 则强化时间动态建模。
 
-\textbf{局限与启示：}图方法在结构学习上表现突出，但动态图更新成本和异构信息融合复杂度较高，提示本文需在表达能力与可部署性之间做轻量平衡。
+\indent{\heiti\addCJKfontfeatures{AutoFakeBold=2}局限与启示：}图方法在结构学习上表现突出，但动态图更新成本和异构信息融合复杂度较高，提示本文需在表达能力与可部署性之间做轻量平衡。
 
-\topichead{进一步讨论}
-图路线通常依赖全局邻接关系学习高阶迁移，这一优势在数据充足时十分明显，但也带来两个工程问题：其一，动态图重构与邻居采样在大规模场景中开销较高；其二，图表示与语言语义空间缺乏天然对齐，导致与LLM协作时存在“信息可用但难注入”的鸿沟。本文后续PAM模块即针对第二个问题给出对齐路径。
+\indent{\heiti\addCJKfontfeatures{AutoFakeBold=2}进一步讨论：}图路线依赖全局邻接关系学习高阶迁移，在数据充足时优势明显，但存在两类工程问题：{\heiti\addCJKfontfeatures{AutoFakeBold=2}其一：}动态图重构与邻居采样在大规模场景中开销较高；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其二：}图表示与语言语义空间缺乏天然对齐，导致与LLM协作时出现“信息可用但难注入”的鸿沟。本文后续PAM模块即针对第二个问题给出对齐路径。
 
 \subsection{大模型路线综述：LLM驱动推荐}
 \subsubsection{LLM在推荐中的应用}
@@ -29,7 +27,7 @@ LLM推荐研究已从“直接提示预测”演化为多条并行技术路线�
 
 从建模粒度看，最新工作进一步从“单步生成答案”转向“分阶段推荐流程”。其中，一类方法将\textbf{召回-排序-解释}统一为共享生成接口，以减少模块割裂；另一类方法引入\textbf{外部记忆与检索}，在长尾物品和冷启动样本上补充证据链，抑制幻觉与不一致。总体上，前沿演化方向已经由“能不能生成”转向“生成是否可控、可解释、可部署”。
 
-对本研究问题而言，上述进展提供了三点直接启示：其一，仅依赖自然语言提示难以稳定承载结构迁移先验；其二，表示对齐应覆盖“ID语义-行为图结构-上下文意图”三类信息；其三，推理过程需要可回溯，以支持后续误差归因与工程调参。这些认识为后文方法章节的模块化设计提供了相关工作层面的依据。
+对本研究问题而言，上述进展提供了三点直接启示：{\heiti\addCJKfontfeatures{AutoFakeBold=2}其一：}仅依赖自然语言提示难以稳定承载结构迁移先验；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其二：}表示对齐应覆盖“ID语义-行为图结构-上下文意图”三类信息；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其三：}方法设计需同步考虑推理效率与部署可控性，避免因复杂推理链带来时延与稳定性波动。这些认识为后文方法章节的模块化设计提供了相关工作层面的依据。
 
 \subsubsection{LLM在Next POI中的进展}
 在Next POI方向，LLM4POI~\cite{LLM4POI} 首先验证了将轨迹预测转化为生成任务的可行性；SeCor~\cite{SeCor} 通过语义-协同表示对齐改进时空序列预测质量；Geo-LLMRec~\cite{wang2024georecllm} 与 POI-LLM基准研究~\cite{zheng2024poillm} 进一步揭示了地理一致性不足、远跳误差偏高与空间幻觉等核心瓶颈。
@@ -38,18 +36,18 @@ LLM推荐研究已从“直接提示预测”演化为多条并行技术路线�
 
 整体上看，LLM驱动的Next POI研究正在经历从“生成可行性验证”到“可控生成与鲁棒部署”的阶段转换。这一趋势也说明：面向真实城市场景，方法评估不能只看命中率，还应同步关注地理误差、跨时段稳定性与推理时延等工程指标。
 
-\subsubsection{标识构造、语义对齐与受约束生成}
-近期工作可概括为“标识构造-语义对齐-受约束生成”三阶段。其一，在标识构造层，P5~\cite{p5recsys2022} 将推荐任务统一为语言生成范式，CID~\cite{cid2023} 进一步讨论了不同Item ID编码方式对可学习性的影响。其二，在语义对齐层，CLLM4Rec~\cite{cllm4rec2024www}、A-LLMRec~\cite{allmrec2024kdd} 与 IDGenRec~\cite{idgenrec2024sigir} 通过协同信号对齐缓解“ID空间-语言空间”错位。其三，在生成阶段，TALLRec~\cite{tallrec2023}、GenRec~\cite{genrec2023} 与 Tiger~\cite{tiger2023neurips} 强调受约束或可校验生成，以降低非法ID输出与语义漂移。
+\subsubsection{ID构造、语义对齐与受约束生成}
+近期工作可概括为“ID构造-语义对齐-受约束生成”三阶段。{\heiti\addCJKfontfeatures{AutoFakeBold=2}其一：}在ID构造层，P5~\cite{p5recsys2022} 将推荐任务统一为语言生成范式，CID~\cite{cid2023} 进一步讨论了不同Item ID编码方式对可学习性的影响。{\heiti\addCJKfontfeatures{AutoFakeBold=2}其二：}在语义对齐层，CLLM4Rec~\cite{cllm4rec2024www}、A-LLMRec~\cite{allmrec2024kdd} 与 IDGenRec~\cite{idgenrec2024sigir} 通过协同信号对齐缓解“ID空间-语言空间”错位。{\heiti\addCJKfontfeatures{AutoFakeBold=2}其三：}在生成阶段，TALLRec~\cite{tallrec2023}、GenRec~\cite{genrec2023} 与 Tiger~\cite{tiger2023neurips} 强调受约束或可校验生成，以降低非法ID输出与语义漂移。
 
 对Next POI任务而言，这一主线具有直接启发：POI本质是带地理语义的Item ID，若仅把POI当作普通文本token处理，会放大空间不连续和转移先验缺失问题；因此需要在“ID层可表达、语义层可对齐、解码层可约束”三个环节同时设计，这也是本文GCIM与PAM协同建模的理论依据之一。
 
-\textbf{局限与启示：}现有LLM方案普遍面临坐标语义稀疏、空间连续性不足和转移先验注入弱的问题，说明Next POI场景需要“结构先验 + 语义推理”的协同机制，而非纯文本提示。
+\indent{\heiti\addCJKfontfeatures{AutoFakeBold=2}局限与启示：}现有LLM方案普遍面临坐标语义稀疏、空间连续性不足和转移先验注入弱的问题，说明Next POI场景需要“结构先验 + 语义推理”的协同机制，而非纯文本提示。
 
 \subsubsection{小结性对比}
 为更清晰地展示三类方法的能力边界，表\ref{tab:c2-compare}给出总结性比较。
 \begin{table}[htbp]
     \cTwoTblStyle
-    \caption{序列、图与LLM路线能力边界对比}
+    \bitablecaption{序列、图与LLM路线能力边界对比}{Capability boundary comparison among sequential, graph-based, and LLM-based routes.}
     \label{tab:c2-compare}
     \begin{tabular}{p{0.13\textwidth}p{0.25\textwidth}p{0.25\textwidth}p{0.29\textwidth}}
         \toprule
@@ -66,12 +64,12 @@ LLM推荐研究已从“直接提示预测”演化为多条并行技术路线�
 随着生成式推荐的发展，研究重点已从“把推荐写成文本生成”逐步转向“提升生成过程的可控性与可诊断性”。这一路线强调：在复杂推荐任务中，仅靠隐式注意力难以稳定地执行约束推断，显式推理链、检索增强与结构对齐是常见改进方向。
 
 \subsubsection{从指令调优到统一生成框架}
-近年来，LLM推荐研究在范式上呈现三步演化。第一步是将推荐任务指令化并进行参数高效微调，如 InstructRec~\cite{li2023instructrec}、RecGPT~\cite{hou2024recgpt}、TALLRec~\cite{tallrec2023} 与 Chat-REC~\cite{bao2023chatrec}。第二步是将召回、排序与解释统一到单一生成框架，如 LLMRec~\cite{LLMRec}、CoLLM~\cite{CoLLM}、CLLM4Rec~\cite{cllm4rec2024www} 与 CoRAL~\cite{CoRAL}。第三步是在统一框架中加入外部检索、协同对齐与结构先验以缓解幻觉和不一致，如 ReLLa~\cite{ReLLa}、IDGenRec~\cite{idgenrec2024sigir} 与 LLaRA~\cite{LLaRA}。围绕该路线，也出现了排序增强、记忆增强与提示优化等工作，例如 LLMRank~\cite{lin2024llmrank}、MEMO~\cite{fan2024memo}、PromptRec~\cite{sun2024promptrec} 与 RAG增强推荐\cite{wu2024ragrec}，并催生了更系统的综述研究\cite{gao2023llm4rs,lin2024genrecsurvey,zhang2024llmrecsurvey,chen2024rsfm}。
+近年来，LLM推荐研究在范式上呈现分阶段演化：{\heiti\addCJKfontfeatures{AutoFakeBold=2}第一步：}将推荐任务指令化并进行参数高效微调，如 InstructRec~\cite{li2023instructrec}、RecGPT~\cite{hou2024recgpt}、TALLRec~\cite{tallrec2023} 与 Chat-REC~\cite{bao2023chatrec}；{\heiti\addCJKfontfeatures{AutoFakeBold=2}第二步：}将召回、排序与解释统一到单一生成框架，如 LLMRec~\cite{LLMRec}、CoLLM~\cite{CoLLM}、CLLM4Rec~\cite{cllm4rec2024www} 与 CoRAL~\cite{CoRAL}；{\heiti\addCJKfontfeatures{AutoFakeBold=2}第三步：}在统一框架中加入外部检索、协同对齐与结构先验以缓解幻觉和不一致，如 ReLLa~\cite{ReLLa}、IDGenRec~\cite{idgenrec2024sigir} 与 LLaRA~\cite{LLaRA}；{\heiti\addCJKfontfeatures{AutoFakeBold=2}第四步：}围绕上述主线进一步形成排序增强、记忆增强与提示优化等工具化实践，例如 LLMRank~\cite{lin2024llmrank}、MEMO~\cite{fan2024memo}、PromptRec~\cite{sun2024promptrec} 与 RAG增强推荐\cite{wu2024ragrec}，并催生了更系统的综述研究\cite{gao2023llm4rs,lin2024genrecsurvey,zhang2024llmrecsurvey,chen2024rsfm}。
 
 \subsubsection{显式推理范式进展}
 与“直接生成答案”不同，显式推理范式强调中间决策轨迹，例如候选过滤、约束检查、理由归纳与自我校验。代表性工作显示，将可追溯推理过程纳入推荐推断有助于提升一致性与可解释性\cite{qu2024onerec,qu2024onerecthink,wu2024thinkrec,yao2024agent4rec,xu2024hybridrec}。这类方法的共同点是：模型不只输出最终推荐，还输出可追溯的中间依据，从而降低“结果可用但难解释”的工程风险。
 
-对Next POI任务而言，显式推理的价值主要在三点：其一，可将“距离可达性、时段约束、历史路径方向”显式纳入决策；其二，可将结构先验作为推理证据而非黑盒隐变量；其三，可在错误分析中定位到底是语义误判还是约束违背。本文借鉴其“可控与可诊断”思想，但不引入候选过滤链、在线约束校验或自反思中间输出，而是通过 GCIM 与 PAM 在嵌入空间施加隐式一致性约束。
+对Next POI任务而言，显式推理的价值主要在三点：{\heiti\addCJKfontfeatures{AutoFakeBold=2}其一：}可将“距离可达性、时段约束、历史路径方向”显式纳入决策；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其二：}可将结构先验作为推理证据而非黑盒隐变量；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其三：}可在错误分析中定位到底是语义误判还是约束违背。本文借鉴其“可控与可诊断”思想，但不引入候选过滤链、在线约束校验或自反思中间输出，而是通过 GCIM 与 PAM 在嵌入空间施加隐式一致性约束。
 
 \subsubsection{与本文方法的关系}
 本文不直接复制通用 CoT 模板，而是采用“结构对齐 + 协同训练”的技术路线。原因在于：Next POI场景具有强时空约束与低时延要求，若直接引入冗长推理链，可能带来明显时延与鲁棒性波动。相比之下，本文将约束能力压缩到“可学习对齐模块 + 统一生成目标”，并保持推理阶段 GA-LLM 单路输出，不采用 constrained decoding、logit mask 或在线重排序。
@@ -92,8 +90,8 @@ LLM推荐研究已从“直接提示预测”演化为多条并行技术路线�
 x_i=(u,\ell_i,t_i,g_i,c_i),
 \label{eq:c2-checkin}
 \end{equation}
-式中：\symline{$u$}{用户标识；\\}
-\hphantom{式中：}\symline{$\ell_i$}{第 $i$ 次签到对应的POI标识；\\}
+式中：\symline{$u$}{用户ID；\\}
+\hphantom{式中：}\symline{$\ell_i$}{第 $i$ 次签到对应的POI ID；\\}
 \hphantom{式中：}\symline{$t_i$}{签到时间戳；\\}
 \hphantom{式中：}\symline{$g_i=(lat_i,lon_i)$}{经纬度坐标；\\}
 \hphantom{式中：}\symline{$c_i$}{POI类别语义标签。}
@@ -120,7 +118,7 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{P},
 为减少后续章节符号歧义，表\ref{tab:c2-notation}给出本文高频符号及含义。
 \begin{table}[htbp]
     \cTwoTblStyle
-    \caption{核心符号说明}
+    \bitablecaption{核心符号说明}{Description of core notations.}
     \label{tab:c2-notation}
     \begin{tabular}{p{0.30\textwidth}p{0.62\textwidth}}
         \toprule
@@ -142,12 +140,12 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{P},
 \subsection{任务边界与建模假设}
 为保证论证聚焦，本文采用如下假设与边界设置：
 \begin{enumerate}
-    \item \textbf{时间先验可用}：训练与测试数据均包含可解析时间戳，且可划分为统一时段；
-    \item \textbf{地理信息可用}：POI具备经纬度坐标，允许构建地理约束与距离相关特征；
-    \item \textbf{用户历史可观测}：每个测试样本至少存在最小历史长度，以支持序列建模；
-    \item \textbf{离线评估优先}：本文主实验聚焦离线Top-$K$评估，不直接讨论在线A/B系统收益。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}时间先验可用：}训练与测试数据均包含可解析时间戳，且可划分为统一时段；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}地理信息可用：}POI具备经纬度坐标，允许构建地理约束与距离相关特征；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}用户历史可观测：}每个测试样本至少存在最小历史长度，以支持序列建模；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}离线评估优先：}本文主实验聚焦离线Top-$K$评估，不直接讨论在线A/B系统收益。
 \end{enumerate}
-这些边界并不削弱问题价值，而是用于保证比较公平与可复现。对超出边界的场景（如极短轨迹、无坐标、实时概念漂移），将在第\ref{chap:conclusion}章与附录中讨论可能扩展路径。
+这些边界并不削弱问题价值，而是用于保证比较公平与可复现。对超出边界的场景（如极短轨迹、无坐标、实时概念漂移），将在第\ref{chap:exp}章“效率与可扩展性分析（RQ5）”中的工程化讨论，以及第\ref{chap:conclusion}章“研究不足”与“研究展望”中给出扩展路径。
 
 \subsection{评价指标与实验协议说明}
 本文采用 Acc@K、MRR 与 NDCG@K 评价排序质量，对应公式定义为：
@@ -191,16 +189,16 @@ NDCG@K对前排命中赋予更高权重。Acc@K反映命中能力，MRR强调首
 \section{研究空白与本文建模原则}
 基于上述综述，本文将研究空白归纳为以下三点：
 \begin{enumerate}
-    \item \textbf{Gap-1：} 小模型强结构、弱语义，难以覆盖复杂意图表达与跨场景泛化；
-    \item \textbf{Gap-2：} 大模型强语义、弱空间，难以稳定保持地理连续性与可达性约束；
-    \item \textbf{Gap-3：} 缺少面向工程部署的统一协同训练方案，难以兼顾效果与成本。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}Gap-1：} 小模型强结构、弱语义，难以覆盖复杂意图表达与跨场景泛化；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}Gap-2：} 大模型强语义、弱空间，难以稳定保持地理连续性与可达性约束；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}Gap-3：} 缺少面向工程部署的统一协同训练方案，难以兼顾效果与成本。
 \end{enumerate}
 
 据此提出本文的建模原则：
 \begin{enumerate}
-    \item \textbf{DP-1（结构先验显式化）：} 在小模型侧显式建模时间异质性与双向转移关系；
-    \item \textbf{DP-2（空间语义对齐）：} 在大模型侧引入地理编码与POI结构对齐模块；
-    \item \textbf{DP-3（协同训练可部署）：} 通过两阶段训练和参数高效微调实现稳定融合。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}DP-1（结构先验显式化）：} 在小模型侧显式建模时间异质性与双向转移关系；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}DP-2（空间语义对齐）：} 在大模型侧引入地理编码与POI结构对齐模块；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}DP-3（协同训练可部署）：} 通过两阶段训练和参数高效微调实现稳定融合。
 \end{enumerate}
 
 相应地，本文联合优化目标写为：

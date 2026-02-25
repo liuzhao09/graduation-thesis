@@ -14,19 +14,19 @@
 \section*{主要研究结论}
 围绕全文提出的RQ1--RQ5，本文可进一步总结如下：
 \begin{enumerate}
-    \item \textbf{关于总体有效性（RQ1）}：协同框架在主流评估指标上保持一致改进，说明“结构增强 + 语义增强”能够形成稳定增益，而非局部指标优化；
-    \item \textbf{关于小模型机制（RQ2）}：时间增强序列动态图、双向转移与动态图权重均具有独立贡献，证明小模型分支对时空规律的建模不是单模块偶然收益；
-    \item \textbf{关于大模型机制（RQ3）}：GCIM有效缓解空间错位，PAM有效增强转移先验注入，二者联合时在冷启动与跨城场景更稳健；
-    \item \textbf{关于协同机理（RQ4）}：协同模型在远跳错误与语义误判上有针对性改善，体现出结构约束对语义偏差的校正作用；
-    \item \textbf{关于效率部署（RQ5）}：借助LoRA与模块化设计，模型在保持性能增益的同时控制了训练与推理开销，具备工程落地可行性。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}关于总体有效性（RQ1）：}协同框架在主流评估指标上保持一致改进，说明“结构增强 + 语义增强”能够形成稳定增益，而非局部指标优化；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}关于小模型机制（RQ2）：}时间增强序列动态图、双向转移与动态图权重均具有独立贡献，证明小模型分支对时空规律的建模不是单模块偶然收益；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}关于大模型机制（RQ3）：}GCIM有效缓解空间错位，PAM有效增强转移先验注入，二者联合时在冷启动与跨城场景更稳健；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}关于协同机理（RQ4）：}协同模型在远跳错误与语义误判上有针对性改善，体现出结构约束对语义偏差的校正作用；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}关于效率部署（RQ5）：}借助LoRA与模块化设计，模型在保持性能增益的同时控制了训练与推理开销，具备工程落地可行性。
 \end{enumerate}
 
 \section*{创新点归纳}
 从方法与实证两方面看，本文创新性体现在以下三个维度：
 \begin{enumerate}
-    \item \textbf{问题层创新}：将Next POI任务中的“结构信息难注入LLM”问题显式化，并以协同框架而非单模型增强作为核心解法；
-    \item \textbf{方法层创新}：提出GCIM与PAM两条互补注入路径，实现地理连续性与POI先验在语义空间中的可学习表达；
-    \item \textbf{验证层创新}：构建按RQ组织的证据闭环，覆盖主结果、消融、诊断、效率与威胁分析，提升结论可信度与可解释性。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}问题层创新：}将Next POI任务中的“结构信息难注入LLM”问题显式化，并以协同框架而非单模型增强作为核心解法；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}方法层创新：}提出GCIM与PAM两条互补注入路径，实现地理连续性与POI先验在语义空间中的可学习表达；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}验证层创新：}构建按RQ组织的证据闭环，覆盖主结果、消融、诊断、效率与威胁分析，提升结论可信度与可解释性。
 \end{enumerate}
 
 \section*{研究不足}
