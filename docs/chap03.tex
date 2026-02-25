@@ -1,6 +1,7 @@
 \chapter{大小模型协同学习方法}
 \label{chap:method}
 \newcommand{\cThreeTblStyle}{\centering\zihao{5}\songti\rmfamily\setlength{\tabcolsep}{4.8pt}\renewcommand{\arraystretch}{1.15}}
+\newcommand{\YesMark}{\ding{51}}
 
 \section{本章引言}
 基于第\ref{chap:related}章给出的研究空白与建模原则，本章给出本文方法的完整实现方案，重点回答“整体框架如何搭建、关键模块如何工作、训练与推理如何落地”三个问题。为保证论证清晰，本章按小模型分支、大模型分支和协同训练策略依次展开，并将每个模块与对应研究问题（RQ）建立映射关系，从而为第\ref{chap:exp}章的实验验证提供可追溯的机制假设。本文方法综合继承了时间增强序列预测模型（Time-enhanced Sequential Prediction Model, TSPM）与地理感知大语言模型（Geography-Aware Large Language Model, GA-LLM）系列相关工作的有效设计思想\cite{liu2025tspm,liu2026gallm}，并在毕业论文中统一为“双路线并行、训练协同、推理独立”的研究框架。
@@ -46,7 +47,27 @@
 
 \section{关键模块设计}
 \subsection{小模型分支：TSPM}
+\subsubsection{初始嵌入构建}
+TSPM分支首先构建可训练的POI初始表示，以保证后续时间分槽与动态图计算有稳定输入。本文采用“关系旋转表示 + 局部拓扑保持”的组合初始化：前者建模转移关系方向性，后者保持近邻几何结构。
+\begin{equation}
+\mathbf{e}^{(0)}_{t}\approx \mathbf{e}^{(0)}_{h}\circ \mathbf{r}_{(h,t)},
+\label{eq:c3-init-rotate}
+\end{equation}
+式中：\symline{$\mathbf{e}^{(0)}_{h},\mathbf{e}^{(0)}_{t}$}{初始阶段的头/尾POI向量；\\}
+\hphantom{式中：}\symline{$\mathbf{r}_{(h,t)}$}{POI转移关系向量；\\}
+\hphantom{式中：}\symline{$\circ$}{复向量旋转对应的逐元素组合运算。}
+
+\begin{equation}
+\mathbf{e}^{(0)}_{i}=\text{EigenMap}(\mathcal{N}(i)),
+\label{eq:c3-init-eigen}
+\end{equation}
+式中：\symline{$\mathbf{e}^{(0)}_{i}$}{POI $i$ 的拓扑保持初始化向量；\\}
+\hphantom{式中：}\symline{$\mathcal{N}(i)$}{POI $i$ 的局部邻接结构。}
+
+该初始化对应 TSPM 论文中的核心做法\cite{liu2025tspm}，其作用是减少“随机初始化导致的早期训练震荡”，并为后续 TSDG 的边权学习提供更平滑的优化起点。
+
 \subsubsection{时间增强序列动态图（TSDG）}
+TSDG 中的双向转移部分记为双向转移建模（Bidirectional Transformation Modeling, BTM）。其核心目标是同时学习“转出偏好”和“转入偏好”，与第\ref{chap:exp}章 \textit{w/o BTM} 消融设置一一对应。
 为刻画不同时段的迁移差异，将一天划分为 $z$ 个时间槽 $\{T_1,\ldots,T_z\}$，并在各时间槽内构建POI转移子图。对当前POI嵌入 $\mathbf{e}_i$ 与时间槽嵌入 $\mathbf{t}_i$，时间感知转出表示定义为：
 \begin{equation}
 \boldsymbol{\xi}^{out}_{i,T_i}=\sigma\left([\mathbf{e}_i\Vert \mathbf{t}_i]\mathbf{W}^{t}_{out}+\mathbf{b}^{t}_{out}\right),
@@ -188,7 +209,7 @@ TiRNN并非替代前述结构模块，而是作为“时序聚合终端”整合
 为避免“模块分开写、读者难以对齐图示”的问题，这里先按图\ref{fig:c3-framework}给出GA-LLM分支的完整数据流。图中右侧语义分支可拆解为四步：第一步，轨迹事件被组织为统一模板文本；第二步，GCIM将坐标字段编码为地理token并注入输入序列；第三步，PAM将结构侧POI表示映射为语义token并注入同一序列；第四步，LLM直接输出候选分布与Top-$K$结果。后续各小节均对应这四步中的一个关键环节，读者可直接对照图\ref{fig:c3-framework}中“语义流$\rightarrow$对齐$\rightarrow$输出”的路径理解实现细节。
 
 \subsubsection{GCIM：地理坐标注入模块}
-GCIM采用“层级离散 + 连续频域”双分支编码，其中连续频域分支定义为：
+GCIM采用“层级离散 + 连续频域”双分支编码。为与实验消融项保持一致，本文将连续频域分支记为连续空间编码（Continuous Spatial Encoding, CSE），将层级离散分支记为层级离散编码（Hierarchical Discrete Encoding, HDE）。其中，CSE定义为：
 \begin{equation}
 \mathbf{E}_{fourier}=\frac{1}{\sqrt{M}}\left[\cos(\mathbf{g}\mathbf{W}_s^\top)\,\Vert\,\sin(\mathbf{g}\mathbf{W}_s^\top)\right],
 \label{eq:c3-fourier}
@@ -206,6 +227,16 @@ GCIM采用“层级离散 + 连续频域”双分支编码，其中连续频域�
 式中：\symline{$\mathbf{E}_{gps}$}{最终地理编码；\\}
 \hphantom{式中：}\symline{$\mathbf{E}_{quad}$}{Quadkey层级编码；\\}
 \hphantom{式中：}\symline{$\mathbf{W}_{gps}$}{融合投影参数。}
+
+为进一步约束地理表示与真实测地距离的一致性，本文在训练阶段引入测地对齐损失（Geodesic Alignment Loss, GAL）：
+\begin{equation}
+\mathcal{L}_{geo}=\frac{1}{|\mathcal{P}|}\sum_{(i,j)\in\mathcal{P}}\left|\operatorname{dist}_{geo}(i,j)-\operatorname{dist}_{emb}(i,j)\right|,
+\label{eq:c3-lgeo}
+\end{equation}
+式中：\symline{$\mathcal{L}_{geo}$}{地理一致性损失，对应实验中的GAL项；\\}
+\hphantom{式中：}\symline{$\mathcal{P}$}{批内POI对集合；\\}
+\hphantom{式中：}\symline{$\operatorname{dist}_{geo}(i,j)$}{POI $i,j$ 的真实测地距离；\\}
+\hphantom{式中：}\symline{$\operatorname{dist}_{emb}(i,j)$}{编码空间中的距离。}
 
 针对第\ref{chap:intro}章图\ref{fig:c1-gcim-motivation}所示的空间错位问题，GCIM在实现层面通过Quadkey分支编码层级区域结构，通过Fourier分支编码连续距离变化，并在投影层完成统一融合。该设计使地理关系以结构化方式进入LLM输入空间，为后续地理一致性约束提供可优化的表示基础。
 对应图\ref{fig:c3-framework}，GCIM位于GA-LLM分支的输入侧，直接作用于轨迹事件中的坐标字段，其输出 $\mathbf{E}_{gps}$ 将作为后续结构化提示中的 \texttt{<GPS>} 语义载体，而不是在LLM输出后再做后处理。
@@ -278,6 +309,19 @@ Question: Which POI will user U\_104 visit next?\\[2pt]
 
 其中，\texttt{<GPS>} 由GCIM编码、\texttt{<POI>} 由PAM编码。该模板在训练与推理阶段字段一致，可有效降低提示分布漂移并提升生成稳定性。
 从图\ref{fig:c3-framework}的角度看，结构化提示就是把“GCIM地理编码结果”和“PAM对齐结果”在输入层做显式合并，使GA-LLM在同一上下文内同时读取地理约束与转移先验。
+
+\subsubsection{生成目标与解码策略}
+GA-LLM的训练目标为标准自回归负对数似然：
+\begin{equation}
+\mathcal{L}_{gen}=-\sum_{t=1}^{m}\log p(y_t\mid y_{<t},\mathbf{X}_{traj},\mathbf{E}_{gps},\mathbf{E}_{poi}),
+\label{eq:c3-lgen}
+\end{equation}
+式中：\symline{$y_t$}{第 $t$ 个生成token；\\}
+\hphantom{式中：}\symline{$\mathbf{X}_{traj}$}{轨迹文本序列输入；\\}
+\hphantom{式中：}\symline{$\mathbf{E}_{gps}$}{GCIM注入的地理表示；\\}
+\hphantom{式中：}\symline{$\mathbf{E}_{poi}$}{PAM注入的POI先验表示。}
+
+推理阶段采用 beam search 直接生成候选并输出 Top-$K$。本文保持与投稿论文一致的单路生成口径：\bluebf{不引入候选约束解码、不引入在线重排序、不引入TSPM推理打分}。这一定义确保方法叙述与实验实现完全一致\cite{liu2026gallm}。
 
 \subsubsection{模块到研究问题的对应关系}
 为保证“方法提出即有验证对象”，本文将核心模块与RQ映射如表\ref{tab:c3-rq-map}。
@@ -470,19 +514,19 @@ GCIM执行“坐标归一化--层级编码--频域编码--投影融合”；PAM�
 
 \begin{table}[htbp]
     \cThreeTblStyle
-    \caption{代表方法能力边界对照（“\\checkmark”表示具备主能力）}
+    \caption{代表方法能力边界对照（“\ding{51}”表示具备主能力）}
     \label{tab:c3-capability-compare}
     \begin{tabular}{P{0.18\textwidth}ccccc}
         \toprule
         方法 & 时间异质 & 地理连续 & 转移先验 & 跨城泛化 & 成本可控 \\
         \midrule
-        PRME / FPMC &  &  & \checkmark &  & \checkmark \\
-        ST-RNN / STAN & \checkmark &  &  &  & \checkmark \\
-        GETNext / STHGCN & \checkmark & \checkmark & \checkmark &  &  \\
-        LLM4POI &  &  &  & \checkmark &  \\
-        TSPM & \checkmark & \checkmark & \checkmark &  & \checkmark \\
-        GA-LLM & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
-        本文协同框架 & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+        PRME / FPMC &  &  & \YesMark &  & \YesMark \\
+        ST-RNN / STAN & \YesMark &  &  &  & \YesMark \\
+        GETNext / STHGCN & \YesMark & \YesMark & \YesMark &  &  \\
+        LLM4POI &  &  &  & \YesMark &  \\
+        TSPM & \YesMark & \YesMark & \YesMark &  & \YesMark \\
+        GA-LLM & \YesMark & \YesMark & \YesMark & \YesMark & \YesMark \\
+        本文协同框架 & \YesMark & \YesMark & \YesMark & \YesMark & \YesMark \\
         \bottomrule
     \end{tabular}
 \end{table}

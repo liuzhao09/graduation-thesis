@@ -4,6 +4,7 @@
 \usepackage[most]{tcolorbox}
 \usepackage{xcolor}
 \usepackage{array}
+\usepackage{pifont}
 
 \definecolor{KeyBorder}{HTML}{C73B2F}
 \definecolor{KeyBg}{HTML}{FFF8F5}
@@ -11,11 +12,14 @@
 \definecolor{PromptBorder}{HTML}{C9D3E4}
 \definecolor{TokBg}{HTML}{EAF3FF}
 \definecolor{TokText}{HTML}{1F4E8C}
+\definecolor{DataBlue}{HTML}{1F4E8C}
 
 \newcommand{\keytag}[1]{\textbf{\kaishu #1}}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcommand{\symline}[2]{#1——#2}
 \newcommand{\topichead}[1]{\par\medskip\noindent\textbf{\heiti #1}\par\noindent}
+\newcommand{\redbf}[1]{\textbf{\textcolor{red}{#1}}}
+\newcommand{\bluebf}[1]{\textbf{\textcolor{DataBlue}{#1}}}
 
 \newcommand{\tok}[1]{%
   \tcbox[

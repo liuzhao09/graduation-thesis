@@ -407,6 +407,16 @@ INPUT /usr/local/texlive/2025/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libr
 INPUT /usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibraryfadings.code.tex
 INPUT /usr/local/texlive/2025/texmf-dist/tex/generic/pgf/libraries/pgflibraryfadings.code.tex
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/tcolorbox/tcbposter.code.tex
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/pifont.sty
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/pifont.sty
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/upzd.fd
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/upzd.fd
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/upzd.fd
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/upsy.fd
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/upsy.fd
+INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/upsy.fd
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/symbol/psyr.tfm
 INPUT ./docs/info.tex
 INPUT ./docs/info.tex
 INPUT ./docs/info.tex
@@ -587,6 +597,7 @@ INPUT ./figures/Time_enhanced_right.pdf
 INPUT ./figures/Time_enhanced_right.pdf
 INPUT ./figures/TiRNN.pdf
 INPUT ./figures/TiRNN.pdf
+INPUT /usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm
 INPUT ./docs/chap04.tex
 INPUT ./docs/chap04.tex
 OUTPUT docs/chap04.aux
