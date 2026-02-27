@@ -430,6 +430,9 @@ INPUT docs/abstract.tex
 INPUT ./main.aux
 INPUT ./main.aux
 INPUT main.aux
+INPUT ./docs/abbr.aux
+INPUT ./docs/abbr.aux
+INPUT docs/abbr.aux
 INPUT ./docs/chap01.aux
 INPUT ./docs/chap01.aux
 INPUT docs/chap01.aux
@@ -555,6 +558,12 @@ OUTPUT main.toc
 INPUT ./docs/eng_toc_entries.tex
 INPUT ./docs/eng_toc_entries.tex
 INPUT docs/eng_toc_entries.tex
+INPUT ./docs/abbr.tex
+INPUT ./docs/abbr.tex
+OUTPUT docs/abbr.aux
+INPUT ./docs/abbr.tex
+INPUT ./docs/abbr.tex
+INPUT docs/abbr.tex
 INPUT ./docs/chap01.tex
 INPUT ./docs/chap01.tex
 OUTPUT docs/chap01.aux
@@ -636,6 +645,9 @@ INPUT ./docs/postscript.tex
 INPUT ./docs/postscript.tex
 INPUT docs/postscript.tex
 INPUT main.aux
+INPUT ./docs/abbr.aux
+INPUT ./docs/abbr.aux
+INPUT docs/abbr.aux
 INPUT ./docs/chap01.aux
 INPUT ./docs/chap01.aux
 INPUT docs/chap01.aux

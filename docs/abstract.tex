@@ -6,7 +6,7 @@
 
 随着位置服务与移动互联网的发展，下一个兴趣点（Point-of-Interest, POI）预测已成为智能出行与个性化推荐的重要问题。传统序列模型和图神经网络在时空依赖建模方面表现良好，但在冷启动与数据稀疏场景中仍存在局限；大语言模型具备更强的语义理解能力，却难以直接刻画细粒度时空转移规律。针对上述问题，本文围绕“大小模型协同学习”开展研究，构建融合传统时空建模能力与大模型语义推理能力的统一框架。
 
-本文首先基于时间偏好构建时间增强的序列动态图，对用户在不同时段的访问行为进行建模，并通过双向转移机制刻画POI的转入与转出偏好；随后通过多层感知器实现传统模型嵌入与大模型语义空间对齐，结合参数高效微调策略将全局时空信息注入大模型，从而提升推荐模型在短轨迹与稀疏数据场景下的鲁棒性与泛化能力。本文进一步给出面向Gowalla与Foursquare数据的实验设计与评测方案，为后续完整实验与论文写作提供可复用的研究基础。
+本文首先基于时间偏好构建时间增强的序列动态图，对用户在不同时段的访问行为进行建模，并通过双向转移机制刻画POI的转入与转出偏好；随后通过多层感知器实现传统模型嵌入与大模型语义空间对齐，结合参数高效微调策略将全局时空信息注入大模型，从而提升推荐模型在短轨迹与稀疏数据场景下的鲁棒性与泛化能力。在Gowalla与Foursquare公开数据集上的实验表明，所提方法在Acc@1、MRR等核心指标上均优于现有序列、图与大语言模型基线，消融实验与诊断分析进一步验证了各模块的独立贡献与协同增益。
 }
 
 \ckeywords{下一个兴趣点推荐；大小模型协同；时空建模；大语言模型；参数高效微调}
@@ -15,7 +15,7 @@
 
 Next point-of-interest (POI) prediction is a key task for intelligent mobility and personalized recommendation. Traditional sequential models and graph neural networks are effective at modeling spatio-temporal dependencies, but they often suffer from cold-start and sparse-data scenarios. In contrast, large language models provide strong semantic understanding, yet they are less capable of modeling fine-grained mobility transitions directly. To address this gap, this thesis studies a collaborative learning framework between small task-specific models and large foundation models for next POI prediction.
 
-The proposed framework first introduces a time-enhanced sequence-based dynamic graph to capture user behaviors across different time slices, together with bidirectional transition modeling for in-flow and out-flow POI preferences. Then, a multilayer perceptron is used to align embeddings from traditional POI models with the semantic space of the large model, and parameter-efficient fine-tuning is applied to inject global spatio-temporal information into the large model. This design aims to improve robustness and generalization under short trajectories and sparse observations. Finally, we present an experiment protocol on Gowalla and Foursquare as the basis for full empirical evaluation in the final thesis.
+The proposed framework first introduces a time-enhanced sequence-based dynamic graph to capture user behaviors across different time slices, together with bidirectional transition modeling for in-flow and out-flow POI preferences. Then, a multilayer perceptron is used to align embeddings from traditional POI models with the semantic space of the large model, and parameter-efficient fine-tuning is applied to inject global spatio-temporal information into the large model. This design aims to improve robustness and generalization under short trajectories and sparse observations. Extensive experiments on Gowalla and Foursquare demonstrate that the proposed method consistently outperforms existing sequential, graph-based, and LLM baselines in terms of Acc@1, MRR, and other core metrics. Ablation studies and diagnostic analyses further confirm the independent contribution and synergistic gains of each module.
 }
 
 \ekeywords{Next POI Recommendation; Collaborative Learning; Spatio-temporal Modeling; Large Language Models; Parameter-efficient Fine-tuning}

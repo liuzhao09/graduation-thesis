@@ -1,8 +1,6 @@
 \chapter{实验设计与结果分析}
 \label{chap:exp}
 
-\newcommand{\tblstyle}{\centering\zihao{5}\songti\rmfamily\setlength{\tabcolsep}{4.0pt}\renewcommand{\arraystretch}{1.16}}
-
 \section{本章引言}
 本章围绕第\ref{chap:method}章提出的双路线研究框架开展系统实验，目标是回答“方法是否有效、为何有效、代价是否可接受”。为避免结果堆叠而缺乏论证链，本章按照“研究问题定义（RQ）—实验设置—主结果—模块消融—机制诊断—效率评估”的闭环组织证据，并确保每类结论都能回溯到对应模块设计与实验现象。
 
@@ -143,13 +141,16 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
         MTNext & 0.2620 & 0.5381 & 0.3855 & 0.2575 & 0.4977 & 0.3659 & 0.1453 & 0.3419 & 0.2367 \\
         STHGCN & 0.2734 & 0.5361 & 0.3915 & 0.2950 & 0.5207 & 0.3986 & 0.1730 & 0.3529 & 0.2558 \\
         ROTAN & \underline{0.3106} & \underline{0.5281} & \underline{0.4104} & 0.2458 & 0.4626 & 0.3475 & \underline{0.2199} & \underline{0.3718} & \underline{0.2931} \\
-        LLM4POI & 0.3372 & -- & -- & 0.3035 & -- & -- & 0.2065 & -- & -- \\
+        LLM4POI\textsuperscript{$\dagger$} & 0.3372 & -- & -- & 0.3035 & -- & -- & 0.2065 & -- & -- \\
         \midrule
         GA-LLM & \textbf{0.3988} & \textbf{0.6337} & \textbf{0.4663} & \textbf{0.3482} & \textbf{0.6207} & \textbf{0.4314} & \textbf{0.2566} & \textbf{0.4614} & \textbf{0.3340} \\
         \rowcolor{TokBg}
         提升（\%） & +18.27\% & +17.77\% & +12.62\% & +14.73\% & +19.20\% & +8.23\% & +16.69\% & +24.10\% & +13.95\% \\
         \bottomrule
     \end{tabular}}
+
+    \vspace{2pt}
+    {\footnotesize $\dagger$\,LLM4POI原文仅报告Acc@1，未提供Acc@5与MRR@5，故以"--"标记。}
 \end{table}
 
 表\ref{tab:c4-gallm-main}最后一行已汇总GA-LLM相对最强非GA基线的提升比例。三个城市在Acc@1、Acc@5、MRR@5上均为正增益，说明提升不是偶然点状收益，而是跨数据分布的稳定趋势。
@@ -432,7 +433,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-表\ref{tab:c4-train-strategy}给出单阶段与两阶段训练对比。可以看出，不同训练流程会改变收敛路径和最终性能，说明“先对齐再协同”并非形式化步骤，而是影响优化稳定性的关键因素。
+表\ref{tab:c4-train-strategy}给出单阶段与两阶段训练对比。在NYC数据集上，单阶段训练略优于两阶段训练。分析其原因：NYC数据量较大且POI分布集中，对齐预热阶段的收益被充分的端到端优化所覆盖；换言之，当训练样本足以支撑联合优化的稳定收敛时，额外的预热阶段引入的信息瓶颈反而限制了最终性能。然而，两阶段策略在数据更稀疏或分布更复杂的场景中仍具有优化稳定性优势（如TKY与CA的消融趋势所示）。因此，本文在方法章保留两阶段作为默认策略，以兼顾不同数据条件下的鲁棒性。
 
 \begin{table}[htbp]
     \tblstyle

@@ -50,7 +50,7 @@
 尽管现有研究已在时空推荐方向取得进展，面向真实出行场景的Next POI建模仍面临以下挑战：
 \begin{enumerate}
     \item {\heiti\bfseries 时间异质性挑战：}同一POI在不同时段的转移模式差异显著，统一转移机制容易造成偏差\cite{ST-RNN,zhao2019stgn,STAN,STiSAN,MTNet}；
-    \item {\heiti\bfseries 空间连续性挑战：}经纬度与语义表示空间之间缺乏天然同构，纯文本建模容易产生地理不一致预测\cite{GeoSAN,li2020gcnpoi,li2024large,LLM4POI,Jonathan2023Gpt}；
+    \item {\heiti\bfseries 空间连续性挑战：}经纬度与语义表示空间之间缺乏天然同构，纯文本建模容易产生地理不一致预测\cite{GeoSAN,li2020gcnpoi,LLM4POI,Jonathan2023Gpt}；
     \item {\heiti\bfseries 转移先验注入挑战：}仅依赖文本上下文时，模型难以充分利用POI图中的高阶转移关系\cite{GraphFlashback,SNPM,STHGCN,SeCor,STKG-PLM}；
     \item {\heiti\bfseries 协同优化挑战：}小模型结构先验与大模型语义能力在统一框架内稳定协同仍缺乏系统方案\cite{ReLLa,CoRAL,xu2024hybridrec,wu2024ragrec,qu2024onerecthink}。
 \end{enumerate}
@@ -70,8 +70,8 @@
 \subsection{研究思路与技术路线}
 针对上述挑战，本文采用“大小模型协同学习”的总体路线：
 \begin{enumerate}
-    \item 在小模型侧构建时间增强序列动态图与双向转移机制，学习稳定时空结构先验\cite{yin2023next,yang2022getnext,rao2022graphflashback,AGCL,FHCRec}；
-    \item 在大模型侧设计地理坐标注入模块与POI对齐模块，增强LLM的空间一致性与转移感知能力\cite{li2024large,LLM4POI,wang2024georecllm,zheng2024poillm,cao2024trajllm}；
+    \item 在小模型侧构建时间增强序列动态图与双向转移机制，学习稳定时空结构先验\cite{SNPM,GETNext,GraphFlashback,AGCL,FHCRec}；
+    \item 在大模型侧设计地理坐标注入模块与POI对齐模块，增强LLM的空间一致性与转移感知能力\cite{LLM4POI,wang2024georecllm,zheng2024poillm,cao2024trajllm}；
     \item 通过嵌入对齐与两阶段训练，将结构知识与语义推理能力融合到统一框架中\cite{LLMRec,CoLLM,LLaRA,qu2024onerec,wu2024thinkrec}。
 \end{enumerate}
 
@@ -85,10 +85,10 @@
     \item {\heiti\bfseries 大模型增强设计：}围绕地理连续性与转移先验缺失，设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），将结构先验以可训练方式注入LLM；
     \item {\heiti\bfseries 实验验证与诊断分析：}基于RQ组织实验证据，覆盖主结果、消融、误差类型、效率开销与部署讨论，形成“设置-结果-解释”闭环。
 \end{enumerate}
-从论文完成度角度，本文不仅给出模型结果，也强调问题定义、机制解释、局限分析与复现细节，以满足毕业论文对研究深度与工作态度的要求。
+上述四项工作构成了从问题定义到实验验证的完整研究闭环。
 
 \subsection{文献脉络与研究定位}
-为保证后续方法设计与实验结论具备可比性与可追溯性，本文在文献层面采用“经典基础 + 近年进展 + 前沿融合”的三层梳理框架。经典基础涵盖协同过滤、序列建模与排序学习等工作\cite{koren2009matrix,rendle2009bpr,rendle2010factorizing,grbovic2015commerce,hidasi2016gru4rec}；近年进展重点关注Next POI任务中的时空序列与图学习路线\cite{cheng2013where,kong2018hst,sun2020where,luo2021stan,CFPRec}；前沿融合聚焦LLM驱动推荐与结构先验注入路线\cite{li2023instructrec,hou2024recgpt,bao2023chatrec,lin2024llmrank,sun2024promptrec}。
+为保证后续方法设计与实验结论具备可比性与可追溯性，本文在文献层面采用“经典基础 + 近年进展 + 前沿融合”的三层梳理框架。经典基础涵盖协同过滤、序列建模与排序学习等工作\cite{koren2009matrix,rendle2009bpr,rendle2010factorizing,grbovic2015commerce,hidasi2016gru4rec}；近年进展重点关注Next POI任务中的时空序列与图学习路线\cite{cheng2013where,HST-LSTM,LSTPM,STAN,CFPRec}；前沿融合聚焦LLM驱动推荐与结构先验注入路线\cite{li2023instructrec,hou2024recgpt,bao2023chatrec,lin2024llmrank,sun2024promptrec}。
 
 面向Next POI这一具体问题，本文重点参考三类证据。第一类是“纯时空/图模型”证据，包括空间门控、超图、对比学习与扩散协同等方向\cite{zhao2019stgn,yang2019lbsn2vec,yang2020flashback,zhou2020sgl,DCPR}。第二类是“语义增强”证据，包括语义城市建模与跨模态地理表示学习\cite{Pasquale2024City,M3PA,CLIP,wav2vec,liu2024mobilityfm}。第三类是“LLM推荐框架”证据，包括检索增强、协同对齐与推理链增强方法\cite{ReLLa,SeCor,GraphGPT,qu2024onerecthink,zhou2023unicorn}，以及近两年面向Next POI的最新模型进展\cite{zhuang2024tau,feng2025lrsa,wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}。上述证据共同支持本文采用“结构建模 + 语义增强 + 协同训练”的总体定位。
 

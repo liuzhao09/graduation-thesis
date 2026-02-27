@@ -1,7 +1,5 @@
 \chapter{大小模型协同学习方法}
 \label{chap:method}
-\newcommand{\cThreeTblStyle}{\centering\zihao{5}\songti\rmfamily\setlength{\tabcolsep}{4.8pt}\renewcommand{\arraystretch}{1.15}}
-\newcommand{\YesMark}{\ding{51}}
 
 \section{本章引言}
 基于第\ref{chap:related}章给出的研究空白与建模原则，本章给出本文方法的完整实现方案，重点回答“整体框架如何搭建、关键模块如何工作、训练与推理如何落地”三个问题。为保证论证清晰，本章按小模型分支、大模型分支和协同训练策略依次展开，并将每个模块与对应研究问题（RQ）建立映射关系，从而为第\ref{chap:exp}章的实验验证提供可追溯的机制假设。本文方法综合继承了时间增强序列预测模型（Time-enhanced Sequential Prediction Model, TSPM）与地理感知大语言模型（Geography-Aware Large Language Model, GA-LLM）系列相关工作的有效设计思想\cite{liu2025tspm,liu2026gallm}，并在毕业论文中统一为“双路线并行、训练协同、推理独立”的研究框架。
@@ -106,7 +104,7 @@ TSDG 中的双向转移部分记为双向转移建模（Bidirectional Transforma
 
 如图\ref{fig:c3-time-compare}所示，传统序列将不同时间段的迁移关系混合建模，而时间增强序列能显式区分时段特征。该现象说明“同一POI在不同时段具有不同转移分布”是必须建模的结构事实。该结论直接回扣本节TSDG设计，并将在第\ref{chap:exp}章RQ2中通过消融实验验证。
 
-{\heiti\addCJKfontfeatures{AutoFakeBold=2}待验证命题：}显式时间分槽可提升模型对时段异质行为的建模能力（对应第\ref{chap:exp}章RQ2）。
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}设计假设H1：}显式时间分槽可提升模型对时段异质行为的建模能力（对应第\ref{chap:exp}章RQ2验证）。
 
 \topichead{时间分槽策略讨论}
 时间分槽粒度过粗会掩盖行为差异，过细会造成样本稀疏。本文采用“以行为节律为导向”的折中策略，即优先保证每个时段具有足够样本密度，再在验证集上微调分槽数量。该策略相比固定等距切分更贴近真实城市活动节奏。
@@ -124,7 +122,7 @@ TSDG 中的双向转移部分记为双向转移建模（Bidirectional Transforma
 \hphantom{式中：}\symline{$\|\cdot\|_2^2$}{平方欧氏距离；\\}
 \hphantom{式中：}\symline{$+$ 与 $-$}{分别表示正负样本POI。}
 
-{\heiti\addCJKfontfeatures{AutoFakeBold=2}待验证命题：}双向转移优于单向转移，可减少路径偏置并提升下一跳预测稳定性（对应RQ2）。
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}设计假设H2：}双向转移优于单向转移，可减少路径偏置并提升下一跳预测稳定性（对应RQ2验证）。
 
 \topichead{损失函数直观解释}
 式\eqref{eq:c3-ltime}的核心是将“当前点到真实下一点”的距离压缩，同时将“当前点到负样本点”的距离拉开。与单向建模相比，双向表示可同时约束“出边合理性”和“入边合理性”：前者回答“当前点一般指向哪些候选”，后者回答“目标点通常由哪些来源到达”。这种双侧约束可显著减少“高频近邻误吸附”与“语义相似点混淆”，尤其在通勤、跨区跳转与晚高峰回流等方向性强的轨迹中更稳定。
@@ -165,7 +163,7 @@ s^d_{i,j}=\exp\left(-\rho_1\|\boldsymbol{\xi}_{seq}-\mathbf{e}_j\|_2^2-\rho_2\|\
 \hphantom{式中：}\symline{$\rho_1,\rho_2$}{两类距离项的平衡系数；\\}
 \hphantom{式中：}\symline{$\exp(\cdot)$}{指数映射函数。}
 
-{\heiti\addCJKfontfeatures{AutoFakeBold=2}待验证命题：}动态图权重可提升复杂迁移场景下的区分能力（对应RQ2、RQ4）。
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}设计假设H3：}动态图权重可提升复杂迁移场景下的区分能力（对应RQ2、RQ4验证）。
 
 \topichead{负采样策略}
 为避免训练信号过于简单，本文采用“同区域困难负样本 + 跨区域随机负样本”的混合策略：前者提升局部细粒度区分难度，后者维持全局判别边界。该策略有助于提升模型在近邻候选上的排序精度，并降低模型仅记忆区域标签的风险。
@@ -243,7 +241,7 @@ GCIM采用“层级离散 + 连续频域”双分支编码。为与实验消融�
 针对第\ref{chap:intro}章图\ref{fig:c1-gcim-motivation}所示的空间错位问题，GCIM在实现层面通过Quadkey分支编码层级区域结构，通过Fourier分支编码连续距离变化，并在投影层完成统一融合。该设计使地理关系以结构化方式进入LLM输入空间，为后续地理一致性约束提供可优化的表示基础。
 对应图\ref{fig:c3-framework}，GCIM位于GA-LLM分支的输入侧，直接作用于轨迹事件中的坐标字段，其输出 $\mathbf{E}_{gps}$ 将作为后续结构化提示中的 \texttt{<GPS>} 语义载体，而不是在LLM输出后再做后处理。
 
-{\heiti\addCJKfontfeatures{AutoFakeBold=2}待验证命题：}GCIM可显著改善地理一致性并降低远跳错误（对应RQ3、RQ4）。
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}设计假设H4：}GCIM可显著改善地理一致性并降低远跳错误（对应RQ3、RQ4验证）。
 
 \topichead{为何采用Quadkey + Fourier}
 Quadkey适合表达“区域层级归属”，Fourier适合表达“连续坐标变化模式”\cite{GeoSAN,STiSAN,liu2026gallm}。前者提供离散空间结构，后者提供连续距离敏感性，二者互补后可同时保留地理分区稳定性与局部变化分辨率。该设计可避免仅离散编码导致的边界不连续，也避免仅连续编码导致的区域语义缺失。
@@ -263,7 +261,7 @@ Quadkey适合表达“区域层级归属”，Fourier适合表达“连续坐标
 针对第\ref{chap:intro}章图\ref{fig:c1-pam-motivation}所示的转移先验缺失问题，PAM在实现层面构建“结构表征到语义表征”的线性映射通道，并将图模型中的迁移知识注入LLM语义空间。该路径避免了仅靠token共现学习关系的局限，使模型在候选稀疏和目标未显式出现时仍可利用结构先验进行推断。
 对应图\ref{fig:c3-framework}，PAM承接小模型/结构侧输出并注入到语义侧输入，承担“跨分支桥接”角色；因此它不是独立预测器，而是连接双分支信息流的关键接口。
 
-{\heiti\addCJKfontfeatures{AutoFakeBold=2}待验证命题：}PAM可提升目标POI未显式出现时的预测能力（对应RQ3、RQ4）。
+{\heiti\addCJKfontfeatures{AutoFakeBold=2}设计假设H5：}PAM可提升目标POI未显式出现时的预测能力（对应RQ3、RQ4验证）。
 
 \topichead{对齐目标}
 PAM的目标不是“替代LLM语义”，而是建立一条可学习映射，使图模型中可迁移的结构关系能够在LLM空间中被读取和利用。换言之，PAM承担的是“知识通道”角色，核心价值在于降低跨空间信息损失。
@@ -442,7 +440,9 @@ p(y_t\mid y_{<t},\mathbf{X})=\operatorname{Softmax}\!\left(\mathbf{W}_o\mathbf{h
 对应图\ref{fig:c3-framework}的训练路径，阶段一主要优化“结构流$\rightarrow$语义流”的对齐通道（GCIM/PAM），阶段二在GA-LLM任务目标上进行参数高效微调，避免一开始就全链路联训导致梯度相互干扰。
 
 \subsection{耦合路径与参数更新机制}
-尽管推理阶段仅保留GA-LLM单路输出，训练阶段仍通过 $\mathcal{L}_{align}$ 与 $\mathcal{L}_{geo}$ 把结构先验注入语义空间。具体耦合路径为：TSPM分支产生结构表示（如 $\boldsymbol{\xi}_{seq}$、POI结构嵌入）；PAM将其投影为语义空间向量 $\mathbf{E}_{poi}$；GCIM提供地理编码 $\mathbf{E}_{gps}$；最终在统一生成目标下更新GA-LLM侧可训练参数。该流程实质上是“训练期对齐注入”，而非“推理期分数融合”。
+尽管推理阶段仅保留GA-LLM单路输出，训练阶段仍通过 $\mathcal{L}_{align}$ 与 $\mathcal{L}_{geo}$ 把结构先验注入语义空间。具体耦合路径为：TSPM分支产生结构表示（如 $\boldsymbol{\xi}_{seq}$、POI结构嵌入）；PAM将其投影为语义空间向量 $\mathbf{E}_{poi}$；GCIM提供地理编码 $\mathbf{E}_{gps}$；最终在统一生成目标下更新GA-LLM侧可训练参数。该流程实质上是”训练期对齐注入”，而非”推理期分数融合”。
+
+需要说明的是，本文标题中的”协同学习”特指训练阶段的知识协同：小模型通过结构化损失提供时空归纳偏置，大模型通过对齐模块吸收这些先验并在语义空间中内化。这种协同体现在三个层面：（1）表示层——PAM将TSPM的结构嵌入映射到LLM语义空间；（2）目标层——$\mathcal{L}_{align}$与$\mathcal{L}_{geo}$在训练中同时约束两侧表示的一致性；（3）能力层——训练完成后，GA-LLM已将结构先验内化为自身参数的一部分，因此推理时无需TSPM在线参与即可受益于结构知识。这一设计在保持推理效率的同时实现了跨模型的知识迁移。
 
 \begin{table}[htbp]
     \cThreeTblStyle

@@ -1,6 +1,5 @@
 \chapter{相关研究与问题分析}
 \label{chap:related}
-\newcommand{\cTwoTblStyle}{\centering\zihao{5}\songti\rmfamily\setlength{\tabcolsep}{4.0pt}\renewcommand{\arraystretch}{1.16}}
 
 \section{本章引言}
 本章目标是建立全文统一的问题分析基线，回答“已有研究做到什么程度、仍缺什么、本文据此如何建模”三个问题。具体而言，本章先系统综述序列/图/大模型三条技术路线并提炼能力边界，再在此基础上给出全文统一的任务定义、符号体系与评价口径，最后将文献证据收敛为可执行的研究空白（Gap）和建模原则（DP），为第\ref{chap:method}章的方法设计提供直接依据。
@@ -23,7 +22,7 @@ GETNext~\cite{GETNext}、GraphFlashback~\cite{GraphFlashback}、STHGCN~\cite{STH
 
 \subsection{大模型路线综述：LLM驱动推荐}
 \subsubsection{LLM在推荐中的应用}
-LLM推荐研究已从“直接提示预测”演化为多条并行技术路线。第一类是\textbf{指令化与参数高效微调路线}，代表工作包括 InstructRec~\cite{li2023instructrec}、RecGPT~\cite{hou2024recgpt}、Chat-REC~\cite{bao2023chatrec} 与 TALLRec~\cite{tallrec2023}，核心目标是以较小训练代价完成任务迁移，并增强跨场景泛化。第二类是\textbf{协同语义对齐路线}，LLMRec~\cite{LLMRec}、CoLLM~\cite{CoLLM}、CoRAL~\cite{CoRAL}、CLLM4Rec~\cite{cllm4rec2024www}、IDGenRec~\cite{idgenrec2024sigir} 与 A-LLMRec~\cite{allmrec2024kdd} 通过结构信号、协同表示或文本化ID缓解“语言空间-行为空间”不匹配问题。第三类是\textbf{显式推理与检索增强路线}，ReLLa~\cite{ReLLa}、LLaRA~\cite{LLaRA}、OneRec~\cite{qu2024onerec}、OneRec-Think~\cite{qu2024onerecthink}、ThinkRec~\cite{wu2024thinkrec}、Agent4Rec~\cite{yao2024agent4rec}、LLMRank~\cite{lin2024llmrank}、MEMO~\cite{fan2024memo} 与 PromptRec~\cite{sun2024promptrec} 强调可追踪中间推断、候选重排稳定性与错误可诊断性。
+LLM推荐研究已从“直接提示预测”演化为多条并行技术路线。第一类是\textbf{指令化与参数高效微调路线}，代表工作包括 InstructRec~\cite{li2023instructrec}、RecGPT~\cite{hou2024recgpt}、Chat-REC~\cite{bao2023chatrec} 与 TALLRec~\cite{tallrec2023}，核心目标是以较小训练代价完成任务迁移，并增强跨场景泛化。第二类是\textbf{协同语义对齐路线}，LLMRec~\cite{LLMRec}、CoLLM~\cite{CoLLM}、CoRAL~\cite{CoRAL}、CLLM4Rec~\cite{cllm4rec2024www}、IDGenRec~\cite{idgenrec2024sigir} 与 A-LLMRec~\cite{allmrec2024kdd} 通过结构信号、协同表示或文本化ID缓解“语言空间-行为空间”不匹配问题。第三类是\textbf{显式推理与检索增强路线}，ReLLa~\cite{ReLLa}、LLaRA~\cite{LLaRA}、OneRec~\cite{qu2024onerec}、OneRec-Think~\cite{qu2024onerecthink}、ThinkRec~\cite{wu2024thinkrec}、Agent4Rec~\cite{qu2024onerecthink}、LLMRank~\cite{lin2024llmrank}、MEMO~\cite{fan2024memo} 与 PromptRec~\cite{sun2024promptrec} 强调可追踪中间推断、候选重排稳定性与错误可诊断性。
 
 从建模粒度看，最新工作进一步从“单步生成答案”转向“分阶段推荐流程”。其中，一类方法将\textbf{召回-排序-解释}统一为共享生成接口，以减少模块割裂；另一类方法引入\textbf{外部记忆与检索}，在长尾物品和冷启动样本上补充证据链，抑制幻觉与不一致。总体上，前沿演化方向已经由“能不能生成”转向“生成是否可控、可解释、可部署”。
 
@@ -67,7 +66,7 @@ LLM推荐研究已从“直接提示预测”演化为多条并行技术路线�
 近年来，LLM推荐研究在范式上呈现分阶段演化：{\heiti\addCJKfontfeatures{AutoFakeBold=2}第一步：}将推荐任务指令化并进行参数高效微调，如 InstructRec~\cite{li2023instructrec}、RecGPT~\cite{hou2024recgpt}、TALLRec~\cite{tallrec2023} 与 Chat-REC~\cite{bao2023chatrec}；{\heiti\addCJKfontfeatures{AutoFakeBold=2}第二步：}将召回、排序与解释统一到单一生成框架，如 LLMRec~\cite{LLMRec}、CoLLM~\cite{CoLLM}、CLLM4Rec~\cite{cllm4rec2024www} 与 CoRAL~\cite{CoRAL}；{\heiti\addCJKfontfeatures{AutoFakeBold=2}第三步：}在统一框架中加入外部检索、协同对齐与结构先验以缓解幻觉和不一致，如 ReLLa~\cite{ReLLa}、IDGenRec~\cite{idgenrec2024sigir} 与 LLaRA~\cite{LLaRA}；{\heiti\addCJKfontfeatures{AutoFakeBold=2}第四步：}围绕上述主线进一步形成排序增强、记忆增强与提示优化等工具化实践，例如 LLMRank~\cite{lin2024llmrank}、MEMO~\cite{fan2024memo}、PromptRec~\cite{sun2024promptrec} 与 RAG增强推荐\cite{wu2024ragrec}，并催生了更系统的综述研究\cite{gao2023llm4rs,lin2024genrecsurvey,zhang2024llmrecsurvey,chen2024rsfm}。
 
 \subsubsection{显式推理范式进展}
-与“直接生成答案”不同，显式推理范式强调中间决策轨迹，例如候选过滤、约束检查、理由归纳与自我校验。代表性工作显示，将可追溯推理过程纳入推荐推断有助于提升一致性与可解释性\cite{qu2024onerec,qu2024onerecthink,wu2024thinkrec,yao2024agent4rec,xu2024hybridrec}。这类方法的共同点是：模型不只输出最终推荐，还输出可追溯的中间依据，从而降低“结果可用但难解释”的工程风险。
+与“直接生成答案”不同，显式推理范式强调中间决策轨迹，例如候选过滤、约束检查、理由归纳与自我校验。代表性工作显示，将可追溯推理过程纳入推荐推断有助于提升一致性与可解释性\cite{qu2024onerec,qu2024onerecthink,wu2024thinkrec,xu2024hybridrec}。这类方法的共同点是：模型不只输出最终推荐，还输出可追溯的中间依据，从而降低“结果可用但难解释”的工程风险。
 
 对Next POI任务而言，显式推理的价值主要在三点：{\heiti\addCJKfontfeatures{AutoFakeBold=2}其一：}可将“距离可达性、时段约束、历史路径方向”显式纳入决策；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其二：}可将结构先验作为推理证据而非黑盒隐变量；{\heiti\addCJKfontfeatures{AutoFakeBold=2}其三：}可在错误分析中定位到底是语义误判还是约束违背。本文借鉴其“可控与可诊断”思想，但不引入候选过滤链、在线约束校验或自反思中间输出，而是通过 GCIM 与 PAM 在嵌入空间施加隐式一致性约束。
 
@@ -80,7 +79,7 @@ LLM推荐研究已从“直接提示预测”演化为多条并行技术路线�
 这些中文研究对本文有两点直接启示。第一，真实业务中“可解释 + 可部署”通常与“离线最优”同等重要，方法设计不能只追求指标提升。第二，国内LBS与本地生活场景具备高密度、强约束、强实时特征，要求推荐模型在地理一致性与时延之间做更细粒度权衡。本文采用协同框架而非单一路线，正是基于上述工程现实做出的方法选择。
 
 \subsection{扩展文献归纳}
-为完整刻画本文研究语境，本文参考了经典协同过滤与排序学习文献\cite{koren2009matrix,rendle2009bpr,rendle2010factorizing,he2017ncf}，以及序列推荐主线工作\cite{hidasi2016gru4rec,kang2018sasrec,sun2019bert4rec,zhang2023sequentialsurvey}。在图推荐与自监督学习方面，重点参考了轻量图卷积、知识图增强与图对比学习工作\cite{he2020lightgcn,wang2019kgat,zhou2020sgl,lin2022simgcl,wu2022gnnrecsurvey}。
+为完整刻画本文研究语境，本文参考了经典协同过滤与排序学习文献\cite{koren2009matrix,rendle2009bpr,FPMC,he2017ncf}，以及序列推荐主线工作\cite{hidasi2016gru4rec,kang2018sasrec,sun2019bert4rec,zhang2023sequentialsurvey}。在图推荐与自监督学习方面，重点参考了轻量图卷积、知识图增强与图对比学习工作\cite{he2020lightgcn,wang2019kgat,zhou2020sgl,lin2022simgcl,wu2022gnnrecsurvey}。
 
 在时空推荐与Next POI方向，本文重点覆盖了序列、图与混合路线的代表方法\cite{cheng2013where,he2016inferring,FPMC,PRME,ST-RNN}，以及近期性能较强的时空图方法\cite{GETNext,GraphFlashback,SNPM,ROTAN,MTNet}。在LLM与基础模型方向，本文参考了 LLM4POI~\cite{LLM4POI}、SeCor~\cite{SeCor}、POI-LLM基准工作~\cite{zheng2024poillm}、Geo-LLMRec~\cite{wang2024georecllm} 与显式推理增强方法~\cite{qu2024onerecthink}。同时，补充引入 P5~\cite{p5recsys2022}、CID~\cite{cid2023}、IDGenRec~\cite{idgenrec2024sigir}、GenRec~\cite{genrec2023} 与 GNPR-SID~\cite{gnprsid2025}，以支撑“构造-对齐-生成”三层方法论与本文任务之间的对应关系。
 
@@ -132,7 +131,7 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{P},
         $\mathbf{E}_{gps},\mathbf{E}_{poi}$ & 大模型侧地理编码与POI对齐表示 \\
         $\hat{\mathbf{y}}_u$ & 模型输出的Top-$K$推荐列表 \\
         $r_n$ & 测试样本中真实POI的排序位次 \\
-        $\mathcal{L}_{\text{small}},\mathcal{L}_{\text{align}},\mathcal{L}_{\text{llm}}$ & 小模型损失、跨空间对齐损失与大模型任务损失 \\
+        $\mathcal{L}_{\text{small}},\mathcal{L}_{\text{align}},\mathcal{L}_{\text{llm}}$ & 小模型损失（对应第\ref{chap:method}章$\mathcal{L}_{TSPM}$）、跨空间对齐损失、大模型任务损失（对应$\mathcal{L}_{gen}$） \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -145,7 +144,7 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{P},
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}用户历史可观测：}每个测试样本至少存在最小历史长度，以支持序列建模；
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}离线评估优先：}本文主实验聚焦离线Top-$K$评估，不直接讨论在线A/B系统收益。
 \end{enumerate}
-这些边界并不削弱问题价值，而是用于保证比较公平与可复现。对超出边界的场景（如极短轨迹、无坐标、实时概念漂移），将在第\ref{chap:exp}章“效率与可扩展性分析（RQ5）”中的工程化讨论，以及第\ref{chap:conclusion}章“研究不足”与“研究展望”中给出扩展路径。
+这些边界并不削弱问题价值，而是用于保证比较公平与可复现。对超出边界的场景（如极短轨迹、无坐标、实时概念漂移），将在第\ref{chap:exp}章”效率与可扩展性分析（RQ5）”中进行工程化讨论，并在第\ref{chap:conclusion}章”研究不足”与”研究展望”中给出扩展路径。
 
 \subsection{评价指标与实验协议说明}
 本文采用 Acc@K、MRR 与 NDCG@K 评价排序质量，对应公式定义为：
@@ -206,9 +205,9 @@ NDCG@K对前排命中赋予更高权重。Acc@K反映命中能力，MRR强调首
 \mathcal{L}=\mathcal{L}_{\text{small}}+\lambda_1\mathcal{L}_{\text{align}}+\lambda_2\mathcal{L}_{\text{llm}}+\lambda_3\mathcal{L}_{\text{reg}},
 \label{eq:c2-joint}
 \end{equation}
-式中：\symline{$\mathcal{L}_{\text{small}}$}{小模型时空结构学习损失；\\}
-\hphantom{式中：}\symline{$\mathcal{L}_{\text{align}}$}{跨空间对齐损失；\\}
-\hphantom{式中：}\symline{$\mathcal{L}_{\text{llm}}$}{大模型任务损失；\\}
+式中：\symline{$\mathcal{L}_{\text{small}}$}{小模型时空结构学习损失（第\ref{chap:method}章中具体化为$\mathcal{L}_{TSPM}$）；\\}
+\hphantom{式中：}\symline{$\mathcal{L}_{\text{align}}$}{跨空间对齐损失（含地理一致性损失$\mathcal{L}_{geo}$）；\\}
+\hphantom{式中：}\symline{$\mathcal{L}_{\text{llm}}$}{大模型任务损失（第\ref{chap:method}章中具体化为生成损失$\mathcal{L}_{gen}$）；\\}
 \hphantom{式中：}\symline{$\mathcal{L}_{\text{reg}}$}{正则化项；\\}
 \hphantom{式中：}\symline{$\lambda_1,\lambda_2,\lambda_3$}{各损失项的权重系数。}
 
