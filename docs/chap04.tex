@@ -353,7 +353,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-此外，表\ref{tab:c4-pam-embedding-source}显示PAM可作为大小模型联动接口：当小模型侧提供不同POI嵌入（TSPM、MTNet、STHGCN、ROTAN）时，大模型侧性能整体保持稳定，其中与TSPM联动时效果最佳。这说明PAM不仅“可兼容”，还能够把更强的时空结构先验有效传递到生成式分支。
+此外，表\ref{tab:c4-pam-embedding-source}显示PAM可作为大小模型联动接口：当PAM输入替换为不同小模型产生的POI嵌入（TSPM、MTNet、STHGCN、ROTAN）时，大模型侧性能整体保持稳定，其中与TSPM嵌入联动时效果最佳。这里的“联动/组合”指\textbf{训练期的嵌入注入与对齐}，并非推理期双模型联合打分。这说明PAM不仅“可兼容”，还能够把更强的时空结构先验有效传递到生成式分支。
 
 \begin{table}[htbp]
     \tblstyle
@@ -409,7 +409,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \end{table}
 
 \subsection{模型规模与训练策略实验}
-除效率曲线外，我们进一步补充不同LLM规模与训练策略的实验。表\ref{tab:c4-llm-scale}显示，GA-LLM在较小参数规模下仍保持稳定优势，说明本文改进并不依赖“更大模型”才能生效；同时，与不同小模型骨干（尤其TSPM）组合后仍能保持提升，进一步验证了PAM的联动兼容性。
+除效率曲线外，我们进一步补充不同LLM规模与训练策略的实验。表\ref{tab:c4-llm-scale}显示，GA-LLM在较小参数规模下仍保持稳定优势，说明本文改进并不依赖“更大模型”才能生效。进一步地，GA-LLM-TSPM、GA-LLM-MTNet、GA-LLM-STHGCN、GA-LLM-ROTAN四组结果表明：当PAM接入不同结构嵌入来源时，性能仍保持稳定提升，验证了PAM的接口兼容性。需要强调，这里的“组合”是\textbf{训练期通过PAM注入结构嵌入}，不是推理期TSPM与GA-LLM并行联合预测。
 
 \begin{table}[htbp]
     \tblstyle

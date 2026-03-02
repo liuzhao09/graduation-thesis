@@ -17,25 +17,27 @@
 \subsection{研究意义}
 本文工作的意义主要体现在理论、方法与应用三个层面。
 \begin{enumerate}
-    \item {\heiti\bfseries 理论意义：}Next POI任务位于“时空序列建模 + 图结构学习 + 语言语义推理”的交叉区域\cite{zhang2023sequentialsurvey,wu2022gnnrecsurvey,cao2024trajllm,li2024spatialfm,gao2023llm4rs}。围绕该任务构建统一框架，有助于回答结构归纳偏置与大模型语义能力如何协同的问题。
+    \item {\heiti\bfseries 理论意义：}Next POI任务位于“时空序列建模 + 图结构学习 + 语言语义推理”的交叉区域\cite{zhang2023sequentialsurvey,wu2022gnnrecsurvey,cao2024trajllm,li2024spatialfm,gao2023llm4rs}。围绕该任务构建统一框架，有助于回答“时空结构先验（如时间分槽、转移关系）如何与大模型语义能力协同”的问题。
     \item {\heiti\bfseries 方法意义：}现有方法多在单一维度较优，例如序列方法\cite{hidasi2016gru4rec,li2017narm,liu2018stamp,hidasi2018gru4rec2,qin2020fmlp}擅长局部时序、图方法\cite{ying2018pin,wu2019session,he2020lightgcn,wang2019kgat,lin2022simgcl}擅长高阶关系、LLM方法\cite{LLMRec,CoLLM,CoRAL,LLaRA,GraphGPT}擅长语义泛化。本文尝试给出可部署的融合路径。
     \item {\heiti\bfseries 应用意义：}在本地生活、城市出行和文旅推荐等场景中，系统需在有限时空约束下提供可执行推荐\cite{gao2022spatiotemporalsurvey,liu2023cn13,zheng2024cn14,wang2024georecllm,zheng2024poillm}。若预测结果与真实地理规律不一致，即使语义上合理也难形成有效服务。
 \end{enumerate}
 
 \section{研究问题、问题陈述与核心挑战}
+\subsection{问题陈述}
+本文关注的核心问题是：给定用户历史签到轨迹及其时间、空间和语义上下文，预测用户下一时刻最可能访问的POI，并输出Top-$K$候选列表。该问题兼具序列预测与结构约束下的转移判断属性，要求模型同时具备局部时空建模能力与跨场景泛化能力。
+
+其中，“结构约束下的转移判断”指的是：预测结果不仅要语义上合理，还要满足真实出行中的结构规律，例如时间段差异、空间可达性、以及POI之间的转移方向性与连通关系。也就是说，模型不仅回答“像不像”，还要回答“走不走得通、在不在合理路径上”。
+
 \subsection{研究问题分解}
 为避免“问题过大、方法过散”，本文将总体目标分解为五个可验证子问题，并在后文通过RQ体系进行闭环验证：
 \begin{enumerate}
-    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P1：时段异质性建模}。同一POI在不同时间段具有不同的转移规律，如何以低额外成本显式建模该异质性；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P1：时段异质性建模}。同一POI在不同时段具有不同转移规律，如何以低额外成本显式建模该异质性；
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P2：双向转移表达}。下一跳预测不仅取决于“当前点指向谁”，也取决于“目标点通常从哪里来”，如何同时表达转出与转入偏好；
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P3：地理连续性注入}。LLM语义空间不天然满足地理邻近关系，如何将经纬度与空间层级先验注入语义编码流程；
-    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P4：结构先验跨空间对齐}。图模型学得的POI关系如何映射到LLM语义空间，并在推理阶段持续发挥作用；
-    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P5：协同训练可部署}。在效果提升之外，如何保证训练成本、推理时延与参数规模仍处于可接受范围。
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P4：转移关系跨空间对齐}。POI间的序列/转移关系如何从结构空间映射到LLM语义空间，并在推理中保持有效；
+    \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}P5：协同训练与部署可行性}。在效果提升之外，如何将训练成本、推理时延与参数规模控制在可接受范围（对应第\ref{chap:method}章协同训练设计与第\ref{chap:exp}章RQ5验证）。
 \end{enumerate}
 通过上述分解，本文将“是否有效”与“为什么有效”区分处理，从而避免仅凭主结果表格给出结论。
-
-\subsection{问题陈述}
-本文关注的核心问题是：给定用户历史签到轨迹及其时间、空间和语义上下文，预测用户下一时刻最可能访问的POI，并输出Top-$K$候选列表。该问题兼具序列预测与结构推断属性，要求模型同时具备局部时空建模能力与跨场景泛化能力。
 
 本文不在绪论中展开完整符号体系与公式定义，统一的任务定义与符号约定放在第\ref{chap:related}章给出，作为全文的单一依据。
 
@@ -75,7 +77,38 @@
     \item 通过嵌入对齐与两阶段训练，将结构知识与语义推理能力融合到统一框架中\cite{LLMRec,CoLLM,LLaRA,qu2024onerec,wu2024thinkrec}。
 \end{enumerate}
 
-该路线的目标不是简单叠加模型，而是在可部署约束下实现“结构归纳偏置 + 语义泛化能力”的互补增益。
+为便于从全局理解“问题-挑战-方法”的对应关系，图\ref{fig:c1-route}给出本文技术路线总览。
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[scale=0.86, transform shape]
+        \node[draw, rounded corners=2pt, fill=gray!12, minimum width=4.6cm, minimum height=1.00cm, align=center] (p1) at (0,3.0) {\small 问题定义：Next POI预测};
+        \node[draw, rounded corners=2pt, fill=orange!15, minimum width=4.0cm, minimum height=1.00cm, align=center] (c1) at (-5.2,1.4) {\small 挑战A：时空结构复杂};
+        \node[draw, rounded corners=2pt, fill=orange!15, minimum width=4.0cm, minimum height=1.00cm, align=center] (c2) at (0,1.4) {\small 挑战B：语义-空间错位};
+        \node[draw, rounded corners=2pt, fill=orange!15, minimum width=4.0cm, minimum height=1.00cm, align=center] (c3) at (5.2,1.4) {\small 挑战C：协同成本约束};
+
+        \node[draw, rounded corners=2pt, fill=blue!10, minimum width=4.0cm, minimum height=1.20cm, align=center] (m1) at (-5.2,-0.4) {\small TSPM\\\small 时间分槽+双向转移};
+        \node[draw, rounded corners=2pt, fill=blue!10, minimum width=4.0cm, minimum height=1.20cm, align=center] (m2) at (0,-0.4) {\small GA-LLM\\\small GCIM+PAM 对齐注入};
+        \node[draw, rounded corners=2pt, fill=blue!10, minimum width=4.0cm, minimum height=1.20cm, align=center] (m3) at (5.2,-0.4) {\small 两阶段训练\\\small LoRA控成本};
+
+        \node[draw, rounded corners=2pt, fill=green!12, minimum width=5.2cm, minimum height=1.10cm, align=center] (o1) at (-3.4,-2.6) {\small 结果1：精度与鲁棒性提升\\\small (RQ1--RQ4)};
+        \node[draw, rounded corners=2pt, fill=green!12, minimum width=5.2cm, minimum height=1.10cm, align=center] (o2) at (3.4,-2.6) {\small 结果2：效率与部署可行\\\small (RQ5)};
+
+        \draw[->, thick] (p1) -- (c1);
+        \draw[->, thick] (p1) -- (c2);
+        \draw[->, thick] (p1) -- (c3);
+        \draw[->, thick] (c1) -- (m1);
+        \draw[->, thick] (c2) -- (m2);
+        \draw[->, thick] (c3) -- (m3);
+        \draw[->, thick] (m1) -- (o1);
+        \draw[->, thick] (m2) -- (o1);
+        \draw[->, thick] (m3) -- (o2);
+        \draw[->, thick] (m2) -- (o2);
+    \end{tikzpicture}
+    \bicaption{研究思路与技术路线总览图。}{Overview of research logic and technical roadmap.}
+    \label{fig:c1-route}
+\end{figure}
+
+该路线的目标不是简单叠加模型，而是在可部署约束下实现“时空结构先验 + 语义泛化能力”的互补增益。需要强调的是，本文的“协同学习”主要发生在训练阶段：通过PAM和对齐损失把结构知识迁移到GA-LLM参数中；推理阶段由GA-LLM单路输出，以保证时延可控。
 
 \subsection{研究内容与工作安排}
 围绕上述路线，本文研究内容可进一步细化为四项工作：
@@ -88,9 +121,9 @@
 上述四项工作构成了从问题定义到实验验证的完整研究闭环。
 
 \subsection{文献脉络与研究定位}
-为保证后续方法设计与实验结论具备可比性与可追溯性，本文在文献层面采用“经典基础 + 近年进展 + 前沿融合”的三层梳理框架。经典基础涵盖协同过滤、序列建模与排序学习等工作\cite{koren2009matrix,rendle2009bpr,rendle2010factorizing,grbovic2015commerce,hidasi2016gru4rec}；近年进展重点关注Next POI任务中的时空序列与图学习路线\cite{cheng2013where,HST-LSTM,LSTPM,STAN,CFPRec}；前沿融合聚焦LLM驱动推荐与结构先验注入路线\cite{li2023instructrec,hou2024recgpt,bao2023chatrec,lin2024llmrank,sun2024promptrec}。
+为保证后续方法设计与实验结论具备可比性与可追溯性，本文在文献层面采用“经典基础 + 近年进展 + 前沿融合”的三层梳理框架。经典基础涵盖协同过滤、序列建模与排序学习等工作\cite{koren2009matrix,rendle2009bpr,FPMC,grbovic2015commerce,hidasi2016gru4rec}；近年进展重点关注Next POI任务中的时空序列与图学习路线\cite{cheng2013where,HST-LSTM,LSTPM,STAN,CFPRec}；前沿融合聚焦LLM驱动推荐与结构先验注入路线\cite{li2023instructrec,hou2024recgpt,bao2023chatrec,lin2024llmrank,sun2024promptrec}。
 
-面向Next POI这一具体问题，本文重点参考三类证据。第一类是“纯时空/图模型”证据，包括空间门控、超图、对比学习与扩散协同等方向\cite{zhao2019stgn,yang2019lbsn2vec,yang2020flashback,zhou2020sgl,DCPR}。第二类是“语义增强”证据，包括语义城市建模与跨模态地理表示学习\cite{Pasquale2024City,M3PA,CLIP,wav2vec,liu2024mobilityfm}。第三类是“LLM推荐框架”证据，包括检索增强、协同对齐与推理链增强方法\cite{ReLLa,SeCor,GraphGPT,qu2024onerecthink,zhou2023unicorn}，以及近两年面向Next POI的最新模型进展\cite{zhuang2024tau,feng2025lrsa,wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}。上述证据共同支持本文采用“结构建模 + 语义增强 + 协同训练”的总体定位。
+面向Next POI这一具体问题，本文重点参考三类相关工作。第一类是“纯时空/图模型”相关工作，包括空间门控、超图、对比学习与扩散协同等方向\cite{zhao2019stgn,yang2019lbsn2vec,yang2020flashback,zhou2020sgl,DCPR}。第二类是“语义增强”相关工作，包括语义城市建模与跨模态地理表示学习\cite{Pasquale2024City,M3PA,CLIP,wav2vec,liu2024mobilityfm}。第三类是“LLM推荐框架”相关工作，包括检索增强、协同对齐与推理链增强方法\cite{ReLLa,SeCor,GraphGPT,qu2024onerecthink,zhou2023unicorn}，以及近两年面向Next POI的最新模型进展\cite{zhuang2024tau,feng2025lrsa,wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}。这些相关工作共同支持本文采用“结构建模 + 语义增强 + 协同训练”的总体定位。
 
 围绕“ID构造-语义对齐-受约束生成”的技术主线，本文将相关进展进一步映射到自身问题：在构造层，借鉴 CID~\cite{cid2023} 与 Tiger~\cite{tiger2023neurips} 的语义ID思路提升POI ID表达能力；在对齐层，参考 CLLM4Rec~\cite{cllm4rec2024www}、A-LLMRec~\cite{allmrec2024kdd} 与 IDGenRec~\cite{idgenrec2024sigir} 的协同对齐范式；在生成层，结合 TALLRec~\cite{tallrec2023} 与 GenRec~\cite{genrec2023} 的受约束生成实践，服务于Next POI的可达性与一致性目标。
 
