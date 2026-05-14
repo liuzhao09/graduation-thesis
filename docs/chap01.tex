@@ -1,24 +1,25 @@
 \chapter{绪论}
 \label{chap:intro}
 
-本章作为全文导引，围绕“为什么研究Next POI、已有工作走到哪里、本文具体解决什么问题”展开。与原稿相比，本章将国内外研究现状统一前置，避免在第1章只给背景、在第2章再另起综述造成结构割裂；同时将原先若干短小节合并为连续论述，使绪论部分的叙事从应用背景自然过渡到文献评述、问题定义和本文贡献。
+随着位置服务、移动社交网络和城市智能应用的发展，下一兴趣点（Next POI）预测逐渐成为推荐系统与城市计算交叉领域中的重要问题。该任务需要根据用户历史签到、时间上下文、地理位置和POI语义信息预测用户下一步可能访问的地点，其核心难点在于同时处理行为序列、空间可达性和活动意图之间的耦合关系。
 
 \section{研究背景与研究意义}
 在数字经济和移动互联网持续发展的背景下，推荐系统已经从平台的辅助功能演进为连接用户、内容、商品和线下服务的重要基础设施\cite{koren2009matrix,rendle2009bpr,he2017ncf,zhang2023sequentialsurvey,liu2024cn1}。传统推荐更多回答“用户可能喜欢什么”，而位置服务、本地生活和城市出行场景进一步要求系统判断“用户此刻可能去哪里、下一步能否到达、推荐结果是否符合真实地理规律”\cite{gao2022spatiotemporalsurvey,zhao2022cn5,he2021cn6,liu2023cn13,zheng2024cn14}。因此，下一兴趣点推荐（Next Point-of-Interest Recommendation, Next POI）不仅是推荐系统问题，也是时空行为建模、地理信息理解和城市计算交叉形成的典型任务。
 
 与普通物品推荐相比，Next POI受到时间节律、空间可达性、活动语义和行为路径连续性的共同约束\cite{PRME,ST-RNN,HST-LSTM,STAN,GETNext}。签到轨迹中记录的并非孤立偏好，而是一组带顺序、地点、时间和语义标签的行为片段：同一商圈在午间和夜间具有不同访问规律，同一交通枢纽在工作日与周末连接的目的地也可能明显不同。若模型只学习历史访问频率，容易把高频近邻点误判为下一目标；若只依赖语义文本，可能生成语义合理但地理上不可达的地点。因此，该任务的核心难点在于同时处理“局部时序规律”“全局转移结构”和“语义泛化能力”。
-
+从实际系统角度看，Next POI预测还具有明显的“决策前置”特点。线上内容推荐允许用户快速跳过不感兴趣的条目，而出行位置推荐往往会影响用户对路线、时间和活动安排的判断，错误推荐带来的成本更高。例如在早高峰通勤场景中，候选点之间可能只相隔数百米，但对应的通勤目的却完全不同；在旅游或本地生活场景中，模型给出的地点即便类别相近，若距离过远或不符合当前时间段，也很难被用户采纳。这使得Next POI模型不能只依赖传统推荐系统中的点击概率思路，而需要更细致地刻画地理距离、路径连通性、访问顺序和活动语义之间的关系。本文选择大小模型协同路线，也正是因为单一路线往往只能覆盖其中一部分约束。
+进一步看，Next POI预测中的“下一点”并不是一个单纯的标签，而是用户当前状态、城市空间结构和候选地点可达性共同作用后的结果。用户在同一POI停留后的下一步行为，可能受当前时间、前序访问目的、所在区域功能和个人习惯影响；而同一个候选POI是否合理，也取决于它与当前点之间是否存在常见迁移路径、是否符合该时段的活动规律、是否与用户近期序列中的语义主题连续。若模型只把任务看作ID分类问题，容易忽略这些约束之间的相互作用；若只把轨迹转写为自然语言提示，又可能把坐标、距离和转移概率压缩成模糊描述，导致预测结果语义上合理但空间上偏离。本文的研究价值就在于把这些约束拆解为可学习的结构表示、地理表示和语义表示，并通过协同训练使它们在同一预测目标下相互补充。
 本文工作的意义体现在三个层面。理论上，Next POI位于时空序列建模、图结构学习和大语言模型语义推理的交叉区域\cite{zhang2023sequentialsurvey,wu2022gnnrecsurvey,cao2024trajllm,li2024spatialfm,gao2023llm4rs}，能够用于检验结构先验如何与语言模型表示空间协同。方法上，现有序列方法擅长短期局部模式\cite{hidasi2016gru4rec,li2017narm,liu2018stamp,hidasi2018gru4rec2,qin2020fmlp}，图方法擅长高阶关系传播\cite{ying2018pin,wu2019session,he2020lightgcn,wang2019kgat,lin2022simgcl}，LLM方法擅长语义迁移和复杂上下文理解\cite{LLMRec,CoLLM,CoRAL,LLaRA,GraphGPT}，但三者很少在可部署框架中被统一组织。应用上，本地生活、文旅推荐和城市出行服务均要求推荐结果既“像用户会去的地方”，又“在时间和空间上走得通”\cite{gao2022spatiotemporalsurvey,liu2023cn13,zheng2024cn14,wang2024georecllm,zheng2024poillm}。
 
 \section{国内外研究现状与评述}
-国内外关于推荐系统的研究经历了从协同过滤、序列推荐到生成式推荐的持续演进。早期协同过滤和排序学习工作，如矩阵分解、BPR和FPMC等，为用户偏好和短期转移建模提供了基础\cite{koren2009matrix,rendle2009bpr,FPMC,grbovic2015commerce}。随后，GRU4Rec、NARM、STAMP、SASRec、BERT4Rec等序列推荐模型将循环网络、注意力机制和双向表示学习引入行为序列建模\cite{hidasi2016gru4rec,li2017narm,liu2018stamp,kang2018sasrec,sun2019bert4rec}。这些研究证明了序列上下文对推荐排序的重要性，但多数方法面向普通物品序列，缺少对地理距离、时间节律和出行可达性的直接刻画。
+国内外关于推荐系统的研究经历了从协同过滤、序列推荐到生成式推荐的持续演进。早期协同过滤和排序学习工作，如矩阵分解\cite{koren2009matrix}、BPR\cite{rendle2009bpr}和FPMC\cite{FPMC}等，为用户偏好和短期转移建模提供了基础。随后，GRU4Rec\cite{hidasi2016gru4rec}、NARM\cite{li2017narm}、STAMP\cite{liu2018stamp}、SASRec\cite{kang2018sasrec}、BERT4Rec\cite{sun2019bert4rec}等序列推荐模型将循环网络、注意力机制和双向表示学习引入行为序列建模。这些研究证明了序列上下文对推荐排序的重要性，但多数方法面向普通物品序列，缺少对地理距离、时间节律和出行可达性的直接刻画。
 
-在Next POI方向，研究重心逐渐从“访问序列预测”转向“时空约束下的路径预测”。FPMC、PRME等方法将个体偏好与连续转移结合，ST-RNN、HST-LSTM、LSTPM、STAN进一步纳入时间间隔、空间距离和注意力机制\cite{FPMC,PRME,ST-RNN,HST-LSTM,LSTPM,STAN}。这类序列模型的优点是结构清晰、训练成本可控，能够细致刻画短期访问惯性；不足是对长距离跳转和跨用户共享迁移的表达较弱，当历史轨迹稀疏或候选分布发生变化时，模型容易退化为局部高频点排序。因此，单纯加深序列编码器并不能自然解决高阶转移和空间可达性问题。
-
-图学习方法试图弥补上述不足。GETNext、GraphFlashback、STHGCN、SNPM、ROTAN、MTNet等工作通过POI图、异构图或动态图学习高阶关系，并在稀疏监督场景中取得较好表现\cite{GETNext,GraphFlashback,STHGCN,SNPM,ROTAN,MTNet}。图方法能够把“哪些地点经常相互连接”显式编码到结构空间中，对转移关系和区域联系更敏感；但其代价是动态图维护、邻居采样和异构信息融合成本较高，而且图表示与语言模型语义空间之间缺乏天然对齐。换言之，图模型能学到有用结构，却不容易直接让LLM稳定读取这些结构知识。
-
-近两年，大语言模型推动推荐研究进入生成式阶段。从P5、TALLRec、GenRec到CID、Tiger、IDGenRec和A-LLMRec，研究重点逐步从“能否把推荐写成生成任务”转向“生成结果是否可控、ID表达是否可学习、协同信号能否进入语言空间”\cite{p5recsys2022,tallrec2023,genrec2023,cid2023,tiger2023neurips,idgenrec2024sigir,allmrec2024kdd}。在Next POI领域，LLM4POI验证了将轨迹预测转化为生成任务的可行性，SeCor、Geo-LLMRec和POI-LLM相关研究进一步指出，纯文本坐标输入容易导致空间连续性破坏，模型可能给出语义通顺但地理上偏移较大的预测\cite{LLM4POI,SeCor,wang2024georecllm,zheng2024poillm}。近期工作开始引入检索增强、地理重排、多智能体推断或隐私保持反思机制\cite{wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}，说明研究前沿已经从“让LLM参与推荐”推进到“让LLM遵守地理和结构约束”。
-
+在Next POI方向，研究重心逐渐从“访问序列预测”转向“时空约束下的路径预测”。FPMC\cite{FPMC}、PRME\cite{PRME}等方法将个体偏好与连续转移结合，ST-RNN\cite{ST-RNN}、HST-LSTM\cite{HST-LSTM}、LSTPM\cite{LSTPM}、STAN\cite{STAN}进一步纳入时间间隔、空间距离和注意力机制。这类序列模型的优点是结构清晰、训练成本可控，能够细致刻画短期访问惯性；不足是对长距离跳转和跨用户共享迁移的表达较弱，当历史轨迹稀疏或候选分布发生变化时，模型容易退化为局部高频点排序。因此，单纯加深序列编码器并不能自然解决高阶转移和空间可达性问题。
+图学习方法试图弥补上述不足。GETNext\cite{GETNext}、GraphFlashback\cite{GraphFlashback}、STHGCN\cite{STHGCN}、SNPM\cite{SNPM}、ROTAN\cite{ROTAN}、MTNet\cite{MTNet}等工作通过POI图、异构图或动态图学习高阶关系，并在稀疏监督场景中取得较好表现。图方法能够把“哪些地点经常相互连接”显式编码到结构空间中，对转移关系和区域联系更敏感；但其代价是动态图维护、邻居采样和异构信息融合成本较高，而且图表示与语言模型语义空间之间缺乏天然对齐。换言之，图模型能学到有用结构，却不容易直接让LLM稳定读取这些结构知识。
+进一步比较序列方法与图方法可以看到，二者并不是简单的替代关系。序列模型更像是在用户个人轨迹上做局部外推，适合捕捉“刚刚去了哪里、下一步通常接着去哪里”的短期惯性；图模型则把大量用户的访问行为汇总为全局结构，适合捕捉“哪些地点之间存在稳定迁移关系”的群体规律。真实出行预测往往同时需要这两类信息：如果只看个体序列，模型容易忽视其他用户形成的可迁移路径；如果只看全局图结构，模型又可能弱化当前用户的个性化计划。因此，本文的小模型分支并不是单纯选择序列或图中的一种，而是通过时间增强序列动态图把二者结合起来，使局部历史、时间分槽和转移结构能够共同参与表示学习。
+近两年，大语言模型推动推荐研究进入生成式阶段。从P5\cite{p5recsys2022}、TALLRec\cite{tallrec2023}、GenRec\cite{genrec2023}到CID\cite{cid2023}、Tiger\cite{tiger2023neurips}、IDGenRec\cite{idgenrec2024sigir}和A-LLMRec\cite{allmrec2024kdd}，研究重点逐步从“能否把推荐写成生成任务”转向“生成结果是否可控、ID表达是否可学习、协同信号能否进入语言空间”。在Next POI领域，LLM4POI\cite{LLM4POI}验证了将轨迹预测转化为生成任务的可行性，SeCor\cite{SeCor}、Geo-LLMRec\cite{wang2024georecllm}和POI-LLM\cite{zheng2024poillm}相关研究进一步指出，纯文本坐标输入容易导致空间连续性破坏，模型可能给出语义通顺但地理上偏移较大的预测。近期工作开始引入检索增强、地理重排、多智能体推断或隐私保持反思机制\cite{wu2024mrpllm,wu2024mas4poi,li2025rallmpoi}，说明研究前沿已经从“让LLM参与推荐”推进到“让LLM遵守地理和结构约束”。
+LLM路线带来的变化值得单独讨论。传统推荐模型通常输出候选分数，模型内部的ID表示不要求具备自然语言解释能力；而LLM推荐把历史轨迹、POI名称、类别和坐标组织成文本输入，再生成目标POI，这使模型可以利用类别语义、区域描述和上下文常识。但这种优势也带来新的问题：语言模型擅长处理符号和语义关联，却不擅长天然理解经纬度之间的连续距离，更难直接学习“坐标相近但token差异大”的几何事实。若不引入专门的地理表示，LLM可能把坐标当作普通字符串处理；若不引入结构对齐，LLM又难以利用图模型中已经学到的POI迁移关系。本文的GCIM和PAM正是围绕这两个缺口设计，而不是简单增加提示词长度。
+从研究发展趋势看，Next POI任务正在从单纯的“下一点分类”转向“带约束的行为推理”。传统序列模型能够较好利用短期历史，但在跨区域、长尾POI和语义稀疏场景中容易受限；图模型能够补充群体层面的迁移关系，却需要面对动态图噪声、边权更新和跨空间对齐问题；LLM能够理解文本语义和复杂上下文，但必须通过专门机制获得地理连续性与结构先验。三类方法的能力边界决定了本文不能只沿着单一路线扩展，而需要把结构先验、地理编码和语言语义放在同一预测目标下联合考虑。
 中文学术界在推荐系统、序列推荐、图推荐和城市时空智能方面也形成了较系统的研究脉络\cite{liu2024cn1,zhang2023cn2,wang2023cn3,li2024cn4,zhao2022cn5,he2021cn6,sun2022cn7,yang2023cn8}。相关工作强调真实业务中的可解释性、工程可用性和实时响应能力\cite{chen2024cn9,gao2024cn10,huang2024cn11,xu2024cn12,qian2024cn15}，这对本文具有直接启示：Next POI模型不能只追求离线指标，还必须说明结构约束从何而来、如何进入模型、推理成本是否可接受。综合已有研究可以看到，序列模型、图模型和LLM模型各有优势，但仍缺少一个在训练阶段吸收结构先验、在推理阶段保持简洁输出的统一方案。这正是本文选择“大小模型协同学习”路线的原因。
 
 \section{研究问题与核心挑战}
@@ -26,18 +27,18 @@
 
 具体而言，本文将总体目标分解为五个可验证问题：第一，同一POI在不同时段具有不同转移规律，模型需要以较低额外成本显式建模时段异质性；第二，下一跳预测不仅取决于“当前点通常去哪里”，也取决于“目标点通常从哪里来”，因此需要同时表达转出与转入偏好；第三，LLM语义空间不天然保持地理邻近关系，经纬度若被当作普通文本token处理，空间连续性会被破坏；第四，POI图中的高阶转移关系需要从结构空间映射到LLM语义空间，否则语言模型难以利用这些先验；第五，在效果提升之外，协同框架必须控制训练成本、推理时延和参数规模，避免只在离线实验中成立。
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.92\textwidth]{fig1_GCIM_c1.pdf}
+    \includegraphics[width=0.76\textwidth]{fig1_GCIM_c1.pdf}
     \bicaption{空间连续性挑战示意：（a）预测误差分布与平均地理误差对比，显示纯文本LLM更易产生远距离偏移；（b）坐标文本token化示例，显示地理上邻近的坐标在离散token空间中可能被映射为差异较大的符号序列。}{Illustration of the spatial continuity challenge: (a) comparison of error distribution and mean geographic error distance; (b) a tokenization example showing that geographically close coordinates may become distant in discrete token space.}
     \label{fig:c1-gcim-motivation}
 \end{figure}
 
 上述问题对应四类核心挑战。其一是时间异质性挑战：同一POI在早晚高峰、工作日和周末的转移模式差异显著，统一转移机制容易造成偏差\cite{ST-RNN,zhao2019stgn,STAN,STiSAN,MTNet}。其二是空间连续性挑战：经纬度与语义表示空间之间缺乏天然同构，直接把坐标写成文本会使相邻地点在token空间中被切分为差异较大的符号序列\cite{GeoSAN,li2020gcnpoi,LLM4POI,Jonathan2023Gpt}，如图\ref{fig:c1-gcim-motivation}所示。其三是转移先验注入挑战：POI图中蕴含的高阶迁移关系并不会自动出现在语言模型输入中，单靠上下文共现很难稳定恢复\cite{GraphFlashback,SNPM,STHGCN,SeCor,STKG-PLM}。其四是协同优化挑战：小模型的结构归纳偏置与大模型的语义泛化能力需要在训练阶段形成稳定接口，否则容易变成简单堆叠或推理期高成本融合\cite{ReLLa,CoRAL,xu2024hybridrec,wu2024ragrec,qu2024onerecthink}。
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.92\textwidth]{fig2_PAM_c2.pdf}
+    \includegraphics[width=0.76\textwidth]{fig2_PAM_c2.pdf}
     \bicaption{转移先验注入挑战示意：仅依赖token语义难以恢复POI图中的高阶迁移关系。}{Illustration of transfer-prior injection challenge: token-level semantics alone are insufficient to recover high-order transitions in the POI graph.}
     \label{fig:c1-pam-motivation}
 \end{figure}
@@ -77,7 +78,8 @@
     \label{fig:c1-route}
 \end{figure}
 
-围绕图\ref{fig:c1-route}所示路线，本文主要贡献如下。第一，提出面向Next POI任务的大小模型协同框架，将时空结构建模、地理语义增强和跨空间对齐训练纳入统一流程；第二，设计时间增强序列动态图与双向转移建模机制，使小模型能够表达不同时段、不同方向的出行规律；第三，设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），分别缓解LLM空间连续性不足和转移先验注入困难；第四，构建围绕研究问题的实验评估流程，从总体性能、模块贡献、协同有效性和效率开销四个维度验证方法有效性。需要强调的是，本文所称“协同学习”主要发生在训练阶段：结构知识通过PAM和对齐损失迁移到GA-LLM侧，推理阶段由GA-LLM单路输出，而不是让TSPM与GA-LLM在线共同打分。
+根据图\ref{fig:c1-route}所示技术路线，本文主要贡献如下。第一，提出面向Next POI任务的大小模型协同框架，将时空结构建模、地理语义增强和跨空间对齐训练纳入统一流程；第二，设计时间增强序列动态图与双向转移建模机制，使小模型能够表达不同时段、不同方向的出行规律；第三，设计地理坐标注入模块（Geographic Coordinate Injection Module, GCIM）与POI对齐模块（POI Alignment Module, PAM），分别缓解LLM空间连续性不足和转移先验注入困难；第四，构建围绕研究问题的实验评估流程，从总体性能、模块贡献、协同有效性和效率开销四个维度验证方法有效性。需要强调的是，本文所称“协同学习”主要发生在训练阶段：结构知识通过PAM和对齐损失迁移到GA-LLM侧，推理阶段由GA-LLM单路输出，而不是让TSPM与GA-LLM在线共同打分。
+这些贡献共同指向同一核心判断：Next POI预测中的性能提升不应只来自更大的模型规模或更长的提示文本，而应来自对任务约束的显式建模。TSPM通过时间分槽和双向转移刻画结构先验，GA-LLM通过GCIM和PAM把地理连续性与转移关系注入语义空间，二者分别对应轻量结构建模与生成式语义推理中的关键缺口。
 
 \section{论文组织结构}
 全文共五章。第1章介绍研究背景、国内外研究现状、核心挑战、技术路线与主要贡献。第2章给出全文统一的任务定义、符号体系、评价指标与建模原则，为后续方法设计提供问题边界。第3章详细阐述大小模型协同学习方法，包括TSPM、GCIM、PAM和训练推理流程。第4章按研究问题组织实验设置、主结果、消融诊断、互补性分析和效率评估。第5章总结全文工作，提炼主要结论，并讨论研究局限和后续方向。

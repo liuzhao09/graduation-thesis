@@ -9,16 +9,14 @@
 \begin{equation}
 \mathcal{L}_{time}=-\sum_t \log\sigma\left(d^-_t-d^+_t\right),
 \end{equation}
-式中：\symline{$\mathcal{L}_{time}$}{双向转移损失；\\}
+式中：$\mathcal{L}_{time}$表示双向转移损失。
 $d^-_t,d^+_t$ 分别表示负样本与正样本距离项。\\
 距离项定义为：
 \begin{equation}
 d^+_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{+,T}\|_2^2,\quad
 d^-_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2.
 \end{equation}
-式中：\symline{$\boldsymbol{\xi}^{out}_{i,T}$}{当前POI在时间槽 $T$ 的转出表示；\\}
-$\boldsymbol{\xi}^{in}_{+,T},\boldsymbol{\xi}^{in}_{-,T}$ 分别表示正负样本转入表示；\\
-\hphantom{式中：}\symline{$\|\cdot\|_2^2$}{平方欧氏距离。\\}
+式中：$\boldsymbol{\xi}^{out}_{i,T}$表示当前POI在时间槽 $T$ 的转出表示；$\boldsymbol{\xi}^{in}_{+,T},\boldsymbol{\xi}^{in}_{-,T}$分别表示正负样本转入表示；$\|\cdot\|_2^2$表示平方欧氏距离。
 该目标本质上是对“正负距离差”进行最大化。
 
 \subsection{梯度方向解释}
@@ -33,8 +31,7 @@ $\boldsymbol{\xi}^{in}_{+,T},\boldsymbol{\xi}^{in}_{-,T}$ 分别表示正负样�
 \begin{equation}
 \mathcal{L}_{seq}=-\sum_t \log\sigma\left(\|\boldsymbol{\xi}_{seq}-\mathbf{e}_t^-\|_2^2-\|\boldsymbol{\xi}_{seq}-\mathbf{e}_{t+1}^+\|_2^2\right).
 \end{equation}
-式中：\symline{$\mathcal{L}_{seq}$}{序列对比损失；\\}
-\hphantom{式中：}\symline{$\boldsymbol{\xi}_{seq}$}{历史序列聚合表示；\\}
+式中：$\mathcal{L}_{seq}$表示序列对比损失；$\boldsymbol{\xi}_{seq}$表示历史序列聚合表示。
 $\mathbf{e}_t^-,\mathbf{e}_{t+1}^+$ 分别表示负样本与真实下一POI嵌入。
 
 \subsection{优化含义}
@@ -49,10 +46,7 @@ $\mathbf{e}_t^-,\mathbf{e}_{t+1}^+$ 分别表示负样本与真实下一POI嵌�
 \begin{equation}
 s(\ell)=\eta s_{llm}(\ell)+(1-\eta)s_{tspm}(\ell)
 \end{equation}
-式中：\symline{$s(\ell)$}{候选POI $\ell$ 的融合分数；\\}
-\hphantom{式中：}\symline{$s_{llm}(\ell)$}{大模型分支打分；\\}
-\hphantom{式中：}\symline{$s_{tspm}(\ell)$}{小模型分支打分；\\}
-\hphantom{式中：}\symline{$\eta$}{融合系数。\\}
+式中：$s(\ell)$表示候选POI $\ell$ 的融合分数；$s_{llm}(\ell)$表示大模型分支打分；$s_{tspm}(\ell)$表示小模型分支打分；$\eta$表示融合系数。
 作为推理阶段融合方式。线性融合的优点是可解释、可调、部署简单。其不足是难以捕捉复杂非线性交互，但在工程上具有较高稳定性与可控性。
 
 \subsection{融合系数选择}

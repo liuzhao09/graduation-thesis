@@ -1,7 +1,7 @@
 \chapter{问题定义与建模原则}
 \label{chap:related}
 
-第\ref{chap:intro}章已经统一梳理了国内外研究现状，并指出序列模型、图模型和大语言模型在Next POI任务上的能力边界。本章不再重复罗列文献，而是把前文评述进一步收敛为全文统一的问题定义、符号体系、评价口径和建模原则。这样处理的目的有两个：一是避免后续章节在任务表述和指标含义上反复解释；二是让第\ref{chap:method}章的方法设计能够直接对应到明确的研究空白和实验问题。
+Next POI预测需要在统一任务定义下同时处理用户历史、时间上下文、地理位置和候选POI集合。给定用户按时间排序的历史访问序列，模型需要估计下一时刻最可能访问的POI，并在Top-$K$候选中尽可能靠前地排列真实目标。由于不同研究路线在输入、输出和评价口径上存在差异，本章首先明确符号体系、建模边界和评价指标，再归纳本文采用的建模原则。
 
 \section{任务定义与符号约定}
 设用户集合为 $\mathcal{U}=\{u_1,u_2,\ldots,u_M\}$，POI集合为 $\mathcal{P}=\{\ell_1,\ell_2,\ldots,\ell_N\}$。用户 $u$ 的第 $i$ 条签到定义为：
@@ -9,31 +9,21 @@
 x_i=(u,\ell_i,t_i,g_i,c_i),
 \label{eq:c2-checkin}
 \end{equation}
-式中：\symline{$u$}{用户ID；\\}
-\hphantom{式中：}\symline{$\ell_i$}{第 $i$ 次签到对应的POI ID；\\}
-\hphantom{式中：}\symline{$t_i$}{签到时间戳；\\}
-\hphantom{式中：}\symline{$g_i=(lat_i,lon_i)$}{经纬度坐标；\\}
-\hphantom{式中：}\symline{$c_i$}{POI类别语义标签。}
+式中：$u$表示用户ID；$\ell_i$表示第 $i$ 次签到对应的POI ID；$t_i$表示签到时间戳；$g_i=(lat_i,lon_i)$表示经纬度坐标；$c_i$表示POI类别语义标签。
 
 用户轨迹表示为：
 \begin{equation}
-\mathcal{T}_u=\{x_1,x_2,\ldots,x_n\},\quad t_1<t_2<\cdots<t_n.
+\mathcal{T}_u=\{x_1,x_2,\ldots,x_n\},\quad t_1<t_2<\cdots<t_n,
 \label{eq:c2-traj}
 \end{equation}
-式中：\symline{$\mathcal{T}_u$}{用户 $u$ 的时间有序签到序列；\\}
-\hphantom{式中：}\symline{$n$}{轨迹长度；\\}
-\hphantom{式中：}\symline{$t_1<t_2<\cdots<t_n$}{轨迹按时间严格递增排序。}
-
+式中：$\mathcal{T}_u$表示用户 $u$ 的时间有序签到序列；$n$表示轨迹长度；$t_1<t_2<\cdots<t_n$表示轨迹按时间严格递增排序。
 Next POI任务可表示为学习映射：
 \begin{equation}
 f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{P},
 \label{eq:c2-task}
 \end{equation}
-式中：\symline{$f$}{预测函数；\\}
-\hphantom{式中：}\symline{$\hat{\ell}_{n+1}$}{模型预测的下一POI；\\}
-\hphantom{式中：}\symline{$\mathcal{P}$}{候选POI全集。}
+式中：$f$表示预测函数；$\hat{\ell}_{n+1}$表示模型预测的下一POI；$\mathcal{P}$表示候选POI全集。
 模型目标是使真实下一POI $\ell_{n+1}$ 在候选排序中尽可能靠前。若输出Top-$K$列表，记为 $\hat{\mathbf{y}}_u=[\hat{\ell}^{(1)},\ldots,\hat{\ell}^{(K)}]$。这一表述同时覆盖小模型的候选打分范式和大模型的POI ID生成范式，后文所有实验均以该任务定义为基准。
-
 为减少符号歧义，表\ref{tab:c2-notation}给出全文高频符号及含义。第\ref{chap:method}章会在此基础上补充实现级变量，但不会改变本章给出的核心定义。
 \begin{table}[htbp]
     \cTwoTblStyle
@@ -55,54 +45,48 @@ f:\mathcal{T}_u\mapsto \hat{\ell}_{n+1},\quad \hat{\ell}_{n+1}\in\mathcal{P},
         \bottomrule
     \end{tabular}
 \end{table}
+上述符号体系的设计遵循两个原则。第一，任务层符号尽量保持简洁，只保留用户、POI、时间、坐标和类别等必要字段，避免在问题定义阶段过早引入模型内部变量。这样做可以使小模型路线和大模型路线共享同一任务入口。第二，模型层符号只在后续章节按需展开，例如小模型分支中的转出/转入表示、大模型分支中的地理编码和POI对齐表示，均在第\ref{chap:method}章结合具体模块解释。通过这种分层定义，本文避免了同一符号在不同章节含义不一致的问题，也使实验章能够直接引用统一指标和变量。
 
 \section{建模边界与评价协议}
-为保证论证聚焦，本文采用如下边界设置。第一，训练与测试数据均包含可解析时间戳，允许划分统一时间槽；第二，POI具备经纬度坐标，允许构建地理约束与距离相关特征；第三，每个测试样本至少保留最小历史长度，以支持序列和结构建模；第四，本文主实验聚焦离线Top-$K$评估，不直接讨论在线A/B系统收益。上述边界并不削弱问题价值，而是保证不同模型在同一信息条件下比较。对于极短轨迹、无坐标输入、实时概念漂移等超出边界的场景，本文在第\ref{chap:exp}章效率与可扩展性分析以及第\ref{chap:conclusion}章展望中讨论扩展路径。
+本文采用如下边界设置。第一，训练与测试数据均包含可解析时间戳，允许划分统一时间槽；第二，POI具备经纬度坐标，允许构建地理约束与距离相关特征；第三，每个测试样本至少保留最小历史长度，以支持序列和结构建模；第四，本文主实验聚焦离线Top-$K$评估，不直接讨论在线A/B系统收益。上述边界并不削弱问题价值，而是保证不同模型在同一信息条件下比较。对于极短轨迹、无坐标输入、实时概念漂移等超出边界的场景，本文在第\ref{chap:exp}章效率与可扩展性分析以及第\ref{chap:conclusion}章展望中讨论扩展路径。
 
+这些边界也对应了本文不做的事情。本文不把POI预测扩展成完整导航问题，因此不直接建模道路限行、实时拥堵和交通工具选择；本文也不把用户画像作为主要研究对象，因此不依赖年龄、职业等隐私敏感属性，而是主要利用轨迹中已经包含的时间、空间和类别信息。这样的取舍使实验比较更清晰：如果模型获得提升，主要应归因于时空结构建模、地理编码和跨空间对齐，而不是额外侧信息带来的隐性优势。明确边界比无限扩展任务更重要，因为只有边界清楚，后续实验的公平性和可复现性才有基础。
 本文采用 Acc@K、MRR 与 NDCG@K 评价排序质量。设第 $n$ 个测试样本中真实POI的排序位次为 $r_n$，测试样本集合为 $\mathcal{D}$，则：
 \begin{equation}
 \text{Acc@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\mathbf{1}(r_n\le K),
 \label{eq:c2-acc}
 \end{equation}
-式中：\symline{$\mathcal{D}$}{测试样本集合；\\}
-\hphantom{式中：}\symline{$|\mathcal{D}|$}{测试样本总数；\\}
-\hphantom{式中：}\symline{$r_n$}{第 $n$ 个样本中真实POI的排序位次；\\}
-\hphantom{式中：}\symline{$\mathbf{1}(\cdot)$}{指示函数，条件满足时取1，否则取0。}
+式中：$\mathcal{D}$表示测试样本集合；$|\mathcal{D}|$表示测试样本总数；$r_n$表示第 $n$ 个样本中真实POI的排序位次；$\mathbf{1}(\cdot)$表示指示函数，条件满足时取1，否则取0。
 
 \begin{equation}
 \text{MRR}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{1}{r_n},
 \label{eq:c2-mrr}
 \end{equation}
-式中：\symline{$r_n$}{越小表示真实POI排名越靠前；\\}
-\hphantom{式中：}\symline{$\frac{1}{r_n}$}{第 $n$ 个样本的倒数排名得分。}
+式中：$r_n$表示越小表示真实POI排名越靠前；$\frac{1}{r_n}$表示第 $n$ 个样本的倒数排名得分。
 
 \begin{equation}
-\text{NDCG@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{\mathbf{1}(r_n\le K)}{\log_2(r_n+1)}.
+\text{NDCG@K}=\frac{1}{|\mathcal{D}|}\sum_{n=1}^{|\mathcal{D}|}\frac{\mathbf{1}(r_n\le K)}{\log_2(r_n+1)},
 \label{eq:c2-ndcg}
 \end{equation}
-式中：\symline{$\log_2(r_n+1)$}{位置折损项；\\}
-\hphantom{式中：}\symline{$\mathbf{1}(r_n\le K)$}{真实POI是否进入Top-$K$。}
+式中：$\log_2(r_n+1)$表示位置折损项；$\mathbf{1}(r_n\le K)$表示真实POI是否进入Top-$K$。
 
 不同指标对应不同系统目标。Acc@1反映第一推荐是否可直接使用；Acc@5/10反映候选列表覆盖能力；MRR强调正确答案能否前移；NDCG@K则对头部排序质量更敏感。因此，本文不以单一指标支撑结论，而是从首位可用性、候选覆盖和排序质量三个维度综合判断方法有效性。数据划分、负采样、显著性检验和实现细节统一在第\ref{chap:exp}章说明。
+在解释实验结果时，本文尤其关注指标之间是否同向变化。若Acc@1上升但MRR下降，说明模型可能只改善少数首位样本，排序整体并不稳定；若Acc@5上升但Acc@1不变，说明模型扩大了候选覆盖，但仍没有把真实目标推到最前；若地理误差下降而命中率变化有限，则说明模型至少减少了不可达或远跳错误。基于这一考虑，第\ref{chap:exp}章不会只给出单张主结果表，而会结合消融、跨城冷启动、平均地理误差和困难样本分析共同判断模型是否真正改善了Next POI任务的关键问题。
 
 \section{研究空白与建模原则}
 结合第\ref{chap:intro}章的文献评述，本文将研究空白归纳为三点。第一，小模型强结构、弱语义，能够学习时间分槽、图邻接和转移方向等规律，但对复杂意图表达与跨场景泛化支持不足。第二，大模型强语义、弱空间，具备文本理解和生成能力，但对经纬度连续性、可达性约束和POI图先验缺少天然建模机制。第三，已有研究缺少面向工程部署的统一协同训练方案，常见做法要么只做离线结构模型，要么让LLM承担全部推理压力，难以同时兼顾效果、解释性和成本。
 
 据此，本文提出三条建模原则。其一是结构先验显式化：在小模型侧显式建模时间异质性和双向转移关系，而不是让模型从稀疏序列中隐式猜测所有规律。其二是空间语义对齐：在大模型侧引入地理编码与POI结构对齐模块，使坐标和图先验能以可学习表示进入LLM输入空间。其三是协同训练可部署：通过先对齐、后协同的训练流程和参数高效微调控制成本，使结构知识在训练阶段被吸收，推理阶段保持单路输出。
-
+这三条原则之间存在明确的递进关系。结构先验显式化解决“哪些规律值得学习”的问题，空间语义对齐解决“这些规律如何进入大模型”的问题，协同训练可部署则解决“模型能否在真实资源约束下使用”的问题。若缺少第一步，大模型只能从文本中猜测结构关系；若缺少第二步，小模型学到的图结构难以被LLM利用；若缺少第三步，协同框架可能退化为推理期多模型堆叠，虽然离线指标提升，但线上时延、系统复杂度和长期运行成本都难以控制。因此，本文后续方法设计始终围绕“先学习结构、再对齐语义、最后保持推理简洁”这一主线展开。
 相应地，本文统一目标可概括为：
 \begin{equation}
 \mathcal{L}=\mathcal{L}_{\text{small}}+\lambda_1\mathcal{L}_{\text{align}}+\lambda_2\mathcal{L}_{\text{llm}}+\lambda_3\mathcal{L}_{\text{reg}},
 \label{eq:c2-joint}
 \end{equation}
-式中：\symline{$\mathcal{L}_{\text{small}}$}{小模型时空结构学习损失（第\ref{chap:method}章中具体化为$\mathcal{L}_{TSPM}$）；\\}
-\hphantom{式中：}\symline{$\mathcal{L}_{\text{align}}$}{跨空间对齐损失（含地理一致性损失$\mathcal{L}_{geo}$）；\\}
-\hphantom{式中：}\symline{$\mathcal{L}_{\text{llm}}$}{大模型任务损失（第\ref{chap:method}章中具体化为生成损失$\mathcal{L}_{gen}$）；\\}
-\hphantom{式中：}\symline{$\mathcal{L}_{\text{reg}}$}{正则化项；\\}
-\hphantom{式中：}\symline{$\lambda_1,\lambda_2,\lambda_3$}{各损失项的权重系数。}
+式中：$\mathcal{L}_{\text{small}}$表示小模型时空结构学习损失（第\ref{chap:method}章中具体化为$\mathcal{L}_{TSPM}$）；$\mathcal{L}_{\text{align}}$表示跨空间对齐损失（含地理一致性损失$\mathcal{L}_{geo}$）；$\mathcal{L}_{\text{llm}}$表示大模型任务损失（第\ref{chap:method}章中具体化为生成损失$\mathcal{L}_{gen}$）；$\mathcal{L}_{\text{reg}}$表示正则化项；$\lambda_1,\lambda_2,\lambda_3$表示各损失项的权重系数。
 该式用于统一描述整体目标组成；在实现层面，第\ref{chap:method}章采用“先训练并冻结TSPM，再进行语义侧两阶段协同优化”的顺序流程，而非端到端联合反向训练。
 
 \section{研究问题映射}
-为保证实验能够直接检验建模假设，本文将研究空白、建模原则和第\ref{chap:exp}章的研究问题建立如下对应关系。Gap-1对应结构先验显式化原则，并在RQ2中通过小模型消融验证；Gap-2对应空间语义对齐原则，并在RQ3中通过GCIM、PAM和跨城冷启动实验验证；Gap-3对应协同训练可部署原则，并在RQ4、RQ5中通过双路线互补性和效率评估验证。该映射关系使全文论证链条从“文献不足”到“方法设计”再到“证据验证”保持一致，避免章节之间目标漂移。
+研究空白、建模原则和第\ref{chap:exp}章的研究问题之间具有如下对应关系。Gap-1对应结构先验显式化原则，并在RQ2中通过小模型消融验证；Gap-2对应空间语义对齐原则，并在RQ3中通过GCIM、PAM和跨城冷启动实验验证；Gap-3对应协同训练可部署原则，并在RQ4、RQ5中通过双路线互补性和效率评估验证。该映射关系用于约束后续模块设计和实验诊断，使每个方法组件都对应明确的任务缺口。
 
 本章完成了全文问题分析的收束工作：首先给出统一任务定义和符号约定，其次明确评价指标与实验边界，最后将第\ref{chap:intro}章的文献评述转化为三类研究空白和三条建模原则。下一章将按照这些原则展开具体模型设计与训练机制说明。
