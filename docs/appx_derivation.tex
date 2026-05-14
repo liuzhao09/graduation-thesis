@@ -5,18 +5,18 @@
 
 \section{双向转移损失推导补充}
 \subsection{目标函数重述}
-第\ref{chap:method}章中，双向转移损失可写为：
+第\ref{chap:method}章中，双向转移损失可写为
 \begin{equation}
 \mathcal{L}_{time}=-\sum_t \log\sigma\left(d^-_t-d^+_t\right),
 \end{equation}
-式中：$\mathcal{L}_{time}$表示双向转移损失。
+其中，$\mathcal{L}_{time}$表示双向转移损失。
 $d^-_t,d^+_t$ 分别表示负样本与正样本距离项。\\
-距离项定义为：
+距离项定义为
 \begin{equation}
 d^+_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{+,T}\|_2^2,\quad
 d^-_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2.
 \end{equation}
-式中：$\boldsymbol{\xi}^{out}_{i,T}$表示当前POI在时间槽 $T$ 的转出表示；$\boldsymbol{\xi}^{in}_{+,T},\boldsymbol{\xi}^{in}_{-,T}$分别表示正负样本转入表示；$\|\cdot\|_2^2$表示平方欧氏距离。
+其中，$\boldsymbol{\xi}^{out}_{i,T}$表示当前POI在时间槽 $T$ 的转出表示；$\boldsymbol{\xi}^{in}_{+,T},\boldsymbol{\xi}^{in}_{-,T}$分别表示正负样本转入表示；$\|\cdot\|_2^2$表示平方欧氏距离。
 该目标本质上是对“正负距离差”进行最大化。
 
 \subsection{梯度方向解释}
@@ -27,11 +27,11 @@ d^-_t=\|\boldsymbol{\xi}^{out}_{i,T}-\boldsymbol{\xi}^{in}_{-,T}\|_2^2.
 
 \section{序列对比损失推导补充}
 \subsection{损失定义}
-序列损失采用与双向损失相似的对比形式：
+序列损失采用与双向损失相似的对比形式
 \begin{equation}
 \mathcal{L}_{seq}=-\sum_t \log\sigma\left(\|\boldsymbol{\xi}_{seq}-\mathbf{e}_t^-\|_2^2-\|\boldsymbol{\xi}_{seq}-\mathbf{e}_{t+1}^+\|_2^2\right).
 \end{equation}
-式中：$\mathcal{L}_{seq}$表示序列对比损失；$\boldsymbol{\xi}_{seq}$表示历史序列聚合表示。
+其中，$\mathcal{L}_{seq}$表示序列对比损失；$\boldsymbol{\xi}_{seq}$表示历史序列聚合表示。
 $\mathbf{e}_t^-,\mathbf{e}_{t+1}^+$ 分别表示负样本与真实下一POI嵌入。
 
 \subsection{优化含义}
@@ -42,11 +42,11 @@ $\mathbf{e}_t^-,\mathbf{e}_{t+1}^+$ 分别表示负样本与真实下一POI嵌�
 
 \section{协同融合打分讨论}
 \subsection{线性融合合理性}
-本文采用如下融合打分函数：
+本文采用如下融合打分函数
 \begin{equation}
 s(\ell)=\eta s_{llm}(\ell)+(1-\eta)s_{tspm}(\ell)
 \end{equation}
-式中：$s(\ell)$表示候选POI $\ell$ 的融合分数；$s_{llm}(\ell)$表示大模型分支打分；$s_{tspm}(\ell)$表示小模型分支打分；$\eta$表示融合系数。
+其中，$s(\ell)$表示候选POI $\ell$ 的融合分数；$s_{llm}(\ell)$表示大模型分支打分；$s_{tspm}(\ell)$表示小模型分支打分；$\eta$表示融合系数。
 作为推理阶段融合方式。线性融合的优点是可解释、可调、部署简单。其不足是难以捕捉复杂非线性交互，但在工程上具有较高稳定性与可控性。
 
 \subsection{融合系数选择}
@@ -67,7 +67,7 @@ LLM语义空间并不天然满足地理距离单调性，即语义邻近不必�
 在协同框架中，LLM前向与反向仍是主要开销来源。TSPM与对齐模块虽增加额外计算，但相对于大模型主干开销可控。LoRA的意义在于限制可训练参数规模，减少优化器状态内存。
 
 \subsection{推理复杂度拆分}
-推理成本可拆为三部分：输入编码、LLM推理、协同重排序。若业务时延敏感，可控制重排序候选规模；若业务精度优先，可适度扩大候选并进行更充分重排。
+推理成本可拆为三部分，包括输入编码、LLM推理和协同重排序。若业务时延敏感，可控制重排序候选规模；若业务精度优先，可适度扩大候选并进行更充分重排。
 
 \subsection{扩展到大规模场景}
 在百万级POI场景下，建议引入分层召回与近似检索，以避免全量打分。协同框架可作为重排层使用，从而在可控成本下保持高精度。
@@ -83,4 +83,4 @@ LLM语义空间并不天然满足地理距离单调性，即语义邻近不必�
 若数据分布发生剧烈漂移或外部上下文缺失，模型仍可能出现性能回退。后续可通过在线增量学习、外部信号注入和不确定性估计进一步缓解。
 
 \section{本附录小结}
-本附录从推导与理论讨论角度补充了方法设计依据。核心结论是：本文关键模块并非经验拼接，而是围绕“排序目标一致性、地理约束合理性、训练稳定性与部署可控性”展开的系统化设计。该补充有助于读者从理论与工程两端理解本文方案的有效性与边界条件。
+本附录从推导与理论讨论角度补充了方法设计依据。核心结论是，本文关键模块并非经验拼接，而是围绕“排序目标一致性、地理约束合理性、训练稳定性与部署可控性”展开的系统化设计。该补充有助于读者从理论与工程两端理解本文方案的有效性与边界条件。

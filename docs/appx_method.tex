@@ -5,11 +5,11 @@
 
 \section{数据管线与样本构造}
 \subsection{轨迹切片规则}
-为统一训练样本构造，本文采用前缀预测范式：给定用户轨迹 $\mathcal{T}_u=\{x_1,\ldots,x_n\}$，构造训练样本为：
+为统一训练样本构造，本文采用前缀预测范式，给定用户轨迹 $\mathcal{T}_u=\{x_1,\ldots,x_n\}$，构造训练样本为
 \begin{equation}
 (\{x_1,\ldots,x_t\}, x_{t+1}),\quad t\in[1,n-1].
 \end{equation}
-式中：$\{x_1,\ldots,x_t\}$表示历史前缀轨迹；$x_{t+1}$表示监督目标下一点；$t\in[1,n-1]$表示切片索引范围。
+其中，$\{x_1,\ldots,x_t\}$表示历史前缀轨迹；$x_{t+1}$表示监督目标下一点；$t\in[1,n-1]$表示切片索引范围。
 该构造与在线推荐流程一致，可避免后缀信息泄露。
 
 \subsection{时间槽映射}
@@ -20,22 +20,22 @@
 
 \section{TSPM分支实现细节}
 \subsection{模块输入输出接口}
-TSPM输入包括三类张量：POI索引序列、时间槽索引序列、用户索引。输出为候选POI得分向量与中间结构表示（用于与LLM侧对齐）。推荐的接口形式如下：
+TSPM输入包括三类张量，包括POI索引序列、时间槽索引序列和用户索引。输出为候选POI得分向量与中间结构表示（用于与LLM侧对齐）。推荐的接口形式如下。
 \begin{itemize}
-    \item 输入：\texttt{poi\_seq[B,L]}，\texttt{time\_slot[B,L]}，\texttt{user\_id[B]}；
-    \item 输出：\texttt{score\_tspm[B,N]}，\texttt{h\_seq[B,d]}，\texttt{h\_graph[B,d]}。
+    \item 输入\texttt{poi\_seq[B,L]}，\texttt{time\_slot[B,L]}，\texttt{user\_id[B]}；
+    \item 输出\texttt{score\_tspm[B,N]}，\texttt{h\_seq[B,d]}，\texttt{h\_graph[B,d]}。
 \end{itemize}
 
 \subsection{动态图更新策略}
-动态图可按两种策略更新：
+动态图可按两种策略更新。
 \begin{enumerate}
-    \item \textbf{离线静态近似更新}：每个epoch后批量更新图权重，训练稳定、实现简单；
-    \item \textbf{在线增量更新}：按批次局部更新邻接权重，能更快响应新分布但开销更高。
+    \item \textbf{离线静态近似更新}，每个epoch后批量更新图权重，训练稳定、实现简单；
+    \item \textbf{在线增量更新}，按批次局部更新邻接权重，能更快响应新分布但开销更高。
 \end{enumerate}
 本文优先采用第一种方式，在稳定性与效率之间更均衡。
 
 \subsection{负采样实践建议}
-负采样按“难负样本优先”原则构造：
+负采样按“难负样本优先”原则构造。
 \begin{enumerate}
     \item 从同区域抽取地理相近但真实未访问POI；
     \item 从同类别抽取语义相近POI；
@@ -45,7 +45,7 @@ TSPM输入包括三类张量：POI索引序列、时间槽索引序列、用户�
 
 \section{GCIM与PAM实现细节}
 \subsection{GCIM编码流水线}
-GCIM编码建议按以下步骤执行：
+GCIM编码建议按以下步骤执行。
 \begin{enumerate}
     \item 经纬度归一化，缓解量纲差异；
     \item Quadkey层级映射，生成离散区域编码；
@@ -65,14 +65,14 @@ PAM负责将POI结构表示投影至LLM语义空间。实现中可采用线性�
 阶段一冻结LLM主体，仅优化GCIM/PAM及映射层，目标是最小化对齐损失与地理一致性损失。该阶段重点在于建立跨空间可读表示，而非追求最终任务最优。
 
 \subsection{阶段二：协同优化}
-阶段二引入LoRA微调并联合优化任务目标。为提升稳定性，建议采用分段学习率：对齐模块较大学习率，LLM-LoRA较小学习率。该设置可避免语义模型过快覆盖已学结构先验。
+阶段二引入LoRA微调并联合优化任务目标。为提升稳定性，建议采用分段学习率，对齐模块较大学习率，LLM-LoRA较小学习率。该设置可避免语义模型过快覆盖已学结构先验。
 
 \subsection{早停与检查点策略}
-建议按验证集MRR与Acc@1联合监控：若二者连续若干轮无提升则触发早停。检查点保存采用“最优性能 + 最近轮次”双副本策略，便于回溯与故障恢复。
+建议按验证集MRR与Acc@1联合监控，若二者连续若干轮无提升则触发早停。检查点保存采用“最优性能 + 最近轮次”双副本策略，便于回溯与故障恢复。
 
 \section{推理与部署细节}
 \subsection{重排序触发条件}
-对于时延敏感场景，可仅在以下条件触发协同重排序：
+对于时延敏感场景，可仅在以下条件触发协同重排序。
 \begin{enumerate}
     \item LLM前两名候选得分接近（不确定性高）；
     \item 用户轨迹呈现跨区域迁移迹象；
@@ -87,7 +87,7 @@ PAM负责将POI结构表示投影至LLM语义空间。实现中可采用线性�
 当地理信息缺失、模板解析失败或模型服务超时时，建议回退至轻量基线（如TSPM-only）保证服务可用性。这一机制对工程稳定性至关重要。
 
 \section{实现清单与复现建议}
-建议在仓库中固定以下内容：
+建议在仓库中固定以下内容。
 \begin{enumerate}
     \item 数据清洗脚本、切分索引与版本哈希；
     \item 训练配置文件（含随机种子、学习率、损失权重）；

@@ -5,9 +5,9 @@
 \section*{（一）已发表的学术论文}
 
 \begin{enumerate}
-    \item Zhao Liu, Wei Liu, Huaijie Zhu, Jianxing Yu, Jian Yin. \textit{Next POI Recommendation Based on Time Slot Preferences and Bidirectional Transformation Modeling} (TSPM). \textbf{WISE 2024（CCF B）}.
+    \item Zhao Liu, Wei Liu, Huaijie Zhu, Jianxing Yu, Jian Yin. \textit{Next POI Recommendation Based on Time Slot Preferences and Bidirectional Transformation Modeling}（Time-enhanced Sequential Prediction Model, TSPM）。 \textbf{WISE 2024（CCF B）}.
 
-    \item Wei Liu*, Zhao Liu, Muzu Xie, Huaijie Zhu, Jianxing Yu, Jian Yin, Wang-Chien Lee. \textit{Geography-Aware Large Language Model for Next POI Recommendation} (GA-LLM). \textbf{ICDE 2026（CCF A）}.
+    \item Wei Liu*, Zhao Liu, Muzu Xie, Huaijie Zhu, Jianxing Yu, Jian Yin, Wang-Chien Lee. \textit{Geography-Aware Large Language Model for Next POI Recommendation}（Geography-Aware Large Language Model, GA-LLM）。 \textbf{ICDE 2026（CCF A）}.
 \end{enumerate}
 
 上述两项工作分别对应本文的两条技术主线。TSPM工作主要围绕时间分槽和双向转移建模展开，强调在轻量结构模型中显式表达时段差异、转出偏好和转入偏好；GA-LLM工作则进一步讨论大语言模型在Next POI任务中的地理连续性不足和结构先验注入问题，强调通过地理编码与POI对齐增强生成式推荐的空间可靠性。二者共同服务于同一研究目标，即小模型分支用于学习稳定的时空结构，大模型分支用于吸收地理和转移先验，训练期通过对齐模块完成知识迁移，推理期保持GA-LLM单路输出。
