@@ -15,7 +15,7 @@
 \end{enumerate}
 
 \section{实验设置}
-\subsection{数据集与预处理}
+\topichead{数据集与预处理}
 为避免“母数据集”和“城市子集”混用造成理解混乱，本文先给出统一口径。原始公开数据源包括：Gowalla\footnote{\url{http://snap.stanford.edu/data/loc-gowalla.html}} 与 Foursquare\footnote{\url{https://sites.google.com/site/yangdingqi/home}}。其中，Gowalla 时间跨度为 2009 年 2 月至 2010 年 10 月；Foursquare 时间跨度为 2012 年 4 月至 2014 年 1 月。两者均包含用户ID、POI ID、时间戳、经纬度与类别信息。
 
 \topichead{两条模型路线的数据使用差异}
@@ -47,7 +47,7 @@
 \keytag{轨迹构造原则}\quad
 轨迹切片采用时间有序滑窗方式构造监督样本：以前缀历史预测下一点。该构造方式与真实推荐流程一致，可避免随机打乱导致的时间泄露。对于超长轨迹，采用固定窗口与可变窗口结合策略，兼顾长期信息保留与训练稳定性。
 
-\subsection{评价指标与计算协议}
+\topichead{评价指标与计算协议}
 指标采用 Acc@1、Acc@5、Acc@10、MRR 与 NDCG@K。设第 $i$ 个测试样本中真实POI排名为 $rank_i$，对应指标定义为：
 \begin{equation}
 \text{Acc@k}=\frac{1}{N}\sum_{i=1}^{N}\mathbb{I}(rank_i\le k),\qquad
@@ -64,7 +64,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \topichead{统计显著性与稳健性}
 除主指标外，本文对关键对比结果进行显著性检验，并在不同随机种子下重复实验，以避免“单次最优偶然性”。具体地，每个核心模型在每个数据集上使用 5 个随机种子重复训练与评测，报告 mean$\pm$std；显著性采用 paired t-test，对 Acc@1、Acc@5 与 MRR@5 做成对检验，阈值设为 $p<0.05$。对于方差较大的设置，报告平均趋势并结合误差分析解释波动来源，而非仅展示最优结果。
 
-\subsection{对比方法与分组}
+\topichead{对比方法与分组}
 基线分为三组：
 \begin{enumerate}
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}序列方法：}FPMC、PRME、LSTM、ST-RNN、STAN 等\cite{FPMC,PRME,LSTM,ST-RNN,STAN};
@@ -73,7 +73,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 \end{enumerate}
 主比较对象分别为TSPM与GA-LLM主模型；小模型与大模型分支结果分别用于回答RQ2与RQ3。
 
-\subsection{实现细节与统计检验}
+\topichead{实现细节与统计检验}
 训练阶段采用两阶段策略：先对齐后协同；LLM侧使用LoRA进行参数高效微调。核心设置为：学习率 $2\times10^{-5}$、warm-up 20 steps、batch size=1/GPU、最大长度32768、训练3 epochs、Quadkey层级$L=25$。小模型侧采用第\ref{chap:method}章给出的统一训练协议。每组实验重复多次并报告平均结果；显著性分析用于验证相对提升的稳定性。
 
 \topichead{超参数搜索范围}
@@ -83,7 +83,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 实验统一在固定软硬件环境下运行，记录依赖版本、随机种子和数据切分索引。对可复现实验提供统一脚本入口，确保主结果、消融结果与诊断结果由同一评估代码生成，避免评估实现差异引入偏差。
 
 \section{主结果：双路线模型与基线对比（RQ1）}
-\subsection{小模型路线主结果}
+\topichead{小模型路线主结果}
 表~\ref{tab:tspm-main} 展示了TSPM在Gowalla与Foursquare上的核心结果。可见 TSPM 相较代表性序列/图基线取得稳定增益，说明时间增强与双向转移设计有效。
 以最强基线 Graph-Flashback 为参照，TSPM 在 Gowalla 上取得 \redbf{Acc@1 +5.49\%}、\bluebf{MRR +3.59\%}；在 Foursquare 上取得 \redbf{Acc@1 +4.53\%}、\bluebf{MRR +3.99\%}。这说明改进不仅提升“是否命中”，也提升“命中的排序位置”。
 
@@ -115,7 +115,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}}
 \end{table}
 
-\subsection{大模型路线主结果}
+\topichead{大模型路线主结果}
 表\ref{tab:c4-gallm-main}展示GA-LLM在NYC/TKY/CA上的主结果。相较于传统模型、图模型以及文本LLM基线，GA-LLM在三座城市均获得最优Acc@1/Acc@5/MRR@5，说明“地理注入+转移对齐”对LLM路线是稳定有效的。
 相对最强非GA基线，GA-LLM 在三城的 Acc@1 提升分别为 \redbf{18.27\%（NYC）}、\redbf{14.73\%（TKY）}、\redbf{16.69\%（CA）}；Acc@5 提升最高达到 \bluebf{24.10\%（CA）}。
 
@@ -155,19 +155,19 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 表\ref{tab:c4-gallm-main}最后一行已汇总GA-LLM相对最强非GA基线的提升比例。三个城市在Acc@1、Acc@5、MRR@5上均为正增益，说明提升不是偶然点状收益，而是跨数据分布的稳定趋势。
 
-\subsection{代表性差值抽样分析}
+\topichead{代表性差值抽样分析}
 本文仅抽取代表性对照做细化分析。对于 GA-LLM（见表\ref{tab:c4-gallm-main}）：在 NYC 上相对最强图基线 ROTAN 的 Acc@1 绝对差值为 \redbf{+0.0882}（0.3988 vs 0.3106）；在 TKY 上相对最强图基线 STHGCN 的差值为 \bluebf{+0.0532}（0.3482 vs 0.2950）；在 CA 上相对 LLM4POI 的差值为 \redbf{+0.0501}（0.2566 vs 0.2065）。这三组对照说明 GA-LLM 的优势同时覆盖“图基线强项场景”和“文本LLM场景”。
 
 对于 TSPM（见表\ref{tab:tspm-main}）：在 Gowalla 上相对最强基线 Graph-Flashback 的 Acc@1 绝对差值为 \bluebf{+0.0083}（0.1595 vs 0.1512），对应 MRR 差值 \bluebf{+0.0087}（0.2509 vs 0.2422）；在 Foursquare 上对应差值为 \bluebf{+0.0127}（Acc@1）与 \bluebf{+0.0165}（MRR）。该结果表明 TSPM 在强基线条件下依然维持稳定正增益，且改进主要体现在“头部命中与排序质量同步提升”。
 
-\subsection{结果分层解读}
+\topichead{结果分层解读}
 从指标层面看，Acc@1与MRR提升说明模型不仅“能命中”，且能把真实目标更稳定地排在前列；Acc@10或Acc@5提升说明候选覆盖范围同步改进。这意味着两条路线并未以牺牲覆盖换取头部精度，而是在多指标上保持一致收益。
 
 从方法层面看，TSPM与GA-LLM分别在“结构稳定性”和“语义泛化”上体现优势，表明“结构约束 + 语义推理”具备明确互补关系。该结论与第\ref{chap:method}章设计目标一致。
 
 \section{机制验证与诊断分析（RQ2--RQ4）}
-\subsection{小模型分支消融与诊断（RQ2）}
-\subsubsection{核心模块消融}
+\topichead{小模型分支消融与诊断（RQ2）}
+\topichead{核心模块消融}
 针对TSPM进行逐项消融，重点比较“去除TSDG”“去除双向转移”等变体。表\ref{tab:ablation}显示：去除任一关键模块均会降低性能，说明小模型增益并非单一组件造成。
 
 \begin{table}[htbp]
@@ -189,8 +189,8 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 该表揭示了两点：第一，TSDG负责将时段异质信息显式结构化，去除后整体能力下降最明显；第二，双向转移建模虽增益幅度略小，但对MRR影响更敏感，说明其在“正确候选前置”上更关键。
 进一步按 Acc@1 计算相对提升：完整 TSPM 相比 \textit{w/o TSDG} 为 \redbf{+1.40\%}（0.1595 vs 0.1573），相比 \textit{w/o BTM} 为 \bluebf{+0.50\%}（0.1595 vs 0.1587）。这说明 TSDG 是主增益来源，BTM 是稳定排序质量的补充增益来源。
 
-\subsection{大模型分支消融与诊断（RQ3）}
-\subsubsection{GCIM与PAM模块消融}
+\topichead{大模型分支消融与诊断（RQ3）}
+\topichead{GCIM与PAM模块消融}
 表\ref{tab:c4-gallm-ablation}展示GA-LLM在三个数据集上的消融结果。去除GCIM带来最大性能回落，说明地理表示建模是LLM路线的基础；去除PAM同样造成稳定下降，说明转移先验注入不可或缺。
 
 \begin{table}[htbp]
@@ -213,7 +213,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 该结果与机制解释一致：CSE更擅长刻画局部连续变化，HDE更擅长编码稀疏场景下的层级归属，GCIM融合二者后形成稳定地理约束；PAM则负责把结构转移知识对齐到LLM语义空间。
 按 Acc@1 的相对提升计算，完整 GA-LLM 相比 \textit{w/o GCIM} 在 NYC/TKY/CA 分别为 \redbf{+6.94\%/+3.32\%/+6.83\%}；相比 \textit{w/o PAM} 分别为 \bluebf{+2.23\%/+0.40\%/+2.68\%}。该结果表明 GCIM 负责主要地理一致性收益，PAM 负责稳定补充收益。
 
-\subsubsection{GCIM细粒度消融与参数实验}
+\topichead{GCIM细粒度消融与参数实验}
 为进一步回答“GCIM的有效性来自哪些设计”，表\ref{tab:c4-gcim-inner-ablation}给出GCIM内部消融结果。可以看到，移除测地对齐损失（GAL）后性能显著下降，说明仅有坐标编码而缺少显式距离一致性约束时，模型仍会出现“语义合理但地理偏离”的预测。
 
 \begin{table}[htbp]
@@ -256,7 +256,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-\subsubsection{坐标注入与空间误差分析}
+\topichead{坐标注入与空间误差分析}
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig4_coor_analysis.pdf}
@@ -296,7 +296,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 从机制上看，图\ref{fig:c4-distance}给出“误差分布左移”，图\ref{fig:c4-avg-distance}给出“均值同步下降”，两者共同说明GCIM收益具备分布层与统计量层的双重一致性。因此该图是RQ3/RQ4的重要量化补证。
 
-\subsubsection{跨城冷启动分析}
+\topichead{跨城冷启动分析}
 跨城冷启动是检验泛化能力的关键场景。表\ref{tab:c4-cross-city}显示，无论以NYC、TKY还是CA作为训练源，带GCIM的模型在跨城测试中均优于文本LLM基线，说明模型学习到可迁移的空间规律，而非城市特定记忆。
 
 \begin{table}[htbp]
@@ -322,7 +322,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
 
 进一步观察跨城失败样例可见，误差主要集中在三类情形：稀疏区域样本不足、长尾类别语义歧义、以及城市功能分布差异导致的概念漂移（concept drift）。其中，稀疏广域场景会放大候选可达性判断难度；类别分布差异会削弱“语义近邻=空间可达”的假设。该现象解释了为何跨城迁移仍有性能回落，也说明后续应引入更强的域自适应机制。
 
-\subsubsection{PAM作用机制分析}
+\topichead{PAM作用机制分析}
 \begin{figure}[htbp]
     \centering
     \includegraphics[height=0.20\textheight,keepaspectratio]{fig7_pam_analysis.pdf}
@@ -371,7 +371,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-\subsection{双路线互补性分析（RQ4）}
+\topichead{双路线互补性分析（RQ4）}
 互补性结论只基于可观测数据，不引入额外假设。第一，TSPM 在母数据集上的稳定提升（如 Gowalla Acc@1 \redbf{+5.49\%}、Foursquare Acc@1 \redbf{+4.53\%}）说明结构分支对时间异质迁移建模有效。第二，GA-LLM 在城市子集上的增益（如 NYC Acc@1 \redbf{+18.27\%}、TKY Acc@5 \redbf{+19.20\%}、CA Acc@5 \redbf{+24.10\%}）说明语义分支在复杂城市分布下具备更强泛化。第三，GCIM 使平均地理误差显著下降、PAM 在缺失目标场景提升 \redbf{+52.98\%}，共同证明“地理一致性 + 转移先验”是 GA-LLM 路线的关键来源。
 
 综合来看，两条路线并非互相替代：TSPM提供稳定时空结构约束，GA-LLM提供跨场景语义泛化能力。该互补关系由表\ref{tab:tspm-main}、表\ref{tab:c4-gallm-main}、表\ref{tab:c4-gallm-ablation}、图\ref{fig:c4-avg-distance}与图\ref{fig:c4-pam}共同支持。
@@ -408,7 +408,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-\subsection{模型规模与训练策略实验}
+\topichead{模型规模与训练策略实验}
 除效率曲线外，我们进一步补充不同LLM规模与训练策略的实验。表\ref{tab:c4-llm-scale}显示，GA-LLM在较小参数规模下仍保持稳定优势，说明本文改进并不依赖“更大模型”才能生效。进一步地，GA-LLM-TSPM、GA-LLM-MTNet、GA-LLM-STHGCN、GA-LLM-ROTAN四组结果表明：当PAM接入不同结构嵌入来源时，性能仍保持稳定提升，验证了PAM的接口兼容性。需要强调，这里的“组合”是\textbf{训练期通过PAM注入结构嵌入}，不是推理期TSPM与GA-LLM并行联合预测。
 
 \begin{table}[htbp]
@@ -449,7 +449,7 @@ NDCG@K与第\ref{chap:related}章定义一致。对于LLM路线，另报告 MRR@
     \end{tabular}
 \end{table}
 
-\subsection{部署策略}
+\topichead{部署策略}
 以下内容属于工程落地可选方案，不属于本文离线实验协议。本文给出三条可实施策略：
 \begin{enumerate}
     \item 采用“GA-LLM直推 + 解码规模控制”的主链路，稳定输出并控制时延；

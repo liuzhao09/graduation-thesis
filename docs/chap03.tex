@@ -23,7 +23,7 @@
 
 如图\ref{fig:c3-framework}所示，图示聚焦“语义分支如何吸收结构先验并完成推理输出”的关键路径：轨迹输入先经GCIM形成地理编码，再由PAM注入结构侧关系信息，随后由GA-LLM完成下一POI生成。该结构并不表示TSPM直接参与在线推理，而是强调PAM作为跨分支接口承接协同信息。该设计对应第\ref{chap:exp}章RQ1与RQ4，用于验证结构信息注入带来的整体收益与互补性。
 
-\subsection{输入构建与数据流定义}
+\topichead{输入构建与数据流定义}
 为便于实现与复现，本文将输入组织为三类并行流：
 \begin{enumerate}
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}序列流：}由时间有序POI序列构成，用于TSPM提取局部与短期迁移模式；
@@ -32,10 +32,10 @@
 \end{enumerate}
 三类输入在特征层保持相对独立，在损失层进行耦合，在推理层保持GA-LLM单路输出。该设计可避免“早期强融合导致互相干扰”，并降低训练初期梯度不稳定风险。
 
-\subsection{核心符号与问题映射}
+\topichead{核心符号与问题映射}
 本章沿用第\ref{chap:related}章给出的统一符号体系，不再重复列出完整符号表。为便于阅读，本章仅补充实现级新增变量：$\boldsymbol{\xi}^{out},\boldsymbol{\xi}^{in}$（双向转移表示）、$\boldsymbol{\xi}_{seq}$（序列聚合表示）、$\mathbf{E}_{gps}$（地理编码表示）、$\mathbf{E}_{poi}$（POI对齐表示）、$\mathcal{L}_{time},\mathcal{L}_{seq},\mathcal{L}_{geo},\mathcal{L}_{align},\mathcal{L}_{gen}$（各模块损失项）。其余符号均与第\ref{chap:related}章定义保持一致。
 
-\subsection{协同设计原则}
+\topichead{协同设计原则}
 本文在框架层遵循三条工程原则：
 \begin{enumerate}
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}先对齐后协同：}先保证不同空间表示可互相读取，再进行语义侧协同优化；
@@ -47,7 +47,7 @@
 \subsection{小模型分支：TSPM}
 TSPM分支的设计初衷是先把“轨迹中的确定性结构规律”学扎实，再把这些规律通过对齐模块迁移给大模型。这里的结构规律主要包括三类：不同时段的行为差异、POI之间的转入/转出方向性，以及局部邻域中的可达路径关系。换言之，TSPM承担的是“结构先验提供者”角色：它不追求生成自然语言，而是输出可迁移、可约束的时空表示，为后续PAM注入提供稳定来源。
 
-\subsubsection{初始嵌入构建}
+\topichead{初始嵌入构建}
 TSPM分支首先构建可训练的POI初始表示，以保证后续时间分槽与动态图计算有稳定输入。本文采用“关系旋转表示 + 局部拓扑保持”的组合初始化：前者建模转移关系方向性，后者保持近邻几何结构\cite{sun2019rotate,belkin2003laplacian}。
 \begin{equation}
 \mathbf{e}^{(0)}_{t}\approx \mathbf{e}^{(0)}_{h}\circ \mathbf{r}_{(h,t)},
@@ -66,7 +66,7 @@ TSPM分支首先构建可训练的POI初始表示，以保证后续时间分槽�
 
 该初始化的作用是减少“随机初始化导致的早期训练震荡”，并为后续TSDG边权学习提供更平滑的优化起点；在实现上，本文将关系建模与局部几何保持联合使用，以兼顾转移方向性与邻域结构稳定性。
 
-\subsubsection{时间增强序列动态图（TSDG）}
+\topichead{时间增强序列动态图（TSDG）}
 TSDG 中的双向转移部分记为双向转移建模（Bidirectional Transformation Modeling, BTM）。其核心目标是同时学习“转出偏好”和“转入偏好”，与第\ref{chap:exp}章 \textit{w/o BTM} 消融设置一一对应。
 为刻画不同时段的迁移差异，将一天划分为 $z$ 个时间槽 $\{T_1,\ldots,T_z\}$，并在各时间槽内构建POI转移子图。对当前POI嵌入 $\mathbf{e}_i$ 与时间槽嵌入 $\mathbf{t}_i$，时间感知转出表示定义为：
 \begin{equation}
@@ -111,7 +111,7 @@ TSDG 中的双向转移部分记为双向转移建模（Bidirectional Transforma
 \topichead{时间分槽策略讨论}
 时间分槽粒度过粗会掩盖行为差异，过细会造成样本稀疏。本文采用更直观的分槽原则：先按一天中常见活动时段做初始划分，再检查每个时段样本量是否充足，最后用验证集微调分槽数量。该策略相比固定等距切分更稳健，也更容易解释。
 
-\subsubsection{双向转移建模}
+\topichead{双向转移建模}
 仅建模“转出”（当前点通常去哪里）在若干场景下会出现歧义。以工作日早高峰为例：用户从地铁站出发时，候选目的地可能同时包含写字楼、早餐店与便利店；如果模型只看“地铁站的常见去向”，容易被高频近邻点吸引而忽略真实通勤目的地。反过来看“转入”特性可提供额外判别信息：写字楼在该时段通常承接大量来自交通枢纽的入流，而便利店的入流更分散且短停留。再如晚间场景，商场与住宅区可能共享相似语义标签，但住宅区在夜间具有更稳定的“被到达”模式。  
 
 基于上述现象，本文同时建模“从哪里来”和“将去哪里”，即联合学习转出表示与转入表示，并通过双向对比损失约束二者的一致性：
@@ -129,7 +129,7 @@ TSDG 中的双向转移部分记为双向转移建模（Bidirectional Transforma
 \topichead{损失函数直观解释}
 式\eqref{eq:c3-ltime}的核心是将“当前点到真实下一点”的距离压缩，同时将“当前点到负样本点”的距离拉开。与单向建模相比，双向表示可同时约束“出边合理性”和“入边合理性”：前者回答“当前点一般指向哪些候选”，后者回答“目标点通常由哪些来源到达”。这种双侧约束可显著减少“高频近邻误吸附”与“语义相似点混淆”，尤其在通勤、跨区跳转与晚高峰回流等方向性强的轨迹中更稳定。
 
-\subsubsection{序列偏好建模与动态图权重}
+\topichead{序列偏好建模与动态图权重}
 将最近 $k$ 个访问拼接得到序列表示：
 \begin{equation}
 \boldsymbol{\xi}_{seq}=\sigma\left([\mathbf{e}_t\Vert\mathbf{e}_{t-1}\Vert\cdots\Vert\mathbf{e}_{t-k}]\mathbf{W}^{s}+\mathbf{b}^{s}\right),
@@ -170,7 +170,7 @@ s^d_{i,j}=\exp\left(-\rho_1\|\boldsymbol{\xi}_{seq}-\mathbf{e}_j\|_2^2-\rho_2\|\
 \topichead{负采样策略}
 为避免训练信号过于简单，本文采用“同区域困难负样本 + 跨区域随机负样本”的混合策略：前者提升局部细粒度区分难度，后者维持全局判别边界。该设计沿用并扩展了TSPM原始工作中的负采样思路\cite{liu2025tspm}，有助于提升模型在近邻候选上的排序精度，并降低模型仅记忆区域标签的风险。需要说明的是，本文主实验未单独展开“负采样比例/来源”的独立消融，后续可作为补充实验进一步细化。
 
-\subsubsection{TiRNN预测头}
+\topichead{TiRNN预测头}
 为建模多步历史依赖，本文在预测头引入时间感知循环神经网络（Time-aware Recurrent Neural Network, TiRNN）。其结构如图\ref{fig:c3-tirnn}所示：右侧为历史隐状态序列 $\{\mathbf{h}_{t-1},\ldots,\mathbf{h}_{t-k}\}$，左侧为关系向量 $\{\mathbf{r}_1,\ldots,\mathbf{r}_k\}$；二者先通过逐步旋转交互，再由注意力模块选择关键依赖，最后与当前输入的全连接映射结果做加和，得到当前隐状态 $\mathbf{h}_t$。
 
 其中，关系向量 $\mathbf{r}_k$ 用于编码“第 $t-k$ 次访问与当前预测时刻之间的转移关系”。它不是随机向量，而是由历史POI与当前上下文之间的相对关系计算得到，可写为：
@@ -218,10 +218,10 @@ s^d_{i,j}=\exp\left(-\rho_1\|\boldsymbol{\xi}_{seq}-\mathbf{e}_j\|_2^2-\rho_2\|\
 TiRNN并非替代前述结构模块，而是作为“时序聚合终端”整合动态图编码结果。通过显式聚合多步隐状态，模型可以在“短期活动惯性”和“中期出行计划”之间动态权衡，从而减少单步过拟合问题。
 
 \subsection{大模型分支：GA-LLM}
-\subsubsection{图3-1中的GA-LLM信息流解读}
+\topichead{图3-1中的GA-LLM信息流解读}
 为避免“模块分开写、读者难以对齐图示”的问题，这里先按图\ref{fig:c3-framework}给出GA-LLM分支的完整数据流。图中右侧语义分支可拆解为四步：第一步，轨迹事件被组织为统一模板文本；第二步，GCIM将坐标字段编码为地理token并注入输入序列；第三步，PAM将结构侧POI表示映射为语义token并注入同一序列；第四步，LLM直接输出候选分布与Top-$K$结果。后续各小节均对应这四步中的一个关键环节，读者可直接对照图\ref{fig:c3-framework}中“语义流$\rightarrow$对齐$\rightarrow$输出”的路径理解实现细节。
 
-\subsubsection{GCIM：地理坐标注入模块}
+\topichead{GCIM：地理坐标注入模块}
 GCIM采用“层级离散 + 连续频域”双分支编码。为与实验消融项保持一致，本文将连续频域分支记为连续空间编码（Continuous Spatial Encoding, CSE），将层级离散分支记为层级离散编码（Hierarchical Discrete Encoding, HDE）。其中，CSE定义为：
 \begin{equation}
 \mathbf{E}_{fourier}=\frac{1}{\sqrt{M}}\left[\cos(\mathbf{g}\mathbf{W}_s^\top)\,\Vert\,\sin(\mathbf{g}\mathbf{W}_s^\top)\right],
@@ -259,7 +259,7 @@ GCIM采用“层级离散 + 连续频域”双分支编码。为与实验消融�
 \topichead{为何采用Quadkey + Fourier}
 Quadkey适合表达“区域层级归属”，Fourier适合表达“连续坐标变化模式”\cite{GeoSAN,STiSAN,liu2026gallm}。前者提供离散空间结构，后者提供连续距离敏感性，二者互补后可同时保留地理分区稳定性与局部变化分辨率。该设计可避免仅离散编码导致的边界不连续，也避免仅连续编码导致的区域语义缺失。
 
-\subsubsection{PAM：POI对齐模块}
+\topichead{PAM：POI对齐模块}
 在协同框架中，轨迹语义、地理坐标与图结构表示属于不同模态：轨迹文本位于离散token语义空间，坐标经GCIM后形成地理编码空间，而小模型/图模型输出位于结构表征空间。三类表示若直接拼接，常出现“可用信息无法被同一注意力层稳定读取”的问题，具体表现为结构先验在生成阶段贡献不稳定、跨城迁移时增益波动较大。
 
 因此，在将结构信息注入LLM之前，需要先建立“结构空间 $\rightarrow$ 语义空间”的可学习映射通道，使POI关系先验在语义侧具备可比较、可聚合、可反向优化的表示形式。基于这一需求，本文引入POI对齐模块（PAM），其核心变换定义为：
@@ -279,7 +279,7 @@ Quadkey适合表达“区域层级归属”，Fourier适合表达“连续坐标
 \topichead{对齐目标}
 PAM的目标不是“替代LLM语义”，而是建立一条可学习映射，使图模型中可迁移的结构关系能够在LLM空间中被读取和利用。换言之，PAM承担的是“知识通道”角色，核心价值在于降低跨空间信息损失。
 
-\subsubsection{结构化提示构造}
+\topichead{结构化提示构造}
 为避免“只有token占位符、缺少可学习语义上下文”的问题，本文将每条轨迹组织为“自然语言事件描述 + 结构化专用token”的混合输入。核心思路是把签到序列转写为按时间递增的事件流，并在每个事件中显式提供时间、POI语义与地理编码。
 
 \topichead{事件文本化规则}
@@ -325,7 +325,7 @@ Question: Which POI will user U\_104 visit next?\\[2pt]
 其中，\texttt{<GPS>} 由GCIM编码、\texttt{<POI>} 由PAM编码。该模板在训练与推理阶段字段一致，可有效降低提示分布漂移并提升生成稳定性。
 从图\ref{fig:c3-framework}的角度看，结构化提示就是把“GCIM地理编码结果”和“PAM对齐结果”在输入层做显式合并，使GA-LLM在同一上下文内同时读取地理约束与转移先验。
 
-\subsubsection{生成目标与解码策略}
+\topichead{生成目标与解码策略}
 GA-LLM的训练目标为标准自回归负对数似然：
 \begin{equation}
 \mathcal{L}_{gen}=-\sum_{t=1}^{m}\log p(y_t\mid y_{<t},\mathbf{X}_{traj},\mathbf{E}_{gps},\mathbf{E}_{poi}),
@@ -412,7 +412,7 @@ p(y_t\mid y_{<t},\mathbf{X})=\operatorname{Softmax}\!\left(\mathbf{W}_o\mathbf{h
 
 推理阶段采用 beam search 直接生成候选并输出 Top-$K$。在本文设定中，\bluebf{不引入候选约束解码、不引入在线重排序、不引入TSPM推理打分}，即由GA-LLM单路完成最终预测输出。
 
-\subsubsection{模块到研究问题的对应关系}
+\topichead{模块到研究问题的对应关系}
 为保证“方法提出即有验证对象”，本文将核心模块与RQ映射如表\ref{tab:c3-rq-map}。
 
 \begin{table}[htbp]
@@ -435,7 +435,7 @@ p(y_t\mid y_{<t},\mathbf{X})=\operatorname{Softmax}\!\left(\mathbf{W}_o\mathbf{h
 \end{table}
 
 \section{对齐与协同训练策略}
-\subsection{两阶段训练流程}
+\topichead{两阶段训练流程}
 在进入两阶段协同前，先独立训练TSPM并固定其参数，导出结构嵌入供PAM读取。随后，阶段一冻结LLM主体，仅训练GCIM/PAM与映射层，建立稳定对齐；阶段二采用LoRA微调注意力层，优化大模型生成与对齐目标：
 \begin{equation}
 \mathcal{L}_{total}^{(2)}=\lambda_1\mathcal{L}_{gen}+\lambda_2\mathcal{L}_{geo}+\lambda_3\mathcal{L}_{align}.
@@ -453,7 +453,7 @@ p(y_t\mid y_{<t},\mathbf{X})=\operatorname{Softmax}\!\left(\mathbf{W}_o\mathbf{h
 联合训练中，不同损失尺度差异会导致优化不稳定。本文采用以下策略缓解：先进行warm-up对齐训练，再逐步提高联合损失权重；对梯度范数进行裁剪；采用早停与验证集监控防止过拟合。上述策略在不增加模型复杂度的情况下提升了收敛稳定性。
 对应图\ref{fig:c3-framework}的训练路径，阶段一主要优化“结构流$\rightarrow$语义流”的对齐通道（GCIM/PAM），阶段二在GA-LLM任务目标上进行参数高效微调，避免一开始就全链路联训导致梯度相互干扰。
 
-\subsection{耦合路径与参数更新机制}
+\topichead{耦合路径与参数更新机制}
 尽管推理阶段仅保留GA-LLM单路输出，训练阶段仍通过 $\mathcal{L}_{align}$ 与 $\mathcal{L}_{geo}$ 把结构先验注入语义空间。具体耦合路径为：TSPM分支先离线产生结构表示（如 $\boldsymbol{\xi}_{seq}$、POI结构嵌入）；PAM将其投影为语义空间向量 $\mathbf{E}_{poi}$；GCIM提供地理编码 $\mathbf{E}_{gps}$；最终在统一生成目标下更新GA-LLM侧可训练参数。该流程实质上是“训练期对齐注入”，而非“推理期分数融合”。
 
 需要说明的是，本文标题中的“协同学习”特指训练阶段的知识协同：小模型通过结构化损失提供时空归纳偏置，大模型通过对齐模块吸收这些先验并在语义空间中内化。这种协同体现在三个层面：（1）表示层——PAM将TSPM的结构嵌入映射到LLM语义空间；（2）目标层——$\mathcal{L}_{align}$与$\mathcal{L}_{geo}$在训练中同时约束两侧表示的一致性；（3）能力层——训练完成后，GA-LLM已将结构先验内化为自身参数的一部分，因此推理时无需TSPM在线参与即可受益于结构知识。这一设计在保持推理效率的同时实现了跨模型的知识迁移。
@@ -475,7 +475,7 @@ p(y_t\mid y_{<t},\mathbf{X})=\operatorname{Softmax}\!\left(\mathbf{W}_o\mathbf{h
 \topichead{梯度回传说明}
 Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传到 LoRA、GCIM 与 PAM。TSPM在阶段二不参与梯度更新，其作用是提供已训练好的结构嵌入作为PAM输入。共享的是“对齐后的表示空间与训练目标”，而非在线推理分数。
 
-\subsection{训练流程说明（实现视角）}
+\topichead{训练流程说明（实现视角）}
 为便于复现实验，协同训练可归纳为以下步骤：
 \begin{enumerate}
     \item 离线训练TSPM并导出POI结构嵌入，作为后续PAM输入；
@@ -486,7 +486,7 @@ Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传�
     \item 保存最优checkpoint并输出可复现实验配置。
 \end{enumerate}
 
-\subsection{推理机制}
+\topichead{推理机制}
 推理时，先由GCIM与PAM将地理与转移信息注入提示，再由LLM输出候选分布并生成最终Top-$K$结果。
 这一路径与图\ref{fig:c3-framework}的语义分支箭头对应：输入轨迹经编码注入后由GA-LLM直接完成下一POI预测。这里容易产生的疑问是“推理时TSPM是否还在工作”。答案是：\textbf{不在线工作}。TSPM的作用发生在训练期与离线准备期，具体为：
 \begin{enumerate}
@@ -496,10 +496,10 @@ Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传�
 \end{enumerate}
 因此，“TSPM的中间产物是否作用于LLM”的准确表述是：\textbf{作用于训练阶段并被GA-LLM参数吸收，不在推理阶段显式参与计算}。
 
-\subsection{分支并行与结果对照}
+\topichead{分支并行与结果对照}
 本文采用“分支并行、结果对照”的组织方式：TSPM分支用于验证时空结构机制，GA-LLM分支用于验证地理注入与语义推理机制。最终报告分别基于各自分支的独立输出，不进行显式分数融合或在线重排序。
 
-\subsection{关键超参数与默认配置}
+\topichead{关键超参数与默认配置}
 结合前期实验设置\cite{liu2025tspm,liu2026gallm}，核心配置如表\ref{tab:c3-hparams}。其中大模型侧采用统一长上下文微调设置，小模型侧采用与TSPM一致的搜索区间并在验证集确定最优值。
 
 \begin{table}[htbp]
@@ -524,10 +524,10 @@ Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传�
     \end{tabular}
 \end{table}
 
-\subsection{复杂度与可扩展性讨论}
+\topichead{复杂度与可扩展性讨论}
 训练成本主要来自三部分：TSPM动态图更新、LLM前向计算与跨模型对齐。相较于全参数微调，LoRA将可训练参数控制在低秩子空间，显著降低显存与训练时间开销。需要强调的是，推理阶段仅采用GA-LLM语义直推；TSPM仅用于离线对照、机制验证与诊断分析，不参与线上推理输出。
 
-\subsubsection{时间复杂度分析}
+\topichead{时间复杂度分析}
 设批大小为 $B$，序列长度为 $L$，隐藏维度为 $d$，动态图平均邻居数为 $K_n$，LLM层数为 $H$。则主要计算量可近似写为：
 \begin{enumerate}
     \item {\heiti\addCJKfontfeatures{AutoFakeBold=2}TSPM编码：}$\mathcal{O}(B\cdot L\cdot d^2 + B\cdot L\cdot K_n\cdot d)$；
@@ -536,10 +536,10 @@ Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传�
 \end{enumerate}
 因此总体瓶颈仍在LLM前向，参数高效微调的价值在于显著减少反向传播所需的可训练参数与显存开销。
 
-\subsubsection{空间复杂度分析}
+\topichead{空间复杂度分析}
 空间开销由三部分组成：模型参数、激活缓存与动态图索引。相较全参微调，LoRA将可训练参数限制在低秩矩阵，显著降低优化器状态占用；动态图仅保留Top-$K_n$邻居，避免全图稠密存储。该组合使模型更易在单机多卡或中等算力环境下训练。
 
-\subsubsection{可复现实现规范}
+\topichead{可复现实现规范}
 为提升结果复现概率，本文采用以下实践：
 \begin{enumerate}
     \item 固定随机种子并记录数据切分索引；
@@ -548,13 +548,13 @@ Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传�
     \item 对核心实验进行多次重复并报告平均趋势而非单次最优值。
 \end{enumerate}
 
-\subsection{工程实现细节与落地策略}
+\topichead{工程实现细节与落地策略}
 除理论模块外，毕业论文还需要给出“可运行”的工程闭环。本节补充数据管线、训练调度与线上部署细节，以体现方法的可实施性。
 
 \topichead{适用边界声明}
 本节部分内容属于工程化可选策略，用于超大POI空间下的时延控制与服务兜底，不构成本文主实验的必要前提。本文主实验保持 GA-LLM 直接生成 Top-$K$ 的推理口径，不采用 TSPM 召回或在线约束重排。
 
-\subsubsection{数据管线与样本构造}
+\topichead{数据管线与样本构造}
 \keytag{轨迹切片规则}\quad
 本文统一采用前缀预测范式：给定用户轨迹 $ \mathcal{T}_{u}=\{x_1,\ldots,x_n\}$，构造监督样本为：
 \begin{equation}
@@ -571,7 +571,7 @@ Stage-2 中，$\mathcal{L}_{gen}$ 与 $\mathcal{L}_{align}$ 的梯度只回传�
 \keytag{解码规模控制}\quad
 主实验推理采用 beam search 生成并输出 Top-$K$，通过 Beam size 与 Top-$K$ 两个参数平衡时延与命中率；不引入候选约束解码、logit mask 或在线重排序。
 
-\subsubsection{分支接口与调度机制}
+\topichead{分支接口与调度机制}
 \topichead{TSPM分支接口}
 TSPM分支输入由 POI 索引序列、时间槽序列与用户索引组成，输出包括候选打分与中间结构表示。该分支主要用于验证时空结构机制与提供对照结果，不直接改写GA-LLM推理输出。
 
@@ -581,13 +581,13 @@ GCIM执行“坐标归一化--层级编码--频域编码--投影融合”；PAM�
 \topichead{动态图更新策略}
 本文优先采用“按epoch离线更新图权重”的稳定策略，而非按batch增量更新。前者虽牺牲部分即时性，但可显著减少训练震荡并提升复现实验一致性，更适合作为论文主结果设置。
 
-\subsubsection{两阶段训练的工程化约束}
+\topichead{两阶段训练的工程化约束}
 阶段一仅优化对齐相关参数，目标是建立跨空间可读表示；阶段二引入 $\mathcal{L}_{gen}+\mathcal{L}_{geo}+\mathcal{L}_{align}$ 进行语义侧协同优化（TSPM参数保持冻结）。为保证稳定性，本文采用以下调度约束：对齐阶段较大学习率、联合阶段较小学习率；按验证集 Acc@1 与 MRR@5 双指标早停；保存“最优检查点 + 最近检查点”双副本，便于回滚与复盘。
 
-\subsubsection{推理服务化与异常回退}
+\topichead{推理服务化与异常回退}
 在线部署时，主链路保持“GA-LLM直推”，并通过 Beam size、Top-$K$ 与提示长度控制时延。当出现地理字段缺失、模板解析失败或模型超时时，系统回退到基础语义模板与规则过滤路径以保证服务可用性。
 
-\subsubsection{实施清单}
+\topichead{实施清单}
 为保证答辩阶段能够展示完整工程闭环，交付物按表\ref{tab:c3-impl-checklist}统一准备。
 
 \begin{table}[htbp]
