@@ -46,6 +46,11 @@
 TSPM分支的设计初衷是先把轨迹中的确定性结构规律学扎实，再把这些规律通过对齐模块迁移给大模型。这里的结构规律主要包括三类，不同时段的行为差异、兴趣点之间的转入/转出方向性，以及局部邻域中的可达路径关系。换言之，TSPM承担的是结构先验提供者角色。它不追求生成自然语言，而是输出可迁移、可约束的时空表示，为后续PAM注入提供稳定来源。
 
 在初始嵌入构建阶段，TSPM分支首先构建可训练的兴趣点初始表示，以保证后续时间分槽与动态图计算有稳定输入。本文采用关系旋转表示 + 局部拓扑保持的组合初始化，前者建模转移关系方向性，后者保持近邻几何结构\cite{sun2019rotate,belkin2003laplacian}。
+\begingroup
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\abovedisplayshortskip}{4pt}
+\setlength{\belowdisplayshortskip}{4pt}
 \begin{equation}
 \mathbf{e}^{(0)}_{t}\approx \mathbf{e}^{(0)}_{h}\circ \mathbf{r}_{(h,t)},
 \label{eq:c3-init-rotate}
@@ -74,6 +79,7 @@ TSPM分支的设计初衷是先把轨迹中的确定性结构规律学扎实，�
 \end{equation}
 其中，$\boldsymbol{\xi}^{in}_{j,T_i}$表示兴趣点 $j$ 在时间槽 $T_i$ 的转入表示；$\mathbf{W}^{t}_{in},\mathbf{b}^{t}_{in}$表示转入分支参数。
 其余符号与式\eqref{eq:c3-xi-out}一致。
+\endgroup
 
 \begin{figure}[htbp]
     \centering
