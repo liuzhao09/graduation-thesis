@@ -27,23 +27,23 @@
 
 具体而言，本文将总体目标分解为五个可验证问题。第一，同一兴趣点在不同时段具有不同转移规律，模型需要以较低额外成本显式建模时段异质性；第二，下一跳预测不仅取决于当前点通常去哪里，也取决于目标点通常从哪里来，因此需要同时表达转出与转入偏好；第三，大语言模型语义空间不天然保持地理邻近关系，经纬度若被当作普通文本词元处理，空间连续性会被破坏；第四，兴趣点图中的高阶转移关系需要从结构空间映射到大语言模型语义空间，否则语言模型难以利用这些先验；第五，在效果提升之外，协同框架必须控制训练成本、推理时延和参数规模，避免只在离线实验中成立。
 
-\begin{figure}[!htbp]
+这些问题进一步落到四类建模挑战上。第一，同一兴趣点在早晚高峰、工作日和周末的转移模式差异明显，统一转移机制容易造成时间异质性偏差\cite{ST-RNN,zhao2019stgn,STAN,STiSAN,MTNet}。第二，经纬度与语义表示空间之间没有天然同构关系，直接把坐标写成文本会使相邻地点在词元空间中被切分为差异较大的符号序列\cite{GeoSAN,li2020gcnpoi,LLM4POI,Jonathan2023Gpt}，如图\ref{fig:c1-gcim-motivation}所示。第三，兴趣点图中蕴含的高阶迁移关系不会自动出现在语言模型输入中，单靠上下文共现很难稳定恢复\cite{GraphFlashback,SNPM,STHGCN,SeCor,STKG-PLM}。第四，小模型的结构归纳偏置与大模型的语义泛化能力需要在训练阶段形成稳定接口，否则协同容易退化为简单堆叠或推理期高成本融合\cite{ReLLa,CoRAL,xu2024hybridrec,wu2024ragrec,qu2024onerecthink}。
+
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.76\textwidth]{fig1_GCIM_c1.pdf}
+    \includegraphics[width=0.66\textwidth]{fig1_GCIM_c1.pdf}
     \bicaption{空间连续性挑战示意，（a）预测误差分布与平均地理误差对比，显示纯文本大语言模型更易产生远距离偏移；（b）坐标文本词元化示例，显示地理上邻近的坐标在离散词元空间中可能被映射为差异较大的符号序列。}{Illustration of the spatial continuity challenge, (a) comparison of error distribution and mean geographic error distance; (b) a tokenization example showing that geographically close coordinates may become distant in discrete token space.}
     \label{fig:c1-gcim-motivation}
 \end{figure}
 
-这些问题进一步落到四类建模挑战上。第一，同一兴趣点在早晚高峰、工作日和周末的转移模式差异明显，统一转移机制容易造成时间异质性偏差\cite{ST-RNN,zhao2019stgn,STAN,STiSAN,MTNet}。第二，经纬度与语义表示空间之间没有天然同构关系，直接把坐标写成文本会使相邻地点在词元空间中被切分为差异较大的符号序列\cite{GeoSAN,li2020gcnpoi,LLM4POI,Jonathan2023Gpt}，如图\ref{fig:c1-gcim-motivation}所示。第三，兴趣点图中蕴含的高阶迁移关系不会自动出现在语言模型输入中，单靠上下文共现很难稳定恢复\cite{GraphFlashback,SNPM,STHGCN,SeCor,STKG-PLM}。第四，小模型的结构归纳偏置与大模型的语义泛化能力需要在训练阶段形成稳定接口，否则协同容易退化为简单堆叠或推理期高成本融合\cite{ReLLa,CoRAL,xu2024hybridrec,wu2024ragrec,qu2024onerecthink}。
+如图\ref{fig:c1-pam-motivation}所示，若缺少结构化对齐路径，模型对未显式出现但高转移概率的候选点识别能力不足。该现象说明兴趣点关系先验需要以可学习方式注入语义空间，而非完全依赖隐式文本学习。基于以上分析，本文在第\ref{chap:method}章分别设计TSPM、GCIM和PAM模块，并在第\ref{chap:exp}章通过主结果、消融和误差分析验证这些模块是否真正缓解上述挑战。
 
-\begin{figure}[!htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.76\textwidth]{fig2_PAM_c2.pdf}
+    \includegraphics[width=0.66\textwidth]{fig2_PAM_c2.pdf}
     \bicaption{转移先验注入挑战示意，仅依赖词元语义难以恢复兴趣点图中的高阶迁移关系。}{Illustration of transfer-prior injection challenge, token-level semantics alone are insufficient to recover high-order transitions in the POI graph.}
     \label{fig:c1-pam-motivation}
 \end{figure}
-
-如图\ref{fig:c1-pam-motivation}所示，若缺少结构化对齐路径，模型对未显式出现但高转移概率的候选点识别能力不足。该现象说明兴趣点关系先验需要以可学习方式注入语义空间，而非完全依赖隐式文本学习。基于以上分析，本文在第\ref{chap:method}章分别设计TSPM、GCIM和PAM模块，并在第\ref{chap:exp}章通过主结果、消融和误差分析验证这些模块是否真正缓解上述挑战。
 
 \section{研究思路与主要贡献}
 针对上述挑战，本文采用大小模型协同学习路线。小模型侧主要处理轨迹中可统计、可解释的结构规律，通过时间增强序列动态图和双向转移机制学习不同时段下的出行方向与局部邻域关系\cite{SNPM,GETNext,GraphFlashback,AGCL,FHCRec}。大模型侧主要处理兴趣点语义、上下文描述和跨场景泛化，并通过地理坐标注入模块与兴趣点对齐模块补足大语言模型对空间连续性和转移先验的感知能力\cite{LLM4POI,wang2024georecllm,zheng2024poillm,cao2024trajllm}。训练时，结构知识经嵌入对齐迁移到GA-LLM侧，并结合参数高效微调控制开销；推理时，模型保持GA-LLM单路输出，避免在线多模型联合打分带来的时延和系统复杂度\cite{LLMRec,CoLLM,LLaRA,qu2024onerec,wu2024thinkrec}。
