@@ -77,8 +77,8 @@
         \resizebox{\textwidth}{!}{
         \begin{tabular}{lcccccccc}
         \toprule
-        \multirow{2}{*}{方法} & \multicolumn{4}{c}{Gowalla} & \multicolumn{4}{c}{Foursquare} \\
-        & 准确率@1 & 准确率@5 & 准确率@10 & 平均倒数排名 & 准确率@1 & 准确率@5 & 准确率@10 & 平均倒数排名 \\
+        \multirow{2}{*}{Method} & \multicolumn{4}{c}{Gowalla} & \multicolumn{4}{c}{Foursquare} \\
+        & ACC@1 & ACC@5 & ACC@10 & MRR & ACC@1 & ACC@5 & ACC@10 & MRR \\
         \midrule
         PRME & 0.0740 & 0.2146 & 0.2899 & 0.1503 & 0.0982 & 0.3167 & 0.4064 & 0.2040 \\
         STRNN & 0.0900 & 0.2120 & 0.2730 & 0.1508 & 0.2290 & 0.4310 & 0.5050 & 0.3248 \\
@@ -93,7 +93,7 @@
         \midrule
         TSPM & \textbf{0.1595} & \textbf{0.3520} & \textbf{0.4350} & \textbf{0.2509} & \textbf{0.2932} & \textbf{0.5978} & \textbf{0.6768} & \textbf{0.4301} \\
         \rowcolor{TokBg}
-        提升（\%） & +5.49\% & +2.77\% & +2.21\% & +3.59\% & +4.53\% & +3.84\% & +3.90\% & +3.99\% \\
+        Gain (\%) & +5.49\% & +2.77\% & +2.21\% & +3.59\% & +4.53\% & +3.84\% & +3.90\% & +3.99\% \\
         \bottomrule
     \end{tabular}}
 \end{table}
@@ -108,8 +108,8 @@
         \resizebox{\textwidth}{!}{
         \begin{tabular}{lccccccccc}
         \toprule
-        \multirow{2}{*}{模型} & \multicolumn{3}{c}{NYC} & \multicolumn{3}{c}{TKY} & \multicolumn{3}{c}{CA} \\
-        & 准确率@1 & 准确率@5 & 平均倒数排名@5 & 准确率@1 & 准确率@5 & 平均倒数排名@5 & 准确率@1 & 准确率@5 & 平均倒数排名@5 \\
+        \multirow{2}{*}{Model} & \multicolumn{3}{c}{NYC} & \multicolumn{3}{c}{TKY} & \multicolumn{3}{c}{CA} \\
+        & ACC@1 & ACC@5 & MRR@5 & ACC@1 & ACC@5 & MRR@5 & ACC@1 & ACC@5 & MRR@5 \\
         \midrule
         FPMC & 0.1003 & 0.2126 & 0.1701 & 0.0814 & 0.2045 & 0.1344 & 0.0383 & 0.0702 & 0.0911 \\
         LSTM & 0.1305 & 0.2719 & 0.1857 & 0.1335 & 0.2728 & 0.1834 & 0.0665 & 0.1306 & 0.1201 \\
@@ -127,7 +127,7 @@
         \midrule
         GA-LLM & \textbf{0.3988} & \textbf{0.6337} & \textbf{0.4663} & \textbf{0.3482} & \textbf{0.6207} & \textbf{0.4314} & \textbf{0.2566} & \textbf{0.4614} & \textbf{0.3340} \\
         \rowcolor{TokBg}
-        提升（\%） & +18.27\% & +17.77\% & +12.62\% & +14.73\% & +19.20\% & +8.23\% & +16.69\% & +24.10\% & +13.95\% \\
+        Gain (\%) & +18.27\% & +17.77\% & +12.62\% & +14.73\% & +19.20\% & +8.23\% & +16.69\% & +24.10\% & +13.95\% \\
         \bottomrule
     \end{tabular}}
 
@@ -144,7 +144,7 @@
 从使用场景看，小模型路线和大模型路线的主结果也各有含义。TSPM在母数据集上的改进说明，轻量结构模型仍然适合资源受限或低延迟要求较高的场景；GA-LLM在城市子集上的改进说明，当系统需要利用兴趣点语义、跨区域泛化和复杂上下文时，大模型路线能够提供额外收益。本文并不主张所有场景都必须部署GA-LLM，也不认为小模型已经被大语言模型替代。更合理的结论是，结构模型提供可靠归纳偏置，大模型提供语义泛化能力，二者可以通过训练期对齐形成互补。
 
 \section{机制验证与诊断分析（研究问题2--研究问题4）}
-在小模型分支消融与诊断（研究问题2）中，针对TSPM进行逐项消融，重点比较去除TSDG、去除BTM等变体。表\ref{tab:ablation}显示，去除任一关键模块均会降低性能，说明小模型增益并非单一组件造成。
+在小模型分支消融与诊断（研究问题2）中，针对TSPM进行逐项消融。实验表格中的w/o表示去除对应模块，因此w/o TSDG与w/o BTM分别表示去除时间增强序列动态图和去除双向转移建模。表\ref{tab:ablation}显示，去除任一关键模块均会降低性能，说明小模型增益并非单一组件造成。
 
 \begin{table}[htbp]
     \tblstyle
@@ -152,22 +152,22 @@
     \label{tab:ablation}
     \begin{tabular}{lcccc}
         \toprule
-        方法 & 准确率@1 & 准确率@5 & 准确率@10 & 平均倒数排名 \\
+        Method & ACC@1 & ACC@5 & ACC@10 & MRR \\
         \midrule
         Flashback & 0.1158 & 0.2754 & 0.3479 & 0.1925 \\
-        TSPM去除TSDG & 0.1573 & 0.3488 & 0.4321 & 0.2482 \\
-        TSPM去除BTM & 0.1587 & 0.3515 & 0.4338 & 0.2501 \\
+        TSPM w/o TSDG & 0.1573 & 0.3488 & 0.4321 & 0.2482 \\
+        TSPM w/o BTM & 0.1587 & 0.3515 & 0.4338 & 0.2501 \\
         TSPM & \textbf{0.1595} & \textbf{0.3520} & \textbf{0.4350} & \textbf{0.2509} \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 该表揭示了两点。第一，TSDG负责将时段异质信息显式结构化，去除后整体能力下降最明显；第二，双向转移建模虽增益幅度略小，但对平均倒数排名影响更敏感，说明其在正确候选前置上更关键。
-进一步按准确率@1计算相对提升，完整TSPM相比去除TSDG为 \redbf{+1.40\%}（0.1595 vs 0.1573），相比去除BTM为 \bluebf{+0.50\%}（0.1595 vs 0.1587）。这说明TSDG是主增益来源，BTM是稳定排序质量的补充增益来源。
-消融幅度看似不大，但在强基线场景中具有实际意义。下一兴趣点任务的头部命中率通常受用户历史长度、兴趣点密度和候选规模共同限制，越接近强基线，单个结构模块能够带来的提升越有限。本文更关注的是消融方向是否稳定。去除TSDG后准确率@1、准确率@5、准确率@10和平均倒数排名均下降，说明时段建模不是只改善某个指标；去除BTM后平均倒数排名下降，说明双向转移确实影响正确候选的前置程度。该现象与第\ref{chap:method}章对时间异质性和转移方向性的分析一致。
+进一步按准确率@1计算相对提升，完整TSPM相比 w/o TSDG 为 \redbf{+1.40\%}（0.1595 vs 0.1573），相比 w/o BTM 为 \bluebf{+0.50\%}（0.1595 vs 0.1587）。这说明TSDG是主增益来源，BTM是稳定排序质量的补充增益来源。
+消融幅度看似不大，但在强基线场景中具有实际意义。下一兴趣点任务的头部命中率通常受用户历史长度、兴趣点密度和候选规模共同限制，越接近强基线，单个结构模块能够带来的提升越有限。本文更关注的是消融方向是否稳定。w/o TSDG后准确率@1、准确率@5、准确率@10和平均倒数排名均下降，说明时段建模不是只改善某个指标；w/o BTM后平均倒数排名下降，说明双向转移确实影响正确候选的前置程度。该现象与第\ref{chap:method}章对时间异质性和转移方向性的分析一致。
 为了更直观地理解这一点，可以把TSDG看作对何时发生转移的约束，把BTM看作对转移方向是否合理的约束。前者决定模型是否能区分早高峰、午间和夜间的不同访问模式，后者决定模型是否能在多个语义相似候选之间识别真实路径方向。两者共同作用时，模型既不会把所有时段混为一个平均转移图，也不会只根据当前点的出边频率做单向判断。这种解释与表\ref{tab:ablation}中的结果一致。TSDG带来更明显的整体增益，BTM则对排序质量提供稳定补充。
 从错误类型看，TSDG和BTM也具有不同作用。若缺少TSDG，模型容易把同一地点在不同时段的出行分布混合，例如把午间餐饮转移、晚间休闲转移和通勤转移都压缩到同一个邻接权重中，导致候选排序受高频平均模式支配；若缺少BTM，模型虽然知道当前点常见去向，却难以判断目标点本身是否具有被到达的合理性，尤其在多个候选点地理相近或类别相似时更容易出错。完整TSPM同时约束时间条件和方向条件，因此在强基线场景中即使绝对提升不大，也能够保持稳定正增益。
-在大模型分支消融与诊断（研究问题3）中，表\ref{tab:c4-gallm-ablation}展示GA-LLM在三个数据集上的消融结果。去除GCIM带来最大性能回落，说明地理表示建模是大语言模型路线的基础；去除PAM同样造成稳定下降，说明转移先验注入不可或缺。
+在大模型分支消融与诊断（研究问题3）中，表\ref{tab:c4-gallm-ablation}展示GA-LLM在三个数据集上的消融结果。w/o GCIM带来最大性能回落，说明地理表示建模是大语言模型路线的基础；w/o PAM同样造成稳定下降，说明转移先验注入不可或缺。
 
 \begin{table}[htbp]
     \tblstyle
@@ -175,19 +175,19 @@
     \label{tab:c4-gallm-ablation}
     \begin{tabular}{lccc}
         \toprule
-        变体 & NYC & TKY & CA \\
+        Variant & NYC & TKY & CA \\
         \midrule
-        完整模型 & \textbf{0.3988} & \textbf{0.3482} & \textbf{0.2566} \\
-        去除CSE & 0.3800 & 0.3435 & 0.2467 \\
-        去除HDE & 0.3813 & 0.3453 & 0.2423 \\
-        去除GCIM & 0.3729 & 0.3370 & 0.2402 \\
-        去除PAM & 0.3901 & 0.3468 & 0.2499 \\
+        Full model & \textbf{0.3988} & \textbf{0.3482} & \textbf{0.2566} \\
+        w/o CSE & 0.3800 & 0.3435 & 0.2467 \\
+        w/o HDE & 0.3813 & 0.3453 & 0.2423 \\
+        w/o GCIM & 0.3729 & 0.3370 & 0.2402 \\
+        w/o PAM & 0.3901 & 0.3468 & 0.2499 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 该结果与机制解释一致，CSE更擅长刻画局部连续变化，HDE更擅长编码稀疏场景下的层级归属，GCIM融合二者后形成稳定地理约束；PAM则负责把结构转移知识对齐到大语言模型语义空间。
-按准确率@1的相对提升计算，完整GA-LLM相比去除GCIM在NYC/TKY/CA分别为 \redbf{+6.94\%/+3.32\%/+6.83\%}；相比去除PAM分别为 \bluebf{+2.23\%/+0.40\%/+2.68\%}。该结果表明GCIM负责主要地理一致性收益，PAM负责稳定补充收益。
+按准确率@1的相对提升计算，完整GA-LLM相比 w/o GCIM 在NYC/TKY/CA分别为 \redbf{+6.94\%/+3.32\%/+6.83\%}；相比 w/o PAM 分别为 \bluebf{+2.23\%/+0.40\%/+2.68\%}。该结果表明GCIM负责主要地理一致性收益，PAM负责稳定补充收益。
 从三座城市的差异看，GCIM在NYC和CA上的相对收益更明显，说明高密度城市和稀疏广域区域都需要显式地理编码，但原因并不相同。NYC中大量兴趣点距离接近，模型需要在相邻候选之间做细粒度区分；CA中地理跨度较大，模型更容易出现远距离偏移，地理一致性约束能显著减少不合理跳转。TKY上的PAM收益较小，可能与其轨迹密度和城市功能分布有关。当文本上下文和地理编码已经提供较强信号时，结构对齐的边际收益会被压缩。本文保留这些差异，而不是只报告平均提升，是为了更真实地呈现模块作用边界。
 这种差异也提示我们，消融实验不应只看去掉模块后平均下降多少，还要看下降发生在哪些数据条件下。地理编码在广域和高密度场景都重要，但一个偏向减少远跳，一个偏向区分近邻；结构对齐在目标缺失和长尾候选中更重要，但在上下文已经足够强的样本上收益可能不显著。因此，第\ref{chap:method}章中将GCIM和PAM设计为可插拔模块，而不是把二者揉成不可分解的单一输入增强。可插拔设计使本文能够在实验中分别解释地理收益和结构收益。
 对于GCIM细粒度消融与参数实验，表\ref{tab:c4-gcim-inner-ablation}给出GCIM内部消融结果，用于区分坐标编码、层级离散表示和测地对齐损失的各自作用。移除测地对齐损失（Geodesic Alignment Loss, GAL）后性能显著下降，说明仅有坐标编码而缺少显式距离一致性约束时，模型仍会出现语义合理但地理偏离的预测。
@@ -198,13 +198,13 @@
     \label{tab:c4-gcim-inner-ablation}
     \begin{tabular}{lcc}
         \toprule
-        变体 & NYC & CA \\
+        Variant & NYC & CA \\
         \midrule
-        完整模型 & \textbf{0.3988} & \textbf{0.2566} \\
-        去除CSE & 0.3800 & 0.2467 \\
-        去除HDE & 0.3813 & 0.2423 \\
-        去除GAL & 0.3809 & 0.2481 \\
-        去除GCIM & 0.3729 & 0.2402 \\
+        Full model & \textbf{0.3988} & \textbf{0.2566} \\
+        w/o CSE & 0.3800 & 0.2467 \\
+        w/o HDE & 0.3813 & 0.2423 \\
+        w/o GAL & 0.3809 & 0.2481 \\
+        w/o GCIM & 0.3729 & 0.2402 \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -217,7 +217,7 @@
     \label{tab:c4-gcim-hparam}
     \begin{tabular}{lcccccc}
         \toprule
-        设置 & NYC 准确率@1 & NYC 准确率@5 & NYC 平均倒数排名@5 & CA 准确率@1 & CA 准确率@5 & CA 平均倒数排名@5 \\
+        Setting & NYC ACC@1 & NYC ACC@5 & NYC MRR@5 & CA ACC@1 & CA ACC@5 & CA MRR@5 \\
         \midrule
         $n=4$ & 0.3476 & 0.5249 & 0.4107 & 0.2198 & 0.3986 & 0.2924 \\
         $n=5$ & 0.3794 & 0.5982 & 0.4451 & 0.2473 & 0.4327 & 0.3185 \\
@@ -239,7 +239,7 @@
     \bicaption{坐标注入方案对比分析。}{Comparison of coordinate injection strategies.}
     \label{fig:c4-coor}
 \end{figure}
-图\ref{fig:c4-coor}展示了坐标注入方式和输入开销对性能的联合影响。横轴为数据集（NYC、CA）；左纵轴为准确率@1（柱状），右纵轴为每次签到平均词元数量（红色折线）。柱状三组分别对应LLM4POI（纯文本坐标基线）、GA-LLM text-geo（文本地理增强）、GA-LLM去除PAM（启用GCIM但不启用PAM）。
+图\ref{fig:c4-coor}展示了坐标注入方式和输入开销对性能的联合影响。横轴为数据集（NYC、CA）；左纵轴为准确率@1（柱状），右纵轴为每次签到平均词元数量（红色折线）。柱状三组分别对应LLM4POI（纯文本坐标基线）、GA-LLM text-geo（文本地理增强）、GA-LLM w/o PAM（启用GCIM但不启用PAM）。
 从图中可读出两层对比关系。第一层是同数据集内的横向对比，即比较三根柱子的高低；第二层是性能-开销联合对比，即比较柱高变化与红线变化是否同步。结果表明，结构化地理注入后准确率@1提升明显，而词元开销增幅相对可控，说明性能提升并非主要来自输入变长，而来自地理表示的有效性提升。
 该图支持的机制结论是，GCIM把连续坐标映射为更稳定的可学习地理表示，从而提高空间可分性；即使不启用PAM，GA-LLM也已显著优于纯文本坐标方案。该结果与第\ref{chap:method}章GCIM设计动机一致，也为坐标建模有效性提供了实验依据。
 
@@ -268,19 +268,19 @@
 
 \begin{table}[htbp]
     \tblstyle
-    \bitablecaption{跨城冷启动结果，LLM4POI与GA-LLM去除PAM（准确率@1）}{Cross-city cold-start results, LLM4POI vs. GA-LLM without PAM (Accuracy@1).}
+    \bitablecaption{跨城冷启动结果，LLM4POI与GA-LLM w/o PAM（准确率@1）}{Cross-city cold-start results, LLM4POI vs. GA-LLM without PAM (Accuracy@1).}
     \label{tab:c4-cross-city}
     \begin{tabular}{llccc}
         \toprule
-        模型 & 训练城市 & NYC测试 & TKY测试 & CA测试 \\
+        Model & Train city & NYC test & TKY test & CA test \\
         \midrule
         LLM4POI & NYC & 0.3372 & 0.2594 & 0.1885 \\
         LLM4POI & TKY & 0.3463 & 0.3035 & 0.1960 \\
         LLM4POI & CA  & 0.3344 & 0.2600 & 0.2065 \\
         \midrule
-        GA-LLM去除PAM & NYC & 0.3901 & 0.3018 & 0.2053 \\
-        GA-LLM去除PAM & TKY & \textbf{0.4059} & \textbf{0.3468} & 0.2273 \\
-        GA-LLM去除PAM & CA  & 0.3670 & 0.3065 & \textbf{0.2499} \\
+        GA-LLM w/o PAM & NYC & 0.3901 & 0.3018 & 0.2053 \\
+        GA-LLM w/o PAM & TKY & \textbf{0.4059} & \textbf{0.3468} & 0.2273 \\
+        GA-LLM w/o PAM & CA  & 0.3670 & 0.3065 & \textbf{0.2499} \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -306,7 +306,7 @@ PAM作用机制可通过图示进一步说明。\begin{figure}[htbp]
     \label{tab:c4-token-pam}
     \begin{tabular}{lcc}
         \toprule
-        方法 & NYC & CA \\
+        Method & NYC & CA \\
         \midrule
         LLM4POI & 0.3372 & 0.2065 \\
         E4SRec（兴趣点词元） & 0.3389 & 0.2226 \\
@@ -323,7 +323,7 @@ PAM作用机制可通过图示进一步说明。\begin{figure}[htbp]
     \label{tab:c4-pam-embedding-source}
     \begin{tabular}{lcc}
         \toprule
-        模型变体 & 准确率@1 & 准确率@5 \\
+        Model variant & ACC@1 & ACC@5 \\
         \midrule
         GA-LLM-TSPM & \textbf{0.3988} & \textbf{0.6337} \\
         GA-LLM-MTNet & 0.3988 & 0.6335 \\
@@ -357,7 +357,7 @@ PAM相关实验的重点不在于证明新增一个模块必然提升，而在�
     \label{tab:c4-eff-summary}
     \begin{tabular}{P{0.20\textwidth}P{0.34\textwidth}P{0.34\textwidth}}
         \toprule
-        维度 & LLM4POI & GA-LLM \\
+        Dimension & LLM4POI & GA-LLM \\
         \midrule
         输入开销 & 依赖更长历史文本，词元消耗高 & 结构化地理/兴趣点注入，词元更紧凑 \\
         训练阶段 & 全流程文本驱动，微调时长较长 & LoRA + 模块化注入，训练效率更高 \\
@@ -375,7 +375,7 @@ PAM相关实验的重点不在于证明新增一个模块必然提升，而在�
     \label{tab:c4-llm-scale}
     \begin{tabular}{lccc}
         \toprule
-        模型 & 准确率@1 & 准确率@5 & 平均倒数排名@5 \\
+        Model & ACC@1 & ACC@5 & MRR@5 \\
         \midrule
         GA-LLM(7B) & 0.3988 & 0.6337 & 0.4663 \\
         GA-LLM(3B) & \textbf{0.4070} & \textbf{0.6448} & \textbf{0.4994} \\
@@ -399,10 +399,10 @@ PAM相关实验的重点不在于证明新增一个模块必然提升，而在�
     \label{tab:c4-train-strategy}
     \begin{tabular}{lcc}
         \toprule
-        训练策略 & 准确率@1 & 准确率@5 \\
+        Strategy & ACC@1 & ACC@5 \\
         \midrule
-        GA-LLM-单阶段 & \textbf{0.3988} & \textbf{0.6337} \\
-        GA-LLM-两阶段 & 0.3922 & 0.6167 \\
+        GA-LLM single-stage & \textbf{0.3988} & \textbf{0.6337} \\
+        GA-LLM two-stage & 0.3922 & 0.6167 \\
         \bottomrule
     \end{tabular}
 \end{table}
