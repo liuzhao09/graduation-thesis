@@ -1,0 +1,4173 @@
+{
+  "deckPath": "/Users/liuzhao/Desktop/SYSUThesis-main/output/output.pptx",
+  "slideCount": 29,
+  "previewFiles": [
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_01.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_02.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_03.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_04.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_05.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_06.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_07.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_08.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_09.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_10.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_11.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_12.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_13.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_14.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_15.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_16.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_17.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_18.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_19.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_20.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_21.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_22.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_23.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_24.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_25.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_26.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_27.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_28.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_29.png"
+  ],
+  "montagePath": "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/montage.png",
+  "generatedFiles": [
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig1_GCIM_c1.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig2_PAM_c2.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig3_framework.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/time_left.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/time_right.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/TiRNN.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig4_coor_analysis.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig5_distance_analysis.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig6_average_distance_analysis.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig7_pam_analysis.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/assets/fig8_efficiency_study.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/qa/generated_content.pptx",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/output/output.pptx",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_01.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_02.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_03.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_04.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_05.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_06.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_07.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_08.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_09.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_10.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_11.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_12.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_13.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_14.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_15.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_16.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_17.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_18.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_19.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_20.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_21.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_22.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_23.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_24.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_25.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_26.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_27.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_28.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/slide_29.png",
+    "/Users/liuzhao/Desktop/SYSUThesis-main/scratch/previews/montage.png"
+  ],
+  "checks": {
+    "expectedSlides": true,
+    "hasPreviewForEverySlide": true,
+    "sourceFiguresConverted": 11,
+    "pptxCreated": true,
+    "noKnownPlaceholderText": true,
+    "pptxParity": "OpenXML package inspection plus custom PNG previews; no PowerPoint/LibreOffice render available in this environment.",
+    "templateBaseCopied": true
+  },
+  "textObjects": [
+    {
+      "slide": 1,
+      "textBoxes": [
+        {
+          "value": "0",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "学位申请",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "学位申请信息一览",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "中山大学人工智能学院 · 研究生学位申请与答辩前置材料",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "学位申请",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "01",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "姓名：",
+          "x": 1.1400000000000001,
+          "y": 1.48,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "刘钊",
+          "x": 2.31,
+          "y": 1.49,
+          "w": 3.55,
+          "h": 0.32,
+          "size": 16.5
+        },
+        {
+          "value": "学号：",
+          "x": 1.1400000000000001,
+          "y": 2.02,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "23214878",
+          "x": 2.31,
+          "y": 2.03,
+          "w": 3.55,
+          "h": 0.32,
+          "size": 16.5
+        },
+        {
+          "value": "专业：",
+          "x": 1.1400000000000001,
+          "y": 2.56,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "085410 人工智能（全日制专业学位硕士）",
+          "x": 2.31,
+          "y": 2.57,
+          "w": 3.8999999999999995,
+          "h": 0.32,
+          "size": 16.5
+        },
+        {
+          "value": "导师：",
+          "x": 1.1400000000000001,
+          "y": 3.1,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "刘威（副教授）",
+          "x": 2.31,
+          "y": 3.11,
+          "w": 3.55,
+          "h": 0.32,
+          "size": 16.5
+        },
+        {
+          "value": "培养：",
+          "x": 1.1400000000000001,
+          "y": 3.64,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "已修 33 学分；必修 29 学分（要求 18）；满足培养方案要求",
+          "x": 2.31,
+          "y": 3.65,
+          "w": 4.1,
+          "h": 0.44,
+          "size": 16.5
+        },
+        {
+          "value": "学术成果：",
+          "x": 1.1400000000000001,
+          "y": 4.35,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "论文 2 篇：WISE 2024（CCF B）；ICDE 2026（CCF A，Accepted）",
+          "x": 2.31,
+          "y": 4.359999999999999,
+          "w": 4.1,
+          "h": 0.52,
+          "size": 16.5
+        },
+        {
+          "value": "成果均围绕 Next POI 预测与大小模型协同学习主线展开。",
+          "x": 1.55,
+          "y": 5.05,
+          "w": 4.85,
+          "h": 0.28,
+          "size": 12.4
+        },
+        {
+          "value": "学位论文题目：",
+          "x": 7.33,
+          "y": 1.48,
+          "w": 2.05,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "面向出行位置点预测的大小模型协同学习研究",
+          "x": 7.33,
+          "y": 1.9,
+          "w": 5.25,
+          "h": 0.38,
+          "size": 17
+        },
+        {
+          "value": "送审结果：",
+          "x": 7.33,
+          "y": 2.46,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "评阅类型：硕士盲审两份；评阅结果：通过",
+          "x": 8.5,
+          "y": 2.4699999999999998,
+          "w": 4.1,
+          "h": 0.36,
+          "size": 16.5
+        },
+        {
+          "value": "复审情况：",
+          "x": 7.33,
+          "y": 4.7,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "无；当前系统评阅结果为通过",
+          "x": 8.5,
+          "y": 4.71,
+          "w": 4,
+          "h": 0.3,
+          "size": 16.5
+        },
+        {
+          "value": "答辩情况：",
+          "x": 7.33,
+          "y": 5.24,
+          "w": 1.25,
+          "h": 0.28,
+          "size": 17.5
+        },
+        {
+          "value": "时间、地点、专家与结果待学院答辩安排及答辩后填写",
+          "x": 8.5,
+          "y": 5.25,
+          "w": 4,
+          "h": 0.42,
+          "size": 16.5
+        },
+        {
+          "value": "第一部分：学位申请与成果信息",
+          "x": 4.45,
+          "y": 6.28,
+          "w": 4.45,
+          "h": 0.24,
+          "size": 13.5
+        }
+      ]
+    },
+    {
+      "slide": 2,
+      "textBoxes": [
+        {
+          "value": "0",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "学位申请",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "培养信息与学分完成情况",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "来自研究生系统截图信息，保留答辩前置审查所需字段",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "培养信息",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "02",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "年级",
+          "x": 0.88,
+          "y": 1.6400000000000001,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "2023级",
+          "x": 1.83,
+          "y": 1.62,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "学生类别",
+          "x": 4.819999999999999,
+          "y": 1.6400000000000001,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "全日制专业学位硕士生",
+          "x": 5.77,
+          "y": 1.62,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "院系",
+          "x": 8.76,
+          "y": 1.6400000000000001,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "人工智能学院",
+          "x": 9.71,
+          "y": 1.62,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "专业",
+          "x": 0.88,
+          "y": 2.22,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "085410 人工智能",
+          "x": 1.83,
+          "y": 2.2,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "导师",
+          "x": 4.819999999999999,
+          "y": 2.22,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "230551_刘威",
+          "x": 5.77,
+          "y": 2.2,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "研究方向",
+          "x": 8.76,
+          "y": 2.22,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "不分方向",
+          "x": 9.71,
+          "y": 2.2,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "学制",
+          "x": 0.88,
+          "y": 2.8000000000000003,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "3年制",
+          "x": 1.83,
+          "y": 2.7800000000000002,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "入学方式",
+          "x": 4.819999999999999,
+          "y": 2.8000000000000003,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "全国统考",
+          "x": 5.77,
+          "y": 2.7800000000000002,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "学习方式",
+          "x": 8.76,
+          "y": 2.8000000000000003,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "全日制",
+          "x": 9.71,
+          "y": 2.7800000000000002,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "入学年月",
+          "x": 0.88,
+          "y": 3.38,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "2023-09-01",
+          "x": 1.83,
+          "y": 3.36,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "预计毕业",
+          "x": 4.819999999999999,
+          "y": 3.38,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "2026-06-30",
+          "x": 5.77,
+          "y": 3.36,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "学籍状态",
+          "x": 8.76,
+          "y": 3.38,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "在读",
+          "x": 9.71,
+          "y": 3.36,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "学位类型",
+          "x": 0.88,
+          "y": 3.96,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "专业学位",
+          "x": 1.83,
+          "y": 3.94,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "是否专业学位",
+          "x": 4.819999999999999,
+          "y": 3.96,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "是",
+          "x": 5.77,
+          "y": 3.94,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "培养类型",
+          "x": 8.76,
+          "y": 3.96,
+          "w": 0.95,
+          "h": 0.12,
+          "size": 8.7
+        },
+        {
+          "value": "无",
+          "x": 9.71,
+          "y": 3.94,
+          "w": 2.5100000000000002,
+          "h": 0.16,
+          "size": 10.6
+        },
+        {
+          "value": "方案学分要求",
+          "x": 0.9,
+          "y": 4.72,
+          "w": 2,
+          "h": 0.28,
+          "size": 17
+        },
+        {
+          "value": "33",
+          "x": 1.05,
+          "y": 5.3,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "总计已选学分（要求 32）",
+          "x": 1.08,
+          "y": 5.88,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "29",
+          "x": 3.9,
+          "y": 5.3,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "总计必修课学分（要求 18）",
+          "x": 3.9299999999999997,
+          "y": 5.88,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "18",
+          "x": 6.75,
+          "y": 5.3,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "专业方向课已选学分",
+          "x": 6.78,
+          "y": 5.88,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        }
+      ]
+    },
+    {
+      "slide": 3,
+      "textBoxes": [
+        {
+          "value": "0",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "学位申请",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "学位论文评阅与答辩状态",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "评阅类型：硕士盲审两份；系统评阅结果：通过",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "评阅信息",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "03",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "通过",
+          "x": 7.75,
+          "y": 1.38,
+          "w": 1.3,
+          "h": 0.4,
+          "size": 27
+        },
+        {
+          "value": "评阅结果",
+          "x": 6.72,
+          "y": 1.49,
+          "w": 1.2,
+          "h": 0.22,
+          "size": 14
+        },
+        {
+          "value": "硕士盲审两份",
+          "x": 3.08,
+          "y": 1.49,
+          "w": 1.85,
+          "h": 0.22,
+          "size": 14
+        },
+        {
+          "value": "评阅类型",
+          "x": 2.05,
+          "y": 1.49,
+          "w": 1.2,
+          "h": 0.22,
+          "size": 14
+        },
+        {
+          "value": "专家1意见摘要",
+          "x": 1.12,
+          "y": 4.18,
+          "w": 1.4,
+          "h": 0.2,
+          "size": 11.5
+        },
+        {
+          "value": "选题具有较强理论意义和现实应用价值；方法设计充分，结果验证较完整，同意参加答辩，并推荐为校级优秀学位论文。",
+          "x": 1.12,
+          "y": 4.55,
+          "w": 4.82,
+          "h": 0.58,
+          "size": 12.2
+        },
+        {
+          "value": "专家2意见摘要",
+          "x": 7.14,
+          "y": 4.18,
+          "w": 1.4,
+          "h": 0.2,
+          "size": 11.5
+        },
+        {
+          "value": "论文达到硕士学位论文要求，同意修改后参加答辩；建议进一步统一格式、术语和章节衔接表达。",
+          "x": 7.14,
+          "y": 4.55,
+          "w": 4.82,
+          "h": 0.58,
+          "size": 12.2
+        },
+        {
+          "value": "答辩安排",
+          "x": 0.95,
+          "y": 6.08,
+          "w": 1.2,
+          "h": 0.24,
+          "size": 13
+        },
+        {
+          "value": "时间 / 地点 / 专家 / 结果：待学院答辩安排及答辩后填写",
+          "x": 2.02,
+          "y": 6.08,
+          "w": 7,
+          "h": 0.24,
+          "size": 13
+        }
+      ]
+    },
+    {
+      "slide": 4,
+      "textBoxes": [
+        {
+          "value": "0",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "学位申请",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "学术成果",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "围绕论文主线形成两项代表性学术论文成果",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "学术成果",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "04",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "论文 / 专利",
+          "x": 0.95,
+          "y": 1.38,
+          "w": 1.4,
+          "h": 0.28,
+          "size": 15
+        },
+        {
+          "value": "当前材料中未检索到专利信息；已发表/接收论文 2 篇。",
+          "x": 2.1,
+          "y": 1.4,
+          "w": 5.2,
+          "h": 0.22,
+          "size": 12.8
+        },
+        {
+          "value": "WISE 2024",
+          "x": 1.1600000000000001,
+          "y": 2.13,
+          "w": 1.65,
+          "h": 0.14,
+          "size": 11
+        },
+        {
+          "value": "CCF B",
+          "x": 4.37,
+          "y": 2.13,
+          "w": 1.7,
+          "h": 0.14,
+          "size": 9.8
+        },
+        {
+          "value": "Next POI Recommendation Based on Time Slot Preferences\nand Bidirectional Transfo",
+          "x": 1.2000000000000002,
+          "y": 2.76,
+          "w": 4.95,
+          "h": 0.74,
+          "size": 13.5
+        },
+        {
+          "value": "Zhao Liu, Wei Liu, Huaijie Zhu, Jianxing Yu, Jian Yin",
+          "x": 1.2000000000000002,
+          "y": 3.65,
+          "w": 4.85,
+          "h": 0.36,
+          "size": 11.5
+        },
+        {
+          "value": "对应论文小模型路线：TSPM、时间增强序列动态图与双向转移建模。",
+          "x": 1.2000000000000002,
+          "y": 4.42,
+          "w": 4.86,
+          "h": 0.42,
+          "size": 12.2
+        },
+        {
+          "value": "ICDE 2026",
+          "x": 7.21,
+          "y": 2.13,
+          "w": 1.65,
+          "h": 0.14,
+          "size": 11
+        },
+        {
+          "value": "CCF A · Accepted",
+          "x": 10.42,
+          "y": 2.13,
+          "w": 1.7,
+          "h": 0.14,
+          "size": 9.8
+        },
+        {
+          "value": "Geography-Aware Large Language Models for\nNext POI Recommendation",
+          "x": 7.25,
+          "y": 2.76,
+          "w": 4.95,
+          "h": 0.74,
+          "size": 13.5
+        },
+        {
+          "value": "Zhao Liu, Muzu Xie, Wei Liu, Huaijie Zhu, Jianxing Yu, Jian Yin, Wang-Chien Lee",
+          "x": 7.25,
+          "y": 3.65,
+          "w": 4.85,
+          "h": 0.36,
+          "size": 11.5
+        },
+        {
+          "value": "对应论文大模型路线：GA-LLM、GCIM 地理注入与 PAM 结构对齐。",
+          "x": 7.25,
+          "y": 4.42,
+          "w": 4.86,
+          "h": 0.42,
+          "size": 12.2
+        },
+        {
+          "value": "成果与毕业论文关系",
+          "x": 0.95,
+          "y": 5.72,
+          "w": 1.8,
+          "h": 0.24,
+          "size": 13
+        },
+        {
+          "value": "两项成果共同支撑“结构先验 + 语义推理 + 协同训练”的论文主框架，覆盖方法设计、实验验证与应用价值。",
+          "x": 2.55,
+          "y": 5.68,
+          "w": 8.7,
+          "h": 0.34,
+          "size": 15.5
+        }
+      ]
+    },
+    {
+      "slide": 5,
+      "textBoxes": [
+        {
+          "value": "中山大学人工智能学院",
+          "x": 4.1,
+          "y": 1.55,
+          "w": 5.15,
+          "h": 0.36,
+          "size": 16
+        },
+        {
+          "value": "硕士学位论文答辩",
+          "x": 4.55,
+          "y": 1.95,
+          "w": 4.25,
+          "h": 0.28,
+          "size": 12.5
+        },
+        {
+          "value": "面向出行位置点预测的\n大小模型协同学习研究",
+          "x": 2.15,
+          "y": 2.58,
+          "w": 9.05,
+          "h": 0.98,
+          "size": 31
+        },
+        {
+          "value": "Collaborative Learning of Large and Small Models for Next POI Prediction in Mobi",
+          "x": 2.5,
+          "y": 4.07,
+          "w": 8.45,
+          "h": 0.28,
+          "size": 10.8
+        },
+        {
+          "value": "人工智能学院",
+          "x": 5.93,
+          "y": 5.3,
+          "w": 1.45,
+          "h": 0.14,
+          "size": 10.5
+        },
+        {
+          "value": "答辩人：刘钊      专业：人工智能      导师：刘威（副教授）",
+          "x": 3.35,
+          "y": 6.18,
+          "w": 6.65,
+          "h": 0.24,
+          "size": 11.5
+        }
+      ]
+    },
+    {
+      "slide": 6,
+      "textBoxes": [
+        {
+          "value": "目录",
+          "x": 1,
+          "y": 0.75,
+          "w": 1.4,
+          "h": 0.36,
+          "size": 20
+        },
+        {
+          "value": "答辩结构",
+          "x": 5.48,
+          "y": 0.8,
+          "w": 2.4,
+          "h": 0.28,
+          "size": 15.5
+        },
+        {
+          "value": "01",
+          "x": 2,
+          "y": 2,
+          "w": 0.68,
+          "h": 0.38,
+          "size": 25
+        },
+        {
+          "value": "研究背景",
+          "x": 2.86,
+          "y": 2.04,
+          "w": 3.1,
+          "h": 0.38,
+          "size": 21
+        },
+        {
+          "value": "任务价值 / 问题定义 / 核心挑战 / 方法边界",
+          "x": 2.88,
+          "y": 2.58,
+          "w": 3.85,
+          "h": 0.42,
+          "size": 10.5
+        },
+        {
+          "value": "02",
+          "x": 2,
+          "y": 4.25,
+          "w": 0.68,
+          "h": 0.38,
+          "size": 25
+        },
+        {
+          "value": "方法设计",
+          "x": 2.86,
+          "y": 4.29,
+          "w": 3.1,
+          "h": 0.38,
+          "size": 21
+        },
+        {
+          "value": "协同框架 / TSPM / GCIM / PAM / 训练策略",
+          "x": 2.88,
+          "y": 4.83,
+          "w": 3.85,
+          "h": 0.42,
+          "size": 10.5
+        },
+        {
+          "value": "03",
+          "x": 7,
+          "y": 2,
+          "w": 0.68,
+          "h": 0.38,
+          "size": 25
+        },
+        {
+          "value": "实验验证",
+          "x": 7.86,
+          "y": 2.04,
+          "w": 3.1,
+          "h": 0.38,
+          "size": 21
+        },
+        {
+          "value": "数据设置 / 主实验 / 消融诊断 / 泛化效率",
+          "x": 7.88,
+          "y": 2.58,
+          "w": 3.85,
+          "h": 0.42,
+          "size": 10.5
+        },
+        {
+          "value": "04",
+          "x": 7,
+          "y": 4.25,
+          "w": 0.68,
+          "h": 0.38,
+          "size": 25
+        },
+        {
+          "value": "结论展望",
+          "x": 7.86,
+          "y": 4.29,
+          "w": 3.1,
+          "h": 0.38,
+          "size": 21
+        },
+        {
+          "value": "主要结论 / 创新点 / 不足与展望",
+          "x": 7.88,
+          "y": 4.83,
+          "w": 3.85,
+          "h": 0.42,
+          "size": 10.5
+        },
+        {
+          "value": "小模型学习结构规律，大模型增强语义推理，对齐机制完成协同。",
+          "x": 1.35,
+          "y": 6.08,
+          "w": 10.7,
+          "h": 0.28,
+          "size": 16.5
+        },
+        {
+          "value": "目录",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "06",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        }
+      ]
+    },
+    {
+      "slide": 7,
+      "textBoxes": [
+        {
+          "value": "01",
+          "x": 2.1,
+          "y": 1.55,
+          "w": 1.15,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "研究背景",
+          "x": 3.3,
+          "y": 1.62,
+          "w": 4.25,
+          "h": 0.48,
+          "size": 31
+        },
+        {
+          "value": "从真实出行任务出发，明确 Next POI 的约束与能力缺口",
+          "x": 3.35,
+          "y": 2.38,
+          "w": 6.25,
+          "h": 0.42,
+          "size": 13.2
+        },
+        {
+          "value": "01",
+          "x": 7.15,
+          "y": 3.72,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "研究背景",
+          "x": 7.82,
+          "y": 3.74,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "任务价值 / 问题定义 / 核心挑战 / 方法边界",
+          "x": 9.72,
+          "y": 3.75,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "02",
+          "x": 7.15,
+          "y": 4.34,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "方法设计",
+          "x": 7.82,
+          "y": 4.359999999999999,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "协同框架 / TSPM / GCIM / PAM / 训练策略",
+          "x": 9.72,
+          "y": 4.37,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "03",
+          "x": 7.15,
+          "y": 4.96,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "实验验证",
+          "x": 7.82,
+          "y": 4.9799999999999995,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "数据设置 / 主实验 / 消融诊断 / 泛化效率",
+          "x": 9.72,
+          "y": 4.99,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "04",
+          "x": 7.15,
+          "y": 5.58,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "结论展望",
+          "x": 7.82,
+          "y": 5.6,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "主要结论 / 创新点 / 不足与展望",
+          "x": 9.72,
+          "y": 5.61,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "位置服务从线上推荐进入线下出行决策",
+          "x": 3.62,
+          "y": 3.72,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "Next POI 需要预测下一步可达且合理的目标",
+          "x": 3.62,
+          "y": 4.15,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "序列、图模型与 LLM 各有能力边界",
+          "x": 3.62,
+          "y": 4.58,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "研究背景",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "07",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        }
+      ]
+    },
+    {
+      "slide": 8,
+      "textBoxes": [
+        {
+          "value": "1",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "研究背景",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "研究背景：位置服务让推荐走向真实出行",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "Next POI 预测服务智能出行、本地生活与文旅推荐",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "背景",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "08",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "推荐目标从“喜欢什么”变成“下一步去哪里”",
+          "x": 0.9,
+          "y": 1.75,
+          "w": 5.6,
+          "h": 0.62,
+          "size": 28
+        },
+        {
+          "value": "线下场景同时受到时间、空间、活动语义和路径连续性约束",
+          "x": 1.15,
+          "y": 2.72,
+          "w": 5.7,
+          "h": 0.42,
+          "size": 15.5
+        },
+        {
+          "value": "下一 POI 预测需要输出 Top-K 候选，并把真实目标排在前列",
+          "x": 1.15,
+          "y": 3.3000000000000003,
+          "w": 5.7,
+          "h": 0.42,
+          "size": 15.5
+        },
+        {
+          "value": "真实系统还要求跨城泛化、稳定排序和可部署的推理成本",
+          "x": 1.15,
+          "y": 3.88,
+          "w": 5.7,
+          "h": 0.42,
+          "size": 15.5
+        },
+        {
+          "value": "本地生活",
+          "x": 7.65,
+          "y": 1.72,
+          "w": 2.25,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "餐饮、购物、服务",
+          "x": 7.67,
+          "y": 2.18,
+          "w": 3,
+          "h": 0.28,
+          "size": 13
+        },
+        {
+          "value": "智能出行",
+          "x": 7.65,
+          "y": 3.0999999999999996,
+          "w": 2.25,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "通勤、导航、行程",
+          "x": 7.67,
+          "y": 3.5599999999999996,
+          "w": 3,
+          "h": 0.28,
+          "size": 13
+        },
+        {
+          "value": "文旅推荐",
+          "x": 7.65,
+          "y": 4.4799999999999995,
+          "w": 2.25,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "景点、活动、路线",
+          "x": 7.67,
+          "y": 4.9399999999999995,
+          "w": 3,
+          "h": 0.28,
+          "size": 13
+        },
+        {
+          "value": "Top-K",
+          "x": 9.65,
+          "y": 5.55,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 34
+        },
+        {
+          "value": "排序质量是核心评估口径",
+          "x": 9.68,
+          "y": 6.13,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        }
+      ]
+    },
+    {
+      "slide": 9,
+      "textBoxes": [
+        {
+          "value": "1",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "研究背景",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "任务定义：由历史轨迹预测下一 POI",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "输入时间有序签到序列，输出下一时刻最可能访问的兴趣点",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "任务定义",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "09",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "签到记录",
+          "x": 0.88,
+          "y": 1.68,
+          "w": 1.4,
+          "h": 0.26,
+          "size": 14
+        },
+        {
+          "value": "xᵢ = (u, ℓᵢ, tᵢ, gᵢ, cᵢ)",
+          "x": 0.88,
+          "y": 2.04,
+          "w": 4.3,
+          "h": 0.45,
+          "size": 25
+        },
+        {
+          "value": "用户、POI、时间、经纬度、类别语义",
+          "x": 0.9,
+          "y": 2.56,
+          "w": 4,
+          "h": 0.24,
+          "size": 12
+        },
+        {
+          "value": "ℓ1",
+          "x": 1.3900000000000001,
+          "y": 4,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 11
+        },
+        {
+          "value": "ℓ2",
+          "x": 3.54,
+          "y": 4,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 11
+        },
+        {
+          "value": "ℓ3",
+          "x": 5.6899999999999995,
+          "y": 4,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 11
+        },
+        {
+          "value": "ℓ4",
+          "x": 7.84,
+          "y": 4,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 11
+        },
+        {
+          "value": "ℓ5",
+          "x": 9.99,
+          "y": 4,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 11
+        },
+        {
+          "value": "历史轨迹 𝒯ᵤ = {x₁, …, xₙ}",
+          "x": 1,
+          "y": 4.62,
+          "w": 4.2,
+          "h": 0.3,
+          "size": 15
+        },
+        {
+          "value": "目标：f : 𝒯ᵤ → ℓ̂ₙ₊₁，使真实 POI 在候选排序中尽可能靠前",
+          "x": 4.62,
+          "y": 4.62,
+          "w": 6.8,
+          "h": 0.3,
+          "size": 15
+        },
+        {
+          "value": "Acc@K 衡量 Top-K 是否命中",
+          "x": 1.2,
+          "y": 5.55,
+          "w": 8.8,
+          "h": 0.42,
+          "size": 14
+        },
+        {
+          "value": "MRR 衡量真实目标排名是否靠前",
+          "x": 1.2,
+          "y": 5.97,
+          "w": 8.8,
+          "h": 0.42,
+          "size": 14
+        },
+        {
+          "value": "NDCG@K 衡量前 K 候选的排序质量",
+          "x": 1.2,
+          "y": 6.39,
+          "w": 8.8,
+          "h": 0.42,
+          "size": 14
+        }
+      ]
+    },
+    {
+      "slide": 10,
+      "textBoxes": [
+        {
+          "value": "1",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "研究背景",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "为什么困难：出行预测是强约束推荐",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "语义合理并不等于地理可达，局部高频也不等于下一步真实目标",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "挑战",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "10",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "01",
+          "x": 0.95,
+          "y": 1.72,
+          "w": 0.68,
+          "h": 0.4,
+          "size": 23
+        },
+        {
+          "value": "时间异质性",
+          "x": 1.75,
+          "y": 1.74,
+          "w": 2.5,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "同一 POI 在工作日、夜间、周末的转移规律不同",
+          "x": 1.77,
+          "y": 2.3,
+          "w": 4.7,
+          "h": 0.7,
+          "size": 14
+        },
+        {
+          "value": "02",
+          "x": 6.85,
+          "y": 1.72,
+          "w": 0.68,
+          "h": 0.4,
+          "size": 23
+        },
+        {
+          "value": "方向性缺失",
+          "x": 7.6499999999999995,
+          "y": 1.74,
+          "w": 2.5,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "只问“当前点去哪里”，容易忽略“目标点从哪里来”",
+          "x": 7.67,
+          "y": 2.3,
+          "w": 4.7,
+          "h": 0.7,
+          "size": 14
+        },
+        {
+          "value": "03",
+          "x": 0.95,
+          "y": 4.02,
+          "w": 0.68,
+          "h": 0.4,
+          "size": 23
+        },
+        {
+          "value": "空间连续性",
+          "x": 1.75,
+          "y": 4.039999999999999,
+          "w": 2.5,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "LLM 把坐标当文本 token，地理邻近可能变成语义远离",
+          "x": 1.77,
+          "y": 4.6,
+          "w": 4.7,
+          "h": 0.7,
+          "size": 14
+        },
+        {
+          "value": "04",
+          "x": 6.85,
+          "y": 4.02,
+          "w": 0.68,
+          "h": 0.4,
+          "size": 23
+        },
+        {
+          "value": "转移先验",
+          "x": 7.6499999999999995,
+          "y": 4.039999999999999,
+          "w": 2.5,
+          "h": 0.38,
+          "size": 22
+        },
+        {
+          "value": "高阶 POI 图关系难以仅靠文本上下文注入 LLM",
+          "x": 7.67,
+          "y": 4.6,
+          "w": 4.7,
+          "h": 0.7,
+          "size": 14
+        },
+        {
+          "value": "单一路线难以同时兼顾精度、泛化、可解释性与部署成本",
+          "x": 1.08,
+          "y": 6.08,
+          "w": 9.4,
+          "h": 0.46,
+          "size": 25
+        }
+      ]
+    },
+    {
+      "slide": 11,
+      "textBoxes": [
+        {
+          "value": "1",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "研究背景",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "现有方法边界：三类路线各有短板",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "本文从能力边界出发设计协同框架，而不是简单叠加模型",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "问题分析",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "11",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "结论",
+          "x": 0.88,
+          "y": 5.35,
+          "w": 0.72,
+          "h": 0.26,
+          "size": 14
+        },
+        {
+          "value": "Next POI 场景需要“结构先验 + 语义推理”的协同机制，并在训练/推理成本上保持可控。",
+          "x": 1.55,
+          "y": 5.32,
+          "w": 9.8,
+          "h": 0.45,
+          "size": 22
+        }
+      ]
+    },
+    {
+      "slide": 12,
+      "textBoxes": [
+        {
+          "value": "1",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "研究背景",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "研究问题：从五个 RQ 构造证据闭环",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "问题、方法、实验按同一逻辑闭环组织",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "研究问题",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "12",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "RQ1",
+          "x": 0.95,
+          "y": 1.55,
+          "w": 0.72,
+          "h": 0.28,
+          "size": 16
+        },
+        {
+          "value": "总体有效性",
+          "x": 1.85,
+          "y": 1.55,
+          "w": 1.55,
+          "h": 0.28,
+          "size": 15
+        },
+        {
+          "value": "协同框架是否稳定优于序列、图与 LLM 基线",
+          "x": 3.72,
+          "y": 1.55,
+          "w": 7.3,
+          "h": 0.28,
+          "size": 14
+        },
+        {
+          "value": "RQ2",
+          "x": 0.95,
+          "y": 2.41,
+          "w": 0.72,
+          "h": 0.28,
+          "size": 16
+        },
+        {
+          "value": "小模型机制",
+          "x": 1.85,
+          "y": 2.41,
+          "w": 1.55,
+          "h": 0.28,
+          "size": 15
+        },
+        {
+          "value": "时间增强与双向转移是否带来独立贡献",
+          "x": 3.72,
+          "y": 2.41,
+          "w": 7.3,
+          "h": 0.28,
+          "size": 14
+        },
+        {
+          "value": "RQ3",
+          "x": 0.95,
+          "y": 3.27,
+          "w": 0.72,
+          "h": 0.28,
+          "size": 16
+        },
+        {
+          "value": "大模型机制",
+          "x": 1.85,
+          "y": 3.27,
+          "w": 1.55,
+          "h": 0.28,
+          "size": 15
+        },
+        {
+          "value": "GCIM 与 PAM 是否改善空间一致性与转移感知",
+          "x": 3.72,
+          "y": 3.27,
+          "w": 7.3,
+          "h": 0.28,
+          "size": 14
+        },
+        {
+          "value": "RQ4",
+          "x": 0.95,
+          "y": 4.13,
+          "w": 0.72,
+          "h": 0.28,
+          "size": 16
+        },
+        {
+          "value": "协同机理",
+          "x": 1.85,
+          "y": 4.13,
+          "w": 1.55,
+          "h": 0.28,
+          "size": 15
+        },
+        {
+          "value": "结构约束是否校正语义偏差与远跳错误",
+          "x": 3.72,
+          "y": 4.13,
+          "w": 7.3,
+          "h": 0.28,
+          "size": 14
+        },
+        {
+          "value": "RQ5",
+          "x": 0.95,
+          "y": 4.99,
+          "w": 0.72,
+          "h": 0.28,
+          "size": 16
+        },
+        {
+          "value": "效率部署",
+          "x": 1.85,
+          "y": 4.99,
+          "w": 1.55,
+          "h": 0.28,
+          "size": 15
+        },
+        {
+          "value": "LoRA 与模块化注入是否控制训练/推理开销",
+          "x": 3.72,
+          "y": 4.99,
+          "w": 7.3,
+          "h": 0.28,
+          "size": 14
+        },
+        {
+          "value": "答辩时的证据顺序",
+          "x": 0.98,
+          "y": 6.13,
+          "w": 1.9,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "主结果 → 消融 → 空间诊断 → 泛化/效率",
+          "x": 2.78,
+          "y": 6.1,
+          "w": 5.8,
+          "h": 0.28,
+          "size": 16
+        }
+      ]
+    },
+    {
+      "slide": 13,
+      "textBoxes": [
+        {
+          "value": "02",
+          "x": 2.1,
+          "y": 1.55,
+          "w": 1.15,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "方法设计",
+          "x": 3.3,
+          "y": 1.62,
+          "w": 4.25,
+          "h": 0.48,
+          "size": 31
+        },
+        {
+          "value": "小模型提供结构先验，大模型完成地理感知语义推理",
+          "x": 3.35,
+          "y": 2.38,
+          "w": 6.25,
+          "h": 0.42,
+          "size": 13.2
+        },
+        {
+          "value": "01",
+          "x": 7.15,
+          "y": 3.72,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "研究背景",
+          "x": 7.82,
+          "y": 3.74,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "任务价值 / 问题定义 / 核心挑战 / 方法边界",
+          "x": 9.72,
+          "y": 3.75,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "02",
+          "x": 7.15,
+          "y": 4.34,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "方法设计",
+          "x": 7.82,
+          "y": 4.359999999999999,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "协同框架 / TSPM / GCIM / PAM / 训练策略",
+          "x": 9.72,
+          "y": 4.37,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "03",
+          "x": 7.15,
+          "y": 4.96,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "实验验证",
+          "x": 7.82,
+          "y": 4.9799999999999995,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "数据设置 / 主实验 / 消融诊断 / 泛化效率",
+          "x": 9.72,
+          "y": 4.99,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "04",
+          "x": 7.15,
+          "y": 5.58,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "结论展望",
+          "x": 7.82,
+          "y": 5.6,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "主要结论 / 创新点 / 不足与展望",
+          "x": 9.72,
+          "y": 5.61,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "TSPM 建模时间异质与双向转移",
+          "x": 3.62,
+          "y": 3.72,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "GCIM 注入连续地理约束",
+          "x": 3.62,
+          "y": 4.15,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "PAM 对齐 POI 图结构与 LLM 语义空间",
+          "x": 3.62,
+          "y": 4.58,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "方法设计",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "13",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        }
+      ]
+    },
+    {
+      "slide": 14,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "总体思路：小模型学结构，大模型做语义推理",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "双路线并行、训练协同、推理独立",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "总体方法",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "14",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "小模型分支 TSPM",
+          "x": 0.95,
+          "y": 1.62,
+          "w": 3.2,
+          "h": 0.36,
+          "size": 21
+        },
+        {
+          "value": "学习时间敏感的时空转移结构：时间分槽、转出/转入方向、动态图权重。",
+          "x": 0.95,
+          "y": 2.1,
+          "w": 4.4,
+          "h": 0.66,
+          "size": 15
+        },
+        {
+          "value": "大模型分支 GA-LLM",
+          "x": 7.75,
+          "y": 1.62,
+          "w": 3.4,
+          "h": 0.36,
+          "size": 21
+        },
+        {
+          "value": "通过 GCIM 注入地理连续性，通过 PAM 注入 POI 转移先验，生成 Top-K。",
+          "x": 7.75,
+          "y": 2.1,
+          "w": 4.5,
+          "h": 0.66,
+          "size": 15
+        },
+        {
+          "value": "PAM\n对齐",
+          "x": 6.02,
+          "y": 3.88,
+          "w": 1.1,
+          "h": 0.55,
+          "size": 21
+        },
+        {
+          "value": "训练期吸收结构知识",
+          "x": 4.7,
+          "y": 5.58,
+          "w": 3.8,
+          "h": 0.34,
+          "size": 20
+        },
+        {
+          "value": "推理期仅 GA-LLM 单路输出，不在线调用 TSPM 打分",
+          "x": 3.48,
+          "y": 6.02,
+          "w": 6.3,
+          "h": 0.28,
+          "size": 14
+        }
+      ]
+    },
+    {
+      "slide": 15,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "协同框架：结构信息在输入侧被对齐注入",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "图示重点展示 GA-LLM 主推理链路以及 GCIM/PAM 的注入流程",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "总体方法",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "15",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "关键口径",
+          "x": 0.9,
+          "y": 6,
+          "w": 1,
+          "h": 0.22,
+          "size": 12
+        },
+        {
+          "value": "TSPM 提供结构嵌入，PAM 将其映射到 LLM 语义空间；最终 Top-K 由 GA-LLM 单路生成。",
+          "x": 1.85,
+          "y": 5.95,
+          "w": 9.8,
+          "h": 0.35,
+          "size": 17
+        }
+      ]
+    },
+    {
+      "slide": 16,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "小模型分支：TSPM 显式建模时间异质性",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "按时段划分转移子图，同时学习转出与转入关系",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "TSPM",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "16",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "传统连续序列",
+          "x": 2.42,
+          "y": 4.3,
+          "w": 1.6,
+          "h": 0.24,
+          "size": 13
+        },
+        {
+          "value": "时间增强序列",
+          "x": 8.22,
+          "y": 4.3,
+          "w": 1.6,
+          "h": 0.24,
+          "size": 13
+        },
+        {
+          "value": "TSDG：按时间槽构建动态图，显式刻画同一 POI 在不同时段的差异",
+          "x": 1.25,
+          "y": 5.15,
+          "w": 10.6,
+          "h": 0.42,
+          "size": 14.2
+        },
+        {
+          "value": "BTM：同时建模“当前点去哪里”和“目标点从哪里来”",
+          "x": 1.25,
+          "y": 5.6000000000000005,
+          "w": 10.6,
+          "h": 0.42,
+          "size": 14.2
+        },
+        {
+          "value": "动态图边权：综合序列距离与双向转移距离，提升排序稳定性",
+          "x": 1.25,
+          "y": 6.050000000000001,
+          "w": 10.6,
+          "h": 0.42,
+          "size": 14.2
+        }
+      ]
+    },
+    {
+      "slide": 17,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "双向转移与 TiRNN：把历史贡献做成可调权重",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "关系向量调节不同历史点对下一 POI 的贡献",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "TSPM",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "17",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "TiRNN 预测头",
+          "x": 0.9,
+          "y": 5.2,
+          "w": 1.55,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "rₖ = RelEnc(ℓₜ₋ₖ, ℓₜ, Δtₖ, Δgₖ)",
+          "x": 7.02,
+          "y": 1.78,
+          "w": 4.6,
+          "h": 0.42,
+          "size": 21
+        },
+        {
+          "value": "ℒₜₛₚₘ = αℒ_time + βℒ_seq",
+          "x": 7.02,
+          "y": 2.55,
+          "w": 4.1,
+          "h": 0.42,
+          "size": 21
+        },
+        {
+          "value": "关系编码引入时间间隔与地理距离",
+          "x": 7.28,
+          "y": 3.55,
+          "w": 4.8,
+          "h": 0.42,
+          "size": 14.3
+        },
+        {
+          "value": "注意力融合多步历史，平衡短期惯性与中期计划",
+          "x": 7.28,
+          "y": 4.05,
+          "w": 4.8,
+          "h": 0.42,
+          "size": 14.3
+        },
+        {
+          "value": "离线训练后导出 POI 结构嵌入，供 PAM 读取",
+          "x": 7.28,
+          "y": 4.55,
+          "w": 4.8,
+          "h": 0.42,
+          "size": 14.3
+        }
+      ]
+    },
+    {
+      "slide": 18,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "大模型问题：坐标文本化破坏空间连续性",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "地理上相邻的位置，可能在离散 token 空间中被切成差异很大的符号序列",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "GA-LLM",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "18",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "远跳",
+          "x": 8.42,
+          "y": 1.85,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 41
+        },
+        {
+          "value": "纯文本 LLM 容易产生地理不一致预测",
+          "x": 8.45,
+          "y": 2.43,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "经纬度不是普通文本，数字 token 相近不代表空间相近",
+          "x": 8.66,
+          "y": 3.25,
+          "w": 3.9,
+          "h": 0.42,
+          "size": 14.2
+        },
+        {
+          "value": "语义上合理的地点，可能在真实城市空间上不可达",
+          "x": 8.66,
+          "y": 3.87,
+          "w": 3.9,
+          "h": 0.42,
+          "size": 14.2
+        },
+        {
+          "value": "需要把地理连续性作为可学习约束注入输入空间",
+          "x": 8.66,
+          "y": 4.49,
+          "w": 3.9,
+          "h": 0.42,
+          "size": 14.2
+        }
+      ]
+    },
+    {
+      "slide": 19,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "GCIM：层级离散编码 + 连续频域编码",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "将地理约束结构化注入 LLM 语义空间",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "GA-LLM",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "19",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "坐标 gᵢ",
+          "x": 0.72,
+          "y": 2.44,
+          "w": 1.36,
+          "h": 0.34,
+          "size": 13
+        },
+        {
+          "value": "HDE\nQuadkey",
+          "x": 3.07,
+          "y": 2.44,
+          "w": 1.36,
+          "h": 0.34,
+          "size": 12.5
+        },
+        {
+          "value": "CSE\nFourier",
+          "x": 5.420000000000001,
+          "y": 2.44,
+          "w": 1.36,
+          "h": 0.34,
+          "size": 12.5
+        },
+        {
+          "value": "融合投影\nE_gps",
+          "x": 7.770000000000001,
+          "y": 2.44,
+          "w": 1.36,
+          "h": 0.34,
+          "size": 12.5
+        },
+        {
+          "value": "LLM 输入\n<GPS>",
+          "x": 10.120000000000001,
+          "y": 2.44,
+          "w": 1.36,
+          "h": 0.34,
+          "size": 12.5
+        },
+        {
+          "value": "E_gps = W_gps · [HDE(g); CSE(g)]",
+          "x": 1.02,
+          "y": 4.08,
+          "w": 5.8,
+          "h": 0.42,
+          "size": 22
+        },
+        {
+          "value": "GAL 损失约束嵌入距离与真实测地距离一致",
+          "x": 1.04,
+          "y": 4.62,
+          "w": 5.7,
+          "h": 0.28,
+          "size": 14
+        },
+        {
+          "value": "38.69%",
+          "x": 8,
+          "y": 5.85,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 31
+        },
+        {
+          "value": "CA 平均地理误差相对下降",
+          "x": 8.03,
+          "y": 6.43,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        }
+      ]
+    },
+    {
+      "slide": 20,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "PAM：把 POI 图结构映射到 LLM 语义空间",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "解决“结构信息可用，但语言模型难以读取”的跨空间鸿沟",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "GA-LLM",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "20",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "E_poi = W_p · e_poi + b_p",
+          "x": 6.85,
+          "y": 1.7,
+          "w": 4.6,
+          "h": 0.42,
+          "size": 23
+        },
+        {
+          "value": "输入：小模型/图模型产生的 POI 结构嵌入",
+          "x": 7.12,
+          "y": 2.75,
+          "w": 4.9,
+          "h": 0.42,
+          "size": 14.5
+        },
+        {
+          "value": "映射：结构空间 → LLM 语义空间",
+          "x": 7.12,
+          "y": 3.33,
+          "w": 4.9,
+          "h": 0.42,
+          "size": 14.5
+        },
+        {
+          "value": "作用：缺少直接目标线索时，提高候选可检索性与可排序性",
+          "x": 7.12,
+          "y": 3.91,
+          "w": 4.9,
+          "h": 0.42,
+          "size": 14.5
+        },
+        {
+          "value": "+52.98%",
+          "x": 6.95,
+          "y": 5.52,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 36
+        },
+        {
+          "value": "CA 缺失目标场景 Acc@1 相对提升",
+          "x": 6.98,
+          "y": 6.1,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        }
+      ]
+    },
+    {
+      "slide": 21,
+      "textBoxes": [
+        {
+          "value": "2",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "方法设计",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "协同训练：先对齐，后协同；推理保持单路输出",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "协同发生在训练期与表示空间，不是在线分数融合",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "训练策略",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "21",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "0",
+          "x": 1.19,
+          "y": 2.24,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 16
+        },
+        {
+          "value": "离线训练 TSPM",
+          "x": 0.95,
+          "y": 3,
+          "w": 2.5,
+          "h": 0.34,
+          "size": 18
+        },
+        {
+          "value": "得到 POI 结构嵌入",
+          "x": 0.95,
+          "y": 3.48,
+          "w": 2.55,
+          "h": 0.58,
+          "size": 12.5
+        },
+        {
+          "value": "1",
+          "x": 4.23,
+          "y": 2.24,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 16
+        },
+        {
+          "value": "Stage-1 对齐预热",
+          "x": 3.99,
+          "y": 3,
+          "w": 2.5,
+          "h": 0.34,
+          "size": 18
+        },
+        {
+          "value": "冻结 LLM 主体，训练 GCIM/PAM",
+          "x": 3.99,
+          "y": 3.48,
+          "w": 2.55,
+          "h": 0.58,
+          "size": 12.5
+        },
+        {
+          "value": "2",
+          "x": 7.2700000000000005,
+          "y": 2.24,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 16
+        },
+        {
+          "value": "Stage-2 协同训练",
+          "x": 7.03,
+          "y": 3,
+          "w": 2.5,
+          "h": 0.34,
+          "size": 18
+        },
+        {
+          "value": "LoRA + GCIM/PAM，优化生成与对齐目标",
+          "x": 7.03,
+          "y": 3.48,
+          "w": 2.55,
+          "h": 0.58,
+          "size": 12.5
+        },
+        {
+          "value": "3",
+          "x": 10.31,
+          "y": 2.24,
+          "w": 0.2,
+          "h": 0.1,
+          "size": 16
+        },
+        {
+          "value": "推理阶段",
+          "x": 10.07,
+          "y": 3,
+          "w": 2.5,
+          "h": 0.34,
+          "size": 18
+        },
+        {
+          "value": "GA-LLM beam search 直接生成 Top-K",
+          "x": 10.07,
+          "y": 3.48,
+          "w": 2.55,
+          "h": 0.58,
+          "size": 12.5
+        },
+        {
+          "value": "ℒ_total = ℒ_gen + λ₂ℒ_geo + λ₃ℒ_align",
+          "x": 2.28,
+          "y": 5.35,
+          "w": 7.5,
+          "h": 0.45,
+          "size": 25
+        },
+        {
+          "value": "不引入候选约束解码 · 不在线重排序 · 不调用 TSPM 实时打分",
+          "x": 2.52,
+          "y": 6.02,
+          "w": 7,
+          "h": 0.28,
+          "size": 14.2
+        }
+      ]
+    },
+    {
+      "slide": 22,
+      "textBoxes": [
+        {
+          "value": "03",
+          "x": 2.1,
+          "y": 1.55,
+          "w": 1.15,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "实验验证",
+          "x": 3.3,
+          "y": 1.62,
+          "w": 4.25,
+          "h": 0.48,
+          "size": 31
+        },
+        {
+          "value": "用主结果、消融、诊断和效率分析构成证据闭环",
+          "x": 3.35,
+          "y": 2.38,
+          "w": 6.25,
+          "h": 0.42,
+          "size": 13.2
+        },
+        {
+          "value": "01",
+          "x": 7.15,
+          "y": 3.72,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "研究背景",
+          "x": 7.82,
+          "y": 3.74,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "任务价值 / 问题定义 / 核心挑战 / 方法边界",
+          "x": 9.72,
+          "y": 3.75,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "02",
+          "x": 7.15,
+          "y": 4.34,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "方法设计",
+          "x": 7.82,
+          "y": 4.359999999999999,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "协同框架 / TSPM / GCIM / PAM / 训练策略",
+          "x": 9.72,
+          "y": 4.37,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "03",
+          "x": 7.15,
+          "y": 4.96,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "实验验证",
+          "x": 7.82,
+          "y": 4.9799999999999995,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "数据设置 / 主实验 / 消融诊断 / 泛化效率",
+          "x": 9.72,
+          "y": 4.99,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "04",
+          "x": 7.15,
+          "y": 5.58,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "结论展望",
+          "x": 7.82,
+          "y": 5.6,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "主要结论 / 创新点 / 不足与展望",
+          "x": 9.72,
+          "y": 5.61,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "双路线分别验证结构分支与语义分支",
+          "x": 3.62,
+          "y": 3.72,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "消融实验定位 TSDG / BTM / GCIM / PAM 贡献",
+          "x": 3.62,
+          "y": 4.15,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "空间诊断、困难样本和效率分析支撑可部署性",
+          "x": 3.62,
+          "y": 4.58,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "实验验证",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "22",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        }
+      ]
+    },
+    {
+      "slide": 23,
+      "textBoxes": [
+        {
+          "value": "3",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "实验验证",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "实验设置：母数据集与城市子集双路线验证",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "统一数据切分、评价指标与显著性检验，避免评估口径漂移",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "实验设置",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "23",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "TSPM 路线",
+          "x": 8.25,
+          "y": 1.58,
+          "w": 1.8,
+          "h": 0.28,
+          "size": 17
+        },
+        {
+          "value": "Gowalla / Foursquare 母数据集\n验证时间分槽、双向转移、动态图机制",
+          "x": 8.26,
+          "y": 2,
+          "w": 3.2,
+          "h": 0.68,
+          "size": 13.5
+        },
+        {
+          "value": "GA-LLM 路线",
+          "x": 8.25,
+          "y": 3.12,
+          "w": 1.9,
+          "h": 0.28,
+          "size": 17
+        },
+        {
+          "value": "NYC / TKY / CA 城市或区域子集\n验证地理注入、转移对齐与跨城泛化",
+          "x": 8.26,
+          "y": 3.54,
+          "w": 3.35,
+          "h": 0.68,
+          "size": 13.5
+        },
+        {
+          "value": "80%/10%/10% 按时间顺序划分",
+          "x": 1.15,
+          "y": 5.23,
+          "w": 7.8,
+          "h": 0.42,
+          "size": 13.8
+        },
+        {
+          "value": "Acc@1 / Acc@5 / Acc@10 / MRR / NDCG@K",
+          "x": 1.15,
+          "y": 5.66,
+          "w": 7.8,
+          "h": 0.42,
+          "size": 13.8
+        },
+        {
+          "value": "5 个随机种子，paired t-test，p < 0.05",
+          "x": 1.15,
+          "y": 6.090000000000001,
+          "w": 7.8,
+          "h": 0.42,
+          "size": 13.8
+        }
+      ]
+    },
+    {
+      "slide": 24,
+      "textBoxes": [
+        {
+          "value": "3",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "实验验证",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "主结果：两条路线在各自场景中均取得稳定增益",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "TSPM 验证结构分支，GA-LLM 验证地理注入与转移对齐",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "实验结果",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "24",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "TSPM 相对 Graph-Flashback 提升（%）",
+          "x": 0.85,
+          "y": 1.46,
+          "w": 4.7,
+          "h": 0.25,
+          "size": 13.5
+        },
+        {
+          "value": "GA-LLM 相对最强非本文基线提升（%）",
+          "x": 6.72,
+          "y": 1.46,
+          "w": 4.9,
+          "h": 0.25,
+          "size": 13.5
+        },
+        {
+          "value": "0.3988",
+          "x": 1.05,
+          "y": 5.3,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 32
+        },
+        {
+          "value": "GA-LLM 在 NYC 上 Acc@1",
+          "x": 1.08,
+          "y": 5.88,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "0.1595",
+          "x": 4.35,
+          "y": 5.3,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 32
+        },
+        {
+          "value": "TSPM 在 Gowalla 上 Acc@1",
+          "x": 4.38,
+          "y": 5.88,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "说明：提升不是单一指标偶然变化，而是在命中率与排序质量上同步改善。",
+          "x": 7.65,
+          "y": 5.45,
+          "w": 4.1,
+          "h": 0.5,
+          "size": 16
+        }
+      ]
+    },
+    {
+      "slide": 25,
+      "textBoxes": [
+        {
+          "value": "3",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "实验验证",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "消融与空间诊断：GCIM 是主要地理收益来源",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "TSDG / BTM / GCIM / PAM 均有独立贡献",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "实验结果",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "25",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "GA-LLM 消融（Acc@1）",
+          "x": 0.88,
+          "y": 1.48,
+          "w": 2.5,
+          "h": 0.25,
+          "size": 13.5
+        },
+        {
+          "value": "诊断结论",
+          "x": 0.9,
+          "y": 5.18,
+          "w": 1.1,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "GCIM 使错误分布向近距离移动；CA 平均地理误差由 61.38 km 降至 37.63 km。",
+          "x": 1.88,
+          "y": 5.12,
+          "w": 4.35,
+          "h": 0.48,
+          "size": 15.5
+        }
+      ]
+    },
+    {
+      "slide": 26,
+      "textBoxes": [
+        {
+          "value": "3",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "实验验证",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "机制证据与效率：困难样本受益，成本保持可控",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "PAM 在目标缺失场景补偿结构先验，LoRA 与结构化注入控制开销",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "实验结果",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "26",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "+52.98%",
+          "x": 1,
+          "y": 4.78,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 34
+        },
+        {
+          "value": "PAM 在 CA 缺失目标场景的 Acc@1 相对提升",
+          "x": 1.03,
+          "y": 5.36,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "LoRA",
+          "x": 6.72,
+          "y": 4.78,
+          "w": 2.25,
+          "h": 0.55,
+          "size": 34
+        },
+        {
+          "value": "参数高效微调，避免全参更新成本激增",
+          "x": 6.75,
+          "y": 5.36,
+          "w": 2.35,
+          "h": 0.38,
+          "size": 11.8
+        },
+        {
+          "value": "部署口径",
+          "x": 1,
+          "y": 6,
+          "w": 1.1,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "训练期完成知识对齐，推理期保持 GA-LLM 单路输出，在精度提升与工程可部署性之间取得平衡。",
+          "x": 2,
+          "y": 5.92,
+          "w": 8.9,
+          "h": 0.42,
+          "size": 17
+        }
+      ]
+    },
+    {
+      "slide": 27,
+      "textBoxes": [
+        {
+          "value": "04",
+          "x": 2.1,
+          "y": 1.55,
+          "w": 1.15,
+          "h": 0.55,
+          "size": 35
+        },
+        {
+          "value": "结论展望",
+          "x": 3.3,
+          "y": 1.62,
+          "w": 4.25,
+          "h": 0.48,
+          "size": 31
+        },
+        {
+          "value": "总结创新贡献，并说明后续可扩展方向",
+          "x": 3.35,
+          "y": 2.38,
+          "w": 6.25,
+          "h": 0.42,
+          "size": 13.2
+        },
+        {
+          "value": "01",
+          "x": 7.15,
+          "y": 3.72,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "研究背景",
+          "x": 7.82,
+          "y": 3.74,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "任务价值 / 问题定义 / 核心挑战 / 方法边界",
+          "x": 9.72,
+          "y": 3.75,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "02",
+          "x": 7.15,
+          "y": 4.34,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "方法设计",
+          "x": 7.82,
+          "y": 4.359999999999999,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "协同框架 / TSPM / GCIM / PAM / 训练策略",
+          "x": 9.72,
+          "y": 4.37,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "03",
+          "x": 7.15,
+          "y": 4.96,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "实验验证",
+          "x": 7.82,
+          "y": 4.9799999999999995,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "数据设置 / 主实验 / 消融诊断 / 泛化效率",
+          "x": 9.72,
+          "y": 4.99,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "04",
+          "x": 7.15,
+          "y": 5.58,
+          "w": 0.52,
+          "h": 0.24,
+          "size": 14
+        },
+        {
+          "value": "结论展望",
+          "x": 7.82,
+          "y": 5.6,
+          "w": 2.25,
+          "h": 0.22,
+          "size": 13.8
+        },
+        {
+          "value": "主要结论 / 创新点 / 不足与展望",
+          "x": 9.72,
+          "y": 5.61,
+          "w": 2.4,
+          "h": 0.2,
+          "size": 8.2
+        },
+        {
+          "value": "协同框架兼顾结构表达与语义泛化",
+          "x": 3.62,
+          "y": 3.72,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "验证闭环覆盖精度、泛化、可解释性和成本",
+          "x": 3.62,
+          "y": 4.15,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "后续引入多模态上下文与在线自适应",
+          "x": 3.62,
+          "y": 4.58,
+          "w": 3.2,
+          "h": 0.27,
+          "size": 11.8
+        },
+        {
+          "value": "结论展望",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "27",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        }
+      ]
+    },
+    {
+      "slide": 28,
+      "textBoxes": [
+        {
+          "value": "4",
+          "x": 0.85,
+          "y": 0.64,
+          "w": 0.18,
+          "h": 0.09,
+          "size": 10
+        },
+        {
+          "value": "结论展望",
+          "x": 1.28,
+          "y": 0.56,
+          "w": 2.35,
+          "h": 0.24,
+          "size": 12.5
+        },
+        {
+          "value": "人工智能学院",
+          "x": 10.74,
+          "y": 0.67,
+          "w": 1.4,
+          "h": 0.12,
+          "size": 9.2
+        },
+        {
+          "value": "结论与展望",
+          "x": 3.05,
+          "y": 0.56,
+          "w": 7.15,
+          "h": 0.26,
+          "size": 14.5
+        },
+        {
+          "value": "结构-语义协同为高约束时空推荐提供可复用框架",
+          "x": 1.04,
+          "y": 0.98,
+          "w": 11.25,
+          "h": 0.3,
+          "size": 9.8
+        },
+        {
+          "value": "总结",
+          "x": 4.05,
+          "y": 7.02,
+          "w": 5.25,
+          "h": 0.18,
+          "size": 7.6
+        },
+        {
+          "value": "28",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        },
+        {
+          "value": "主要结论",
+          "x": 0.9,
+          "y": 1.65,
+          "w": 2,
+          "h": 0.32,
+          "size": 20
+        },
+        {
+          "value": "协同框架兼顾结构表达与语义泛化",
+          "x": 1.1,
+          "y": 2.28,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "TSDG/BTM 提升时间异质与路径转移建模",
+          "x": 1.1,
+          "y": 3,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "GCIM/PAM 改善地理一致性、跨场景泛化与效率",
+          "x": 1.1,
+          "y": 3.7199999999999998,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "创新点",
+          "x": 5.0200000000000005,
+          "y": 1.65,
+          "w": 2,
+          "h": 0.32,
+          "size": 20
+        },
+        {
+          "value": "问题层：显式化结构信息难注入 LLM",
+          "x": 5.220000000000001,
+          "y": 2.28,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "方法层：GCIM + PAM 两条互补注入路径",
+          "x": 5.220000000000001,
+          "y": 3,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "验证层：主结果、消融、诊断、效率闭环",
+          "x": 5.220000000000001,
+          "y": 3.7199999999999998,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "后续工作",
+          "x": 9.14,
+          "y": 1.65,
+          "w": 2,
+          "h": 0.32,
+          "size": 20
+        },
+        {
+          "value": "引入天气、交通、节假日等多模态上下文",
+          "x": 9.34,
+          "y": 2.28,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "研究细粒度跨城迁移与在线自适应",
+          "x": 9.34,
+          "y": 3,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "优化生成链路、缓存更新与端到端时延",
+          "x": 9.34,
+          "y": 3.7199999999999998,
+          "w": 3.45,
+          "h": 0.42,
+          "size": 13.3
+        },
+        {
+          "value": "谢谢各位老师批评指正",
+          "x": 3.28,
+          "y": 6.26,
+          "w": 6.75,
+          "h": 0.55,
+          "size": 30
+        }
+      ]
+    },
+    {
+      "slide": 29,
+      "textBoxes": [
+        {
+          "value": "THANKS",
+          "x": 4.42,
+          "y": 1.72,
+          "w": 4.5,
+          "h": 0.72,
+          "size": 42
+        },
+        {
+          "value": "谢谢！",
+          "x": 5.55,
+          "y": 2.72,
+          "w": 2.25,
+          "h": 0.62,
+          "size": 36
+        },
+        {
+          "value": "人工智能学院",
+          "x": 5.93,
+          "y": 5.3,
+          "w": 1.45,
+          "h": 0.14,
+          "size": 10.5
+        },
+        {
+          "value": "欢迎各位老师批评指正",
+          "x": 4.5,
+          "y": 4.1,
+          "w": 4.35,
+          "h": 0.28,
+          "size": 15.5
+        },
+        {
+          "value": "29",
+          "x": 12.18,
+          "y": 7,
+          "w": 0.45,
+          "h": 0.18,
+          "size": 8.5
+        }
+      ]
+    }
+  ]
+}

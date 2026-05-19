@@ -1,0 +1,119 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1777382687938,
+  "projectRoot": "/Users/liuzhao/Desktop/SYSUThesis-main",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "bibtex-style": {
+      "path": "bibtex-style",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1777382687896,
+      "keyFiles": [
+        "gbt7714-2015-numerical.bst"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 32,
+      "lastAccessed": 1777382687896,
+      "keyFiles": [
+        "abbr.aux",
+        "abbr.tex",
+        "abstract.tex",
+        "appendix.aux",
+        "appendix.tex"
+      ]
+    },
+    "figures": {
+      "path": "figures",
+      "purpose": null,
+      "fileCount": 11,
+      "lastAccessed": 1777382687897,
+      "keyFiles": [
+        "TiRNN.pdf",
+        "Time_enhanced_left.pdf",
+        "Time_enhanced_right.pdf",
+        "fig1_GCIM_c1.pdf",
+        "fig2_PAM_c2.pdf"
+      ]
+    },
+    "output": {
+      "path": "output",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1777382687897,
+      "keyFiles": [
+        "logo_1.png",
+        "刘钊毕业答辩.pptx",
+        "刘钊毕业答辩PPT demo.pptx",
+        "背景.png"
+      ]
+    },
+    "scratch": {
+      "path": "scratch",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1777382687898,
+      "keyFiles": []
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 1,
+      "lastAccessed": 1777382687898,
+      "keyFiles": [
+        "build_defense_pptx.cjs"
+      ]
+    },
+    "scratch/assets": {
+      "path": "scratch/assets",
+      "purpose": "Static assets",
+      "fileCount": 16,
+      "lastAccessed": 1777382687900,
+      "keyFiles": [
+        "TiRNN.png",
+        "fig1_GCIM_c1.png",
+        "fig2_PAM_c2.png"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "docs/chap03.tex",
+      "accessCount": 3,
+      "lastAccessed": 1777382990310,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
